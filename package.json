@@ -1,0 +1,23 @@
+{
+  "name": "kgrid-cli",
+  "version": "0.0.1",
+  "description": "A command-line tool for Kgrid workbench",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "keywords": [
+    "kgrid"
+  ],
+  "author": "George Meng",
+  "license": "MIT",
+  "bin": {
+    "kgrid": "./index.js"
+  },
+  "dependencies": {
+    "co": "^4.6.0",
+    "co-prompt": "^1.0.0",
+    "commander": "^2.14.1",
+    "superagent": "^3.8.2"
+  }
+}

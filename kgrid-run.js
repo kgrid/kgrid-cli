@@ -6,13 +6,21 @@ var program = require('commander')
 var exec = require('child_process').exec
 var spawn = require('child_process').spawn
 var child=null
+var kill = function (pid, signal, callback) {
+    signal   = signal || 'SIGKILL';
+    callback = callback || function () {};
+    try { process.kill(pid, signal) }
+        catch (ex) { }
+        callback();
+    }
+
 
 program
-  .command('run ["username"]')
   .option('-u, --username <username>', 'The user to authenticate as')
-  .action(function(file) {
-      var delay = 500
-      request
+	.parse(process.argv)
+
+var delay = 500
+    request
         .get('http://localhost:8082/health')
         .end(function(err,res){
             if(res==null){
@@ -56,31 +64,11 @@ program
                           }
 
                          if(child!=null) {
-                            console.log('Shutting down the activator')
-                            child.kill()
+                            process.kill(process.pid)
                           }
                           process.stdin.pause()
                       })
                   })
                   },delay)
     })
-  })
-
-program
-  .command('login ["username","password"]')
-  .option('-u, --username <username>', 'The user to authenticate as')
-  .option('-p, --password <password>', 'The users password')
-  .action(function(file) {
-      co(function *() {
-      var username = yield prompt('username: ')
-      var password = yield prompt.password('password: ')
-      request
-       .post('http://kgrid.med.umich.edu/library2/login?username='+username+'&password='+password)
-       .end(function (err, res) {
-         var link = JSON.stringify(res.body)
-         console.log('Response: %s', link)
-       })
-    })
- })
-
- program.parse(process.argv)
+ 

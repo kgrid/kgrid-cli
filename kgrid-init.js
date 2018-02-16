@@ -8,57 +8,52 @@ const ncp=require('ncp').ncp
 const exists = require('fs').existsSync
 
 program
-  .usage('<template-name> [object-name]')
+  .usage('<template-name> <project-name> [object-name]')
   .option('-c, --clone', 'use git clone')
   .option('--offline', 'use cached template')
  	.parse(process.argv)
 
 var template=program.args[0]
-var object = program.args[1]
+var project = program.args[1]
+var object = program.args[2]
 var tmp = 'tmp'
-var dest = template.replace(/[\/:]/g, '-')
+var srccontainer= 'src'
+var dest = project.replace(/[\/:]/g, '-')
 var gittemplate='kgrid/ko-templates'
 var src=path.join(tmp,template)
-const activatorfile='activator-0.5.8-SNAPSHOT.war'
-
-
+var prop = {'project':'','object':'','adapters':[]}
 if(object!=null){
 		console.log('Your Object Name:'+object)
 		dest = object.replace(/[\/:]/g, '-')
 }
-
+prop.project=project
+prop.object=object
+switch (template){
+  case 'jslegacy':
+    prop.adapters.push('JS')
+    break;
+  default:
+    break;
+}
+console.log(JSON.stringify(prop))
 download(gittemplate, tmp, err => {
-		if(err){
+		if(err!=null){
 		    console.log(err)
 		 }else {
-				fs.ensureDir(dest, err => {  console.log(err) })
-				fs.ensureDir('activator', err => {  
-					if(err){
-					   console.log(err) 
-					} else{
-					   fs.ensureDir('activator/adapters', err => {  
-								console.log(err) })
-					   fs.ensureDir('activator/shelf', err => {  
-					   console.log(err) })
-					   }
-					})
-				var b = 	'./activator/'+activatorfile
-				console.log(b)
-				if(!exists(b)){
-					console.log('Downloading activator...')
-					downloadurl('https://github.com/kgrid/kgrid-starter/releases/download/0.6/activator-0.5.8-SNAPSHOT.war','activator').then(() => { console.log('done!')
-}, err=>{
-console.log(err)})
-				}
-				ncp(src, dest, function(err) {
-					if(err){
+       fs.ensureDir(project+'/'+srccontainer+'/'+dest, err => {
+         if(err!=null){
+           console.log(err)
+         }else{
+				ncp(src, project+'/'+srccontainer+'/'+dest, function(err) {
+					if(err!=null){
 						console.error(err)
 					}else{
 						console.log('Successfully initiated your object!')
-						fs.remove(tmp,err=>{ console.log(err)})
+            fs.writeFileSync(project+'/project.json',JSON.stringify(prop))
+						fs.remove(tmp,err=>{ if(err) console.log(err)})
 					}
 				})
-		 }   
+		 }
   })
-
-
+}
+})

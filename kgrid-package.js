@@ -18,36 +18,24 @@ const outputfile='output.xml'
 const payloadfile='payload.js'
 const metadatafile='metadata.json'
 const basefile='base.json'
-const packfile=path.basename(process.cwd())
+const project=path.basename(process.cwd())
 
-console.log(packfile)
-
-var data = fs.readFileSync(basefile, 'utf8')
+var prop= JSON.parse(fs.readFileSync('project.json', 'utf8'))
+var packfile=prop.object
+var srcpath = 'src/'+prop.object+'/'
+var data = fs.readFileSync(srcpath+basefile, 'utf8')
 var myobject = JSON.parse(data)
-
-data = fs.readFileSync(inputfile, 'utf8')
+data = fs.readFileSync(srcpath+inputfile, 'utf8')
 myobject.inputMessage=data
-data = fs.readFileSync(outputfile, 'utf8')
+data = fs.readFileSync(srcpath+outputfile, 'utf8')
 myobject.outputMessage=data
-data = fs.readFileSync(payloadfile, 'utf8')
+data = fs.readFileSync(srcpath+payloadfile, 'utf8')
 myobject.payload.content=data
-data = fs.readFileSync(metadatafile, 'utf8')
+data = fs.readFileSync(srcpath+metadatafile, 'utf8')
 myobject.metadata=JSON.parse(data).metadata
 console.log(JSON.stringify(myobject))
-
-fs.writeFileSync(packfile,JSON.stringify(myobject))
-fs.writeFileSync('../activator/shelf/'+packfile,JSON.stringify(myobject))
-
-/*
-				ncp(src, dest, function(err) {
-					if(err){
-						console.error(err)
-					}else{
-						console.log('Successfully initiated your object!')
-						fs.remove(tmp,err=>{ console.log(err)})
-					}
-				})
-		 }   
-  })
-
-*/
+fs.ensureDir('target', err => {
+   if(err!=null){console.log(err) }
+   fs.writeFileSync('target/'+packfile,JSON.stringify(myobject))
+   fs.writeFileSync('./activator/shelf/'+packfile,JSON.stringify(myobject))
+ })

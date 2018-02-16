@@ -15,11 +15,8 @@ program
 
 var arkid = path.basename(process.cwd()).replace(/[\-:]/g, '/')
 
-
-var delay = 500
-    request
-        .get('http://localhost:8082/health')
-        .end(function(err,res){
+request.get('http://localhost:8082/health')
+       .end(function(err,res){
             if(res==null){
               console.log('Starting Activator...')
               delay=3000
@@ -30,42 +27,14 @@ var delay = 500
                           console.log("Error -> "+error);
                         }
                       })
-                     
+
             }else {
 							console.log('There is one activator running on Port 8082.')
 							console.log('Your knowledge object operation will be directed to this instance.')
             }
             setTimeout(function(){
-                console.log('Activator is ready and can be accessed at http://localhost:8082.')
-                co(function *() {
-                    var username = yield prompt('Please enter your name: ')
- //                   var outcome='Hello, '+username
-                    request
-                      .post('http://localhost:8082/knowledgeObject/ark:/'+arkid+'/result')
-                      .set('Content-Type','application/json')
-                      .send({'name':username})
-                      .end(function (err, res) {
-                          if(res!=null) {
-                            var link = JSON.parse(res.text).result
-                            console.log('Response: %s', link)
- //                           if(link==outcome){
-   //                           console.log('Test Passed!')
-     //                       }else {
-       //                       console.log('Test Failed!')
-         //                   }
-                          }
-                          if(err!=null) {
-                            var link = err
-                            console.log('Response: %s', link)
-                            console.log('Test Failed!')
-                          }
+               console.log('K-Grid Activator is ready and can be accessed at http://localhost:8082.')
+               process.kill(process.pid)
+             },3000)
 
-                         if(child!=null) {
-                            process.kill(process.pid)
-                          }
-                          process.stdin.pause()
-                      })
-                  })
-                  },delay)
     })
- 

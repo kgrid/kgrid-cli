@@ -12,8 +12,8 @@
   "author": "George Meng",
   "license": "MIT",
   "bin": {
-    "kgrid": "./index.js",
-    "kgridtrial": "./kgrid.js"
+    "kgrid": "./kgrid.js",
+    "kgriddev": "./index.js"
   },
   "dependencies": {
     "co": "^4.6.0",
@@ -23,7 +23,6 @@
     "download-git-repo": "^1.0.2",
     "fs-extra": "^5.0.0",
     "ncp": "^2.0.0",
-    "node-pre-gyp": "^0.6.39",
     "superagent": "^3.8.2"
   }
 }

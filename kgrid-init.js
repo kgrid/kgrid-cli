@@ -8,13 +8,13 @@ const ncp=require('ncp').ncp
 const exists = require('fs').existsSync
 
 program
-  .usage('<template-name> [project-name]')
+  .usage('<template-name> [object-name]')
   .option('-c, --clone', 'use git clone')
   .option('--offline', 'use cached template')
  	.parse(process.argv)
 
 var template=program.args[0]
-var project = program.args[1]
+var object = program.args[1]
 var tmp = 'tmp'
 var dest = template.replace(/[\/:]/g, '-')
 var gittemplate='kgrid/ko-templates'
@@ -22,9 +22,9 @@ var src=path.join(tmp,template)
 const activatorfile='activator-0.5.8-SNAPSHOT.war'
 
 
-if(project!=null){
-		console.log('Your Object Name:'+project)
-		dest = project.replace(/[\/:]/g, '-')
+if(object!=null){
+		console.log('Your Object Name:'+object)
+		dest = object.replace(/[\/:]/g, '-')
 }
 
 download(gittemplate, tmp, err => {

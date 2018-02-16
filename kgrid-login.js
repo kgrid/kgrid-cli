@@ -5,11 +5,11 @@ var prompt = require('co-prompt')
 var program = require('commander')
 
 program
-  .usage('kgridtrial login [options]')
-  .option('-u, --username <username>', 'The user to authenticate as')
-  .option('-p, --password <password>', 'The users password')
+  .name('kgrid login')
+  .description('This will log into https://kgrid.med.umich.edu/library2')
+  .usage('')
   .parse(process.argv)
-  
+
   co(function *() {
       var username = yield prompt('username: ')
       var password = yield prompt.password('password: ')
@@ -20,4 +20,3 @@ program
          console.log('Response: %s', link)
        })
     })
- 

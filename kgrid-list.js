@@ -7,7 +7,7 @@ program
   .option('-t, --template','template list')
  	.parse(process.argv)
 
-var l = ['jslegacy','TBD','TBD']
+var l = ['jslegacy','sample']
 
 l.forEach(function(e){
   console.log(e)

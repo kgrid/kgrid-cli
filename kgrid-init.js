@@ -9,7 +9,7 @@ const exists = require('fs').existsSync
 
 program
   .name('kgrid init')
-  .description('This will initialize the knowledge object based on the specified template. \n\n  If object-name is omitted, the object will have the same name as project-name.\n\n  Use kgrid list -t to find the available templates. \n\nExample:\n\n        kgrid init jslegacy myproject 99999-trial')
+  .description('This will initialize the knowledge object based on the specified template. \n\n  If object-name is omitted, the object will have the same name as project-name.\n\n  Use kgrid list -t to find the available templates. \n\n  Example:\n\n        kgrid init jslegacy myproject 99999-trial')
   .usage('<template-name> <project-name> [object-name]')
  	.parse(process.argv)
 
@@ -21,11 +21,12 @@ var srccontainer= 'src'
 var dest = project.replace(/[\/:]/g, '-')
 var gittemplate='kgrid/ko-templates'
 var src=path.join(tmp,template)
-var prop = {'project':'','object':'','adapters':[]}
+var prop = {'template':'','project':'','object':'','adapters':[]}
 if(object!=null){
 		console.log('Your Object Name:'+object)
 		dest = object.replace(/[\/:]/g, '-')
 }
+prop.template=template
 prop.project=project
 prop.object=object
 switch (template){

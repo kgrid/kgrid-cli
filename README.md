@@ -19,16 +19,20 @@ In your terminal:
 
     ```npm install -g```
 
-You should be able to run `kgrid` as a node command globally
+You should be able to run `kgrid` as a node command globally in your working directory.
 
 ## Usage
 
 The listed subcommands are prototypes and subject to change during development.
 
-``` kgrid init <template> <object-name> ```
+``` kgrid init ```
 
-``` kgrid run ```
+``` kgrid install ```
 
 ``` kgrid package ```
 
- 
+``` kgrid run ```
+
+``` kgrid list ```
+
+For details in using these command, run the commands with -h option.

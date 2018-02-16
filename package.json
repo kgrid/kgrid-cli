@@ -7,13 +7,13 @@
     "test": "test"
   },
   "keywords": [
-    "kgrid"
+    "kgrid",
+    "cli"
   ],
   "author": "George Meng",
   "license": "MIT",
   "bin": {
-    "kgrid": "./kgrid.js",
-    "kgriddev": "./index.js"
+    "kgrid": "./kgrid.js"
   },
   "dependencies": {
     "co": "^4.6.0",

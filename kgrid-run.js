@@ -11,7 +11,7 @@ var child=null
 
 program
   .name('kgrid run')
-  .description('This will start the K-Grid activator with default port of 8082.\n  Use the option -p to specify a port.\n  Example: kgrid run -p 8083')
+  .description('This will start the K-Grid activator with default port of 8082.\n\n  Use the option -p to specify a port.\n\n  Example: \n\n      kgrid run -p 8083')
   .usage('[options]')
   .option('-p, --port','Specify a different port')
 	.parse(process.argv)

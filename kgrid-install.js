@@ -8,8 +8,8 @@ const ncp=require('ncp').ncp
 const exists = require('fs').existsSync
 
 program
-  .usage('')
- 	.parse(process.argv)
+  .name('kgrid install')
+  .parse(process.argv)
 
 const activatorfile='activator-0.5.8-SNAPSHOT.war'
 

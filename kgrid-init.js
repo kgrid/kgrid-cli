@@ -8,9 +8,9 @@ const ncp=require('ncp').ncp
 const exists = require('fs').existsSync
 
 program
+  .name('kgrid init')
+  .description('This will initialize the knowledge object based on the specified template. \n\n  If object-name is omitted, the object will have the same name as project-name.\n\n  Use kgrid list -t to find the available templates. \n\nExample:\n\n        kgrid init jslegacy myproject 99999-trial')
   .usage('<template-name> <project-name> [object-name]')
-  .option('-c, --clone', 'use git clone')
-  .option('--offline', 'use cached template')
  	.parse(process.argv)
 
 var template=program.args[0]

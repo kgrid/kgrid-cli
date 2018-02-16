@@ -6,11 +6,15 @@ var path=require('path')
 const fs=require('fs-extra')
 const ncp=require('ncp').ncp
 const exists = require('fs').existsSync
+const zipFolder = require('zip-folder');
 
 program
+  .name('kgrid packge')
+  .usage('[options]')
+  .option('-l, --legacy','An option to package using legacy model')
  	.parse(process.argv)
 
-var object = program.args[0]
+var ver = program.args[0]
 var tmp = 'tmp'
 var dest = 'activator/shelf'
 const inputfile ='input.xml'
@@ -23,6 +27,30 @@ const project=path.basename(process.cwd())
 var prop= JSON.parse(fs.readFileSync('project.json', 'utf8'))
 var packfile=prop.object
 var srcpath = 'src/'+prop.object+'/'
+
+if(program.legacy){
+    packaginglegacy()
+}else{
+    packagingzip()
+}
+
+function packagingzip(){
+
+  zipFolder('src/'+prop.object, 'src/'+prop.object+'.zip', function(err) {
+  	if(err) {
+  		console.log('oh no!', err);
+  	} else {
+  		console.log('EXCELLENT');
+      fs.ensureDir('target', err => {
+         if(err!=null){console.log(err) }
+         fs.copySync('src/'+prop.object+'.zip','target/'+prop.object+'.zip')
+         fs.moveSync('src/'+prop.object+'.zip','activator/shelf/'+prop.object+'.zip',{overwrite:true})
+       })
+  	}
+  });
+}
+
+function packaginglegacy(){
 var data = fs.readFileSync(srcpath+basefile, 'utf8')
 var myobject = JSON.parse(data)
 data = fs.readFileSync(srcpath+inputfile, 'utf8')
@@ -39,3 +67,4 @@ fs.ensureDir('target', err => {
    fs.writeFileSync('target/'+packfile,JSON.stringify(myobject))
    fs.writeFileSync('./activator/shelf/'+packfile,JSON.stringify(myobject))
  })
+}

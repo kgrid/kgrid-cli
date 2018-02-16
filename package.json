@@ -23,6 +23,7 @@
     "download-git-repo": "^1.0.2",
     "fs-extra": "^5.0.0",
     "ncp": "^2.0.0",
-    "superagent": "^3.8.2"
+    "superagent": "^3.8.2",
+    "zip-folder": "^1.0.0"
   }
 }

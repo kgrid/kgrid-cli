@@ -26,7 +26,6 @@ request.get('http://localhost:'+port+'/health')
        .end(function(err,res){
             if(res==null){
               console.log('Starting Activator...')
-              delay=3000
               child=exec('java -jar activator/activator-0.5.8-SNAPSHOT.war --server.port='+port+' --activator.home=activator',
                     function (error, stdout, stderr){
                         console.log('Output -> ' + stdout);
@@ -34,14 +33,12 @@ request.get('http://localhost:'+port+'/health')
                           console.log("Error -> "+error);
                         }
                       })
+                      child.stdout.on('data', (data) => {
+                        console.log(`${data}`)
+                        })
 
             }else {
 							console.log('There is one activator running on Port '+port+'.')
 							console.log('Your knowledge object operation will be directed to this instance.')
             }
-            setTimeout(function(){
-               console.log('K-Grid Activator is ready and can be accessed at http://localhost:'+port)
-               process.kill(process.pid)
-             },3000)
-
     })

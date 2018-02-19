@@ -19,25 +19,25 @@ var template = ''
 var project = 'newproject'
 var object = 'newko'
 const choices = [
-  'jslegacy',
-  'pythonlegacy',
-  'sample'
+  'jslegacy'
+  ,'pythonlegacy'
+  ,'sample'
 ]
-if(program.args.length<2 && !program.input){
+if (program.args.length<2 && !program.input) {
   program.help()
 }else {
   template=program.args[0]
-  if(program.args[1]!=null){
+  if (program.args[1]!=null) {
     project=program.args[1]
   }
-  if(program.args[2]!=null){
+  if (program.args[2]!=null) {
     object=program.args[2]
-  }else{
+  } else {
     object=project
   }
   var inx=choices.indexOf(template)
-  if(inx==-1){ inx=0}
-  if(program.input){
+  if (inx==-1) inx=0
+  if (program.input) {
     inquirer.prompt([{
         type: 'rawlist',
         name: 'template',

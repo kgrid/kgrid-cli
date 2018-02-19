@@ -42,7 +42,7 @@ if(program.legacy){
   if(isLegacy){
     packaginglegacy()
   }else {
-    console.log('This knowledge Object cannot be packaged using l--legacy option. Please remove the option and try again.')
+    console.log('This knowledge Object cannot be packaged using -l for legacy option. Please remove the option and try again.')
   }
 }else{
   if(isLegacy){

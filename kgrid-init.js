@@ -1,43 +1,70 @@
 #!/usr/bin/env node
 var download = require('download-git-repo')
-const downloadurl = require('download');
+const downloadurl = require('download')
 var program = require('commander')
 var path=require('path')
+const inquirer = require('inquirer')
 const fs=require('fs-extra')
 const ncp=require('ncp').ncp
 const exists = require('fs').existsSync
 
 program
   .name('kgrid init')
-  .description('This will initialize the knowledge object based on the specified template. \n\n  If object-name is omitted, the object will have the same name as project-name.\n\n  Use kgrid list -t to find the available templates. \n\n  Example:\n\n        kgrid init jslegacy myproject 99999-trial')
+  .description('This will initialize the knowledge object based on the specified template. \n\n  If object-name is omitted, the object will have the same name as project-name.\n\n  Use kgrid list -t to find the available templates. \n\n  Example:\n\n        kgrid init jslegacy myproject 99999-trial\n\n        cd myproject \n\n        kgrid install')
   .usage('<template-name> <project-name> [object-name]')
  	.parse(process.argv)
 
-var template=program.args[0]
-var project = program.args[1]
-var object = program.args[2]
-var tmp = 'tmp'
-var srccontainer= 'src'
-var dest = project.replace(/[\/:]/g, '-')
-var gittemplate='kgrid/ko-templates'
-var src=path.join(tmp,template)
-var prop = {'template':'','project':'','object':'','adapters':[]}
-if(object!=null){
+if(program.args.length<2){
+  program.help()
+}else{
+  var template=program.args[0]
+  var project = program.args[1]
+  var object = program.args[2]
+  if(exists(project)){
+    console.log('The project name is in use. Continuing will overwrite the existing project.')
+    inquirer.prompt([{
+            type: 'confirm',
+            name: 'continue',
+            message: 'Would you like to continue? ',
+            default: false
+          }]).then(answers=>{
+            if (answers.continue){
+              initproject()
+            }else {
+              console.log('Please change the project name and try again.')
+            }
+          })
+  }else{
+    initproject()
+  }
+}
+
+function initproject(){
+  var tmp = 'tmp'
+  var srccontainer= 'src'
+  var dest = project.replace(/[\/:]/g, '-')
+  var gittemplate='kgrid/ko-templates'
+  var src=path.join(tmp,template)
+  var prop = {'template':'','project':'','object':'','adapters':[]}
+  if(object!=null){
 		console.log('Your Object Name:'+object)
 		dest = object.replace(/[\/:]/g, '-')
-}
-prop.template=template
-prop.project=project
-prop.object=object
-switch (template){
-  case 'jslegacy':
-    prop.adapters.push('JS')
-    break;
-  default:
-    break;
-}
-console.log(JSON.stringify(prop))
-download(gittemplate, tmp, err => {
+  }
+  prop.template=template
+  prop.project=project
+  prop.object=dest
+  switch (template){
+    case 'jslegacy':
+      prop.adapters.push('JS')
+      break
+    case 'pythonlegacy':
+      prop.adapters.push('PYTHON')
+      break
+    default:
+      break
+  }
+  console.log(JSON.stringify(prop))
+  download(gittemplate, tmp, err => {
 		if(err!=null){
 		    console.log(err)
 		 }else {
@@ -58,3 +85,4 @@ download(gittemplate, tmp, err => {
   })
 }
 })
+}

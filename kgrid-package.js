@@ -3,8 +3,7 @@ var download = require('download-git-repo')
 const downloadurl = require('download');
 var program = require('commander')
 var path=require('path')
-var co = require('co')
-var prompt = require('co-prompt')
+var inquirer = require('inquirer');
 const fs=require('fs-extra')
 const ncp=require('ncp').ncp
 const exists = require('fs').existsSync
@@ -21,7 +20,8 @@ var tmp = 'tmp'
 var dest = 'activator/shelf'
 const inputfile ='input.xml'
 const outputfile='output.xml'
-const payloadfile='payload.js'
+const payloadfile='payload'
+var payloadext = 'js'
 const metadatafile='metadata.json'
 const basefile='base.json'
 const project=path.basename(process.cwd())
@@ -29,6 +29,14 @@ const project=path.basename(process.cwd())
 var prop= JSON.parse(fs.readFileSync('project.json', 'utf8'))
 var packfile=prop.object
 var srcpath = 'src/'+prop.object+'/'
+switch(prop.template){
+  case 'jslegacy':
+    payloadext ='js'
+    break
+  case 'pythonlegacy':
+    payloadext ='py'
+    break
+}
 var isLegacy = prop.template.includes('legacy')
 if(program.legacy){
   if(isLegacy){
@@ -39,15 +47,18 @@ if(program.legacy){
 }else{
   if(isLegacy){
     console.log('This knowledge Object is using a legacy model. Though it can be packged as instructed, it won\'t be runnable in the activator.')
-    co(function *() {
-        var op = yield prompt('Would you like to continue? (Y/N): ')
-        if (op=='Y'|op=='y'){
-          packagingzip()
-        }else {
-          console.log('Please add the option of -l or --legacy and try again.')
-        }
-        process.stdin.pause()
-      })
+    inquirer.prompt([{
+            type: 'confirm',
+            name: 'continue',
+            message: 'Would you like to continue? ',
+            default: false
+          }]).then(answers=>{
+            if (answers.continue){
+              packagingzip()
+            }else {
+              console.log('Please add the option of -l or --legacy and try again.')
+            }
+          })
   }else {
     packagingzip()
   }
@@ -58,11 +69,13 @@ function packagingzip(){
   	if(err) {
   		console.log('oh no!', err);
   	} else {
-  		console.log('ZIP file created.');
+  		console.log(prop.object+'.zip is created in the target folder.');
       fs.ensureDir('target', err => {
          if(err!=null){console.log(err) }
          fs.copySync('src/'+prop.object+'.zip','target/'+prop.object+'.zip')
-         fs.moveSync('src/'+prop.object+'.zip','activator/shelf/'+prop.object+'.zip',{overwrite:true})
+         if(!isLegacy){
+          fs.moveSync('src/'+prop.object+'.zip','activator/shelf/'+prop.object+'.zip',{overwrite:true})
+         }
        })
   	}
   });
@@ -75,7 +88,7 @@ data = fs.readFileSync(srcpath+inputfile, 'utf8')
 myobject.inputMessage=data
 data = fs.readFileSync(srcpath+outputfile, 'utf8')
 myobject.outputMessage=data
-data = fs.readFileSync(srcpath+payloadfile, 'utf8')
+data = fs.readFileSync(srcpath+payloadfile+'.'+payloadext, 'utf8')
 myobject.payload.content=data
 data = fs.readFileSync(srcpath+metadatafile, 'utf8')
 myobject.metadata=JSON.parse(data).metadata

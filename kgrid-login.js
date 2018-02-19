@@ -1,8 +1,7 @@
 #!/usr/bin/env node
 var request = require('superagent')
-var co = require('co')
-var prompt = require('co-prompt')
 var program = require('commander')
+const inquirer = require('inquirer')
 
 program
   .name('kgrid login')
@@ -10,13 +9,25 @@ program
   .usage('')
   .parse(process.argv)
 
-  co(function *() {
-      var username = yield prompt('username: ')
-      var password = yield prompt.password('password: ')
-      request
-       .post('http://kgrid.med.umich.edu/library2/login?username='+username+'&password='+password)
-       .end(function (err, res) {
-         var link = JSON.stringify(res.body)
-         console.log('Response: %s', link)
-       })
-    })
+inquirer.prompt([{
+            type: 'input',
+            name: 'username',
+            message: 'Username: '
+          },{
+            type: 'password',
+            name: 'password',
+            message: 'Password: ',
+            mask:'*'
+          }]).then(ans=>{
+            request
+             .post('http://kgrid.med.umich.edu/library2/login?username='+ans.username+'&password='+ans.password)
+             .end(function (err, res) {
+                if(err!=null){
+                  console.log('Login failed. Please try again late.')
+                }
+                if(res!=null){
+                  console.log('\n')
+                  console.log('Welcome, '+res.body.first_name)
+                }
+             })
+          })

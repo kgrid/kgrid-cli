@@ -1,13 +1,11 @@
 #!/usr/bin/env node
 var request = require('superagent')
-var co = require('co')
-var prompt = require('co-prompt')
 var program = require('commander')
 var path=require('path')
 var exec = require('child_process').exec
 var spawn = require('child_process').spawn
+const exists = require('fs').existsSync
 var child=null
-
 
 program
   .name('kgrid run')
@@ -22,6 +20,14 @@ var port = '8082'
 if(program.port){
   port=program.args[0]
 }
+const activatorfile='./activator/activator-0.5.8-SNAPSHOT.war'
+
+if(!exists(activatorfile)){
+    console.log('Cannot find the activator file. Please run kgrid install and then try again.')
+
+  }else {
+
+
 request.get('http://localhost:'+port+'/health')
        .end(function(err,res){
             if(res==null){
@@ -42,3 +48,4 @@ request.get('http://localhost:'+port+'/health')
 							console.log('Your knowledge object operation will be directed to this instance.')
             }
     })
+  }

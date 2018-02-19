@@ -12,17 +12,67 @@ program
   .name('kgrid init')
   .description('This will initialize the knowledge object based on the specified template. \n\n  If object-name is omitted, the object will have the same name as project-name.\n\n  Use kgrid list -t to find the available templates. \n\n  Example:\n\n        kgrid init jslegacy myproject 99999-trial\n\n        cd myproject \n\n        kgrid install')
   .usage('<template-name> <project-name> [object-name]')
+  .option('-i, --input','An optional mode to enter the set-up information interactively.')
  	.parse(process.argv)
 
-if(program.args.length<2){
+var template = ''
+var project = 'newproject'
+var object = 'newko'
+const choices = [
+  'jslegacy',
+  'pythonlegacy',
+  'sample'
+]
+if(program.args.length<2 && !program.input){
   program.help()
-}else{
-  var template=program.args[0]
-  var project = program.args[1]
-  var object = program.args[2]
-  if(exists(project)){
-    console.log('The project name is in use. Continuing will overwrite the existing project.')
+}else {
+  template=program.args[0]
+  if(program.args[1]!=null){
+    project=program.args[1]
+  }
+  if(program.args[2]!=null){
+    object=program.args[2]
+  }else{
+    object=project
+  }
+  var inx=choices.indexOf(template)
+  if(inx==-1){ inx=0}
+  if(program.input){
     inquirer.prompt([{
+        type: 'rawlist',
+        name: 'template',
+        message: 'Please select one of the available templates:',
+        choices:choices,
+        default:inx
+      },
+      {
+        type: 'input',
+        name: 'project',
+        message: 'Project Name: ',
+        default:project
+      },
+      {
+        type: 'input',
+        name: 'object',
+        message: 'Object Name: ',
+        default:function(a){ return a.project}
+      }
+    ]).then(answers=>{
+        template=answers.template
+        project=answers.project
+        object=answers.object
+        checkproject(project)
+    })
+  }else {
+    checkproject(project)
+  }
+
+}
+
+function checkproject(proj){
+  if(exists(proj)){
+      console.log('The project name is in use. Continuing will overwrite the existing project.')
+      inquirer.prompt([{
             type: 'confirm',
             name: 'continue',
             message: 'Would you like to continue? ',
@@ -33,9 +83,11 @@ if(program.args.length<2){
             }else {
               console.log('Please change the project name and try again.')
             }
+          },err=>{
+            console.log(err)
           })
-  }else{
-    initproject()
+  }else {
+      initproject()
   }
 }
 

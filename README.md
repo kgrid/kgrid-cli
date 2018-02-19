@@ -25,14 +25,38 @@ You should be able to run `kgrid` as a node command globally in your working dir
 
 The listed subcommands are prototypes and subject to change during development.
 
-``` kgrid init ```
+### Initialize the knowledge object
 
+`kgrid init <template-name> <project-name> [object-name]`
+
+or using the interactive mode
+
+`kgrid init -i`
+
+After the initilization, go to the project folder,
+
+`cd <project-name>`
+
+### Install needed K-Grid components, including activator and adapters
 ``` kgrid install ```
 
+
+### Package the knowledge object for activation
 ``` kgrid package ```
+
+For legacy models, use
+
+``` kgrid package -l```
+
+### Start the activator and activate the knowledge object
 
 ``` kgrid run ```
 
+To start the activator on a different port (Default port: 8082), use
+
+``` kgrid run -p <port>```
+
+### Additional commands
 ``` kgrid list ```
 
 For details in using these command, run the commands with -h option.

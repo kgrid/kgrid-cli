@@ -24,11 +24,8 @@ const activatorfile='./activator/activator-0.5.8-SNAPSHOT.war'
 
 if(!exists(activatorfile)){
     console.log('Cannot find the activator file. Please run kgrid install and then try again.')
-
   }else {
-
-
-request.get('http://localhost:'+port+'/health')
+    request.get('http://localhost:'+port+'/health')
        .end(function(err,res){
             if(res==null){
               console.log('Starting Activator...')

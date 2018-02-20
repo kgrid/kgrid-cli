@@ -16,6 +16,7 @@ program
  	.parse(process.argv)
 
 var template = ''
+var localtemplatedir=''
 var project = 'newproject'
 var object = 'newko'
 const choices = [
@@ -23,6 +24,13 @@ const choices = [
   ,'pythonlegacy'
   ,'sample'
 ]
+var tmp = 'tmp'
+var srccontainer= 'src'
+var dest = project.replace(/[\/:]/g, '-')
+var gittemplate='kgrid/ko-templates'
+var src=path.join(tmp,template)
+var prop = {'template':'','project':'','object':'','adapters':[]}
+
 if (program.args.length<2 && !program.input) {
   program.help()
 }else {
@@ -38,12 +46,41 @@ if (program.args.length<2 && !program.input) {
   var inx=choices.indexOf(template)
   if (inx==-1) inx=0
   if (program.input) {
-    inquirer.prompt([{
+    inquirer.prompt([
+            {
+              type: 'confirm',
+              name: 'localtemp',
+              message: 'Would you like to use a template from your local folder? ',
+              default: false
+            },
+      {
         type: 'rawlist',
         name: 'template',
         message: 'Please select one of the available templates:',
         choices:choices,
-        default:inx
+        default:inx,
+        when:function(answers){
+          return !answers.localtemp
+        }
+      },
+      {
+        type: 'rawlist',
+        name: 'templatetype',
+        message: 'Please select one of the template types:',
+        choices:choices,
+        default:inx,
+        when:function(answers){
+          return answers.localtemp
+        }
+      },
+      {
+        type: 'input',
+        name: 'localtemplatedir',
+        message: 'Local Template Directory:',
+        default:process.cwd(),
+        when:function(answers){
+          return answers.localtemp
+        }
       },
       {
         type: 'input',
@@ -58,18 +95,24 @@ if (program.args.length<2 && !program.input) {
         default:function(a){ return a.project}
       }
     ]).then(answers=>{
+      if(answers.localtemp){
+        template=answers.templatetype
+        localtemplatedir = answers.localtemplatedir
+      }else {
         template=answers.template
-        project=answers.project
-        object=answers.object
-        checkproject(project)
+      }
+      project=answers.project
+      object=answers.object
+      checkproject(project)
     })
   }else {
     checkproject(project)
   }
-
 }
 
 function checkproject(proj){
+  dest = project.replace(/[\/:]/g, '-')
+  src=path.join(tmp,template)
   if(exists(proj)){
       console.log('The project name is in use. Continuing will overwrite the existing project.')
       inquirer.prompt([{
@@ -79,7 +122,8 @@ function checkproject(proj){
             default: false
           }]).then(answers=>{
             if (answers.continue){
-              initproject()
+              var local=(localtemplatedir!='')
+              initproject(local)
             }else {
               console.log('Please change the project name and try again.')
             }
@@ -87,17 +131,12 @@ function checkproject(proj){
             console.log(err)
           })
   }else {
-      initproject()
+    var local=(localtemplatedir!='')
+    initproject(local)
   }
 }
 
-function initproject(){
-  var tmp = 'tmp'
-  var srccontainer= 'src'
-  var dest = project.replace(/[\/:]/g, '-')
-  var gittemplate='kgrid/ko-templates'
-  var src=path.join(tmp,template)
-  var prop = {'template':'','project':'','object':'','adapters':[]}
+function initproject(local){
   if(object!=null){
 		console.log('Your Object Name:'+object)
 		dest = object.replace(/[\/:]/g, '-')
@@ -116,25 +155,35 @@ function initproject(){
       break
   }
   console.log(JSON.stringify(prop))
-  download(gittemplate, tmp, err => {
-		if(err!=null){
+  if(!local){
+    download(gittemplate, tmp, err => {
+		  if(err!=null){
 		    console.log(err)
-		 }else {
-       fs.ensureDir(project+'/'+srccontainer+'/'+dest, err => {
-         if(err!=null){
-           console.log(err)
-         }else{
-				ncp(src, project+'/'+srccontainer+'/'+dest, function(err) {
-					if(err!=null){
-						console.error(err)
-					}else{
-						console.log('Successfully initiated your object!')
-            fs.writeFileSync(project+'/project.json',JSON.stringify(prop))
-						fs.remove(tmp,err=>{ if(err) console.log(err)})
-					}
-				})
-		 }
-  })
+		  }else {
+        copytemplate(false)
+      }
+    })
+  }else{
+    copytemplate(true)
+  }
 }
-})
+
+function copytemplate(local){
+  var source = src
+  if(local) source =localtemplatedir
+  fs.ensureDir(project+'/'+srccontainer+'/'+dest, err => {
+    if(err!=null){
+      console.log(err)
+    }else{
+      ncp(source, project+'/'+srccontainer+'/'+dest, function(err) {
+        if(err!=null){
+          console.error(err)
+        }else{
+          console.log('Successfully initiated your object!')
+          fs.writeFileSync(project+'/project.json',JSON.stringify(prop))
+          if(!local) fs.remove(tmp,err=>{ if(err) console.log(err)})
+        }
+      })
+    }
+  })
 }

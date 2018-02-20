@@ -39,7 +39,7 @@ function extractinglegacytolegacy(srcfile){
   var metadata ={'metadata':{}}
   metadata.metadata = myobject.metadata
   var payload = myobject.payload.content
-  var enginetype= myobject.payload.enginetype
+  var enginetype= myobject.payload.engineType.toUpperCase()
   switch(enginetype){
     case 'JS':
       payloadext='js'

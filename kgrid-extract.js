@@ -1,13 +1,7 @@
 #!/usr/bin/env node
-var download = require('download-git-repo')
-const downloadurl = require('download')
 var program = require('commander')
-var path=require('path')
 var inquirer = require('inquirer')
 const fs=require('fs-extra')
-const ncp=require('ncp').ncp
-const exists = require('fs').existsSync
-const zipFolder = require('zip-folder')
 
 program
   .name('kgrid extract')
@@ -54,7 +48,6 @@ function extractinglegacytolegacy(srcfile){
   myobject.metadata={}
   myobject.inputMessage=''
   myobject.outputMessage=''
-//  console.log(JSON.stringify(myobject))
   fs.ensureDir('extra', err => {
     if(err!=null){console.log(err) }
     fs.writeFileSync('extra/base.json',JSON.stringify(myobject))

@@ -57,6 +57,9 @@ To start the activator on a different port (Default port: 8082), use
 ``` kgrid run -p <port>```
 
 ### Additional commands
+
 ``` kgrid list ```
+
+``` kgrid extract ```
 
 For details in using these command, run the commands with -h option.

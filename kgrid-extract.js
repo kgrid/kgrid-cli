@@ -56,6 +56,8 @@ inquirer.prompt([{
           template=answers.templatetype
           localtemplatedir = answers.localtemplatedir
         }
+        fs.pathExists(answers.srcfile, (err, exists)=>{
+          if(exists){
         if(program.legacy){
           console.log('Start extracting '+answers.srcfile+' into legacy template ...')
           extractinglegacytolegacy(answers.srcfile)
@@ -63,8 +65,13 @@ inquirer.prompt([{
           console.log('Start extracting '+answers.srcfile+' ...')
           // extractinglegacy(answers.srcfile)
           extractlegacy(answers.srcfile)
+          }
+        }else {
+          console.log('The file is not found. Please check the path and try again.')
         }
+      
       })
+    })
 
 function extractinglegacytolegacy(srcfile){
   var data = fs.readFileSync(srcfile, 'utf8')

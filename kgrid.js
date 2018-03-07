@@ -10,5 +10,5 @@ program
   .command('login','log in to Kgrid library2')
   .command('install','install the needed kgrid components')
   .command('list','listing utility')
-  .command('extract','extract the legacy KO ')
+  .command('extract [filename]','extract the legacy KO ')
   .parse(process.argv)

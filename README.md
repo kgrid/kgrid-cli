@@ -48,6 +48,7 @@ For legacy models, use
 
 ``` kgrid package -l```
 
+
 ### Start the activator and activate the knowledge object
 
 ``` kgrid run ```
@@ -56,10 +57,19 @@ To start the activator on a different port (Default port: 8082), use
 
 ``` kgrid run -p <port>```
 
+
+### Extract a legacy knowledge object
+
+``` kgrid extract ```
+
+To extract using legacy model, use option `-l`
+
+If not using local template, the template will be downloaded from GitHub
+
+
 ### Additional commands
 
 ``` kgrid list ```
 
-``` kgrid extract ```
 
 For details in using these command, run the commands with -h option.

@@ -3,7 +3,7 @@ var request = require('superagent')
 var program = require('commander')
 var path=require('path')
 var exec = require('child_process').exec
-var spawn = require('child_process').spawn
+// var spawn = require('child_process').spawn
 const exists = require('fs').existsSync
 var child=null
 

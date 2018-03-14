@@ -20,9 +20,10 @@
     "download": "^6.2.5",
     "download-git-repo": "^1.0.2",
     "fs-extra": "^5.0.0",
+    "gulp": "^3.9.1",
+    "gulp-zip": "^4.1.0",
     "inquirer": "^5.1.0",
     "ncp": "^2.0.0",
-    "superagent": "^3.8.2",
-    "zip-folder": "^1.0.0"
+    "superagent": "^3.8.2"
   }
 }

@@ -7,7 +7,8 @@ var inquirer = require('inquirer');
 const fs=require('fs-extra')
 const ncp=require('ncp').ncp
 const exists = require('fs').existsSync
-const zipFolder = require('zip-folder');
+const gulp = require('gulp');
+require('./gulpfile.js')
 
 program
   .name('kgrid packge')
@@ -60,26 +61,12 @@ if(program.legacy){
             }
           })
   }else {
-    packagingzip()
+//    packagingzip()
+  gulp.start('zip')
+  
   }
 }
 
-function packagingzip(){
-  zipFolder('src/'+prop.object, 'src/'+prop.object+'.zip', function(err) {
-  	if(err) {
-  		console.log('oh no!', err);
-  	} else {
-  		console.log(prop.object+'.zip is created in the target folder.');
-      fs.ensureDir('target', err => {
-         if(err!=null){console.log(err) }
-         fs.copySync('src/'+prop.object+'.zip','target/'+prop.object+'.zip')
-         if(!isLegacy){
-          fs.moveSync('src/'+prop.object+'.zip','activator/shelf/'+prop.object+'.zip',{overwrite:true})
-         }
-       })
-  	}
-  });
-}
 
 function packaginglegacy(){
 var data = fs.readFileSync(srcpath+basefile, 'utf8')

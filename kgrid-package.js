@@ -29,7 +29,7 @@ const project=path.basename(process.cwd())
 
 var prop= JSON.parse(fs.readFileSync('project.json', 'utf8'))
 var packfile=prop.object
-var srcpath = 'src/'+prop.object+'/'
+var srcpath = prop.object+'/'
 switch(prop.template){
   case 'jslegacy':
     payloadext ='js'
@@ -55,34 +55,32 @@ if(program.legacy){
             default: false
           }]).then(answers=>{
             if (answers.continue){
-              packagingzip()
+              gulp.start('zip')
             }else {
               console.log('Please add the option of -l or --legacy and try again.')
             }
           })
   }else {
-//    packagingzip()
-  gulp.start('zip')
-  
+    gulp.start('zip')
   }
 }
 
-
 function packaginglegacy(){
-var data = fs.readFileSync(srcpath+basefile, 'utf8')
-var myobject = JSON.parse(data)
-data = fs.readFileSync(srcpath+inputfile, 'utf8')
-myobject.inputMessage=data
-data = fs.readFileSync(srcpath+outputfile, 'utf8')
-myobject.outputMessage=data
-data = fs.readFileSync(srcpath+payloadfile+'.'+payloadext, 'utf8')
-myobject.payload.content=data
-data = fs.readFileSync(srcpath+metadatafile, 'utf8')
-myobject.metadata=JSON.parse(data).metadata
-console.log(JSON.stringify(myobject))
-fs.ensureDir('target', err => {
-   if(err!=null){console.log(err) }
-   fs.writeFileSync('target/'+packfile,JSON.stringify(myobject))
-   fs.writeFileSync('./activator/shelf/'+packfile,JSON.stringify(myobject))
- })
+  srcpath=srcpath+prop.version+"/"
+  var data = fs.readFileSync(srcpath+basefile, 'utf8')
+  var myobject = JSON.parse(data)
+  data = fs.readFileSync(srcpath+inputfile, 'utf8')
+  myobject.inputMessage=data
+  data = fs.readFileSync(srcpath+outputfile, 'utf8')
+  myobject.outputMessage=data
+  data = fs.readFileSync(srcpath+payloadfile+'.'+payloadext, 'utf8')
+  myobject.payload.content=data
+  data = fs.readFileSync(srcpath+metadatafile, 'utf8')
+  myobject.metadata=JSON.parse(data).metadata
+  console.log(JSON.stringify(myobject))
+  fs.ensureDir('target', err => {
+    if(err!=null){console.log(err) }
+    fs.writeFileSync('target/'+packfile,JSON.stringify(myobject))
+    // fs.writeFileSync('./activator/shelf/'+packfile,JSON.stringify(myobject))
+  })
 }

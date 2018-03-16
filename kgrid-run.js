@@ -12,15 +12,18 @@ program
   .description('This will start the K-Grid activator with default port of 8082.\n\n  Use the option -p to specify a port.\n\n  Example: \n\n      kgrid run -p 8083')
   .usage('[options]')
   .option('-p, --port','Specify a different port')
+  .option('--dev','Run in development mode')
 	.parse(process.argv)
 
 var arkid = path.basename(process.cwd()).replace(/[\-:]/g, '/')
 var port = '8082'
+var options=' --activator.home=tools --activator.shelf.path=target'
+if(!program.dev){options=""}
 
 if(program.port){
   port=program.args[0]
 }
-const activatorfile='./activator/activator-0.5.8-SNAPSHOT.war'
+const activatorfile='./tools/activator-0.5.8-SNAPSHOT.war'
 
 if(!exists(activatorfile)){
     console.log('Cannot find the activator file. Please run kgrid install and then try again.')
@@ -29,7 +32,7 @@ if(!exists(activatorfile)){
        .end(function(err,res){
             if(res==null){
               console.log('Starting Activator...')
-              child=exec('java -jar activator/activator-0.5.8-SNAPSHOT.war --server.port='+port+' --activator.home=activator',
+              child=exec('java -jar tools/activator-0.5.8-SNAPSHOT.war --server.port='+port+options,
                     function (error, stdout, stderr){
                         console.log('Output -> ' + stdout);
                         if(error !== null){

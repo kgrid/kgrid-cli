@@ -22,7 +22,7 @@ var payloadext = 'js'
 const metadatafile='metadata.json'
 const basefile='base.json'
 
- var template = 'sample'
+ var template = 'kotemplate'
  var localtemplatedir=''
   var koid='99999-newko'
  var tmp = 'tmp'
@@ -69,7 +69,7 @@ inquirer.prompt([{
         }else {
           console.log('The file is not found. Please check the path and try again.')
         }
-      
+
       })
     })
 
@@ -94,14 +94,14 @@ function extractinglegacytolegacy(srcfile){
   myobject.metadata={}
   myobject.inputMessage=''
   myobject.outputMessage=''
-  fs.ensureDir('shelf', err => {
+  fs.ensureDir('target', err => {
     if(err!=null){console.log(err) }
-    fs.writeFileSync('shelf/base.json',JSON.stringify(myobject))
-    fs.writeFileSync('shelf/metadata.json',JSON.stringify(metadata))
-    fs.writeFileSync('shelf/payload.'+payloadext,payload)
-    fs.writeFileSync('shelf/input.xml',input)
-    fs.writeFileSync('shelf/output.xml',output)
-    console.log('Extracted files can be found in the folder of shelf.')
+    fs.writeFileSync('target/base.json',JSON.stringify(myobject))
+    fs.writeFileSync('target/metadata.json',JSON.stringify(metadata))
+    fs.writeFileSync('target/payload.'+payloadext,payload)
+    fs.writeFileSync('target/input.xml',input)
+    fs.writeFileSync('target/output.xml',output)
+    console.log('Extracted files can be found in the folder of target.')
  })
 }
 
@@ -128,12 +128,12 @@ function extractlegacy(srcfile){
       payloadext='py'
       break;
   }
-  dest='shelf/'+koid+'/'+ver
+  dest='target/'+koid+'/'+ver
   var input=myobject.inputMessage
   var output = myobject.outputMessage
   console.log("Object ID: "+koid)
   console.log("Version: "+ver)
-  fs.ensureDir('shelf').then(() => {
+  fs.ensureDir('target').then(() => {
     console.log('Creating template ...')
     initproject(localtemplatedir!='', function(){
       console.log('Extracting top-level metadata ...')
@@ -165,7 +165,7 @@ function initproject(local,callback){
 }
 
 function copytemplate(local, callback){
-  var source = src
+  var source = src+'/ko'
   if(local) source =localtemplatedir
   fs.ensureDir(dest, err => {
     if(err!=null){

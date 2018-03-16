@@ -7,7 +7,7 @@ program
   .option('-t, --template','template list')
  	.parse(process.argv)
 
-var l = ['jslegacy','sample']
+var l = ['jslegacy','pythonlegacy','kotemplate']
 
 l.forEach(function(e){
   console.log(e)

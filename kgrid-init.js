@@ -19,17 +19,18 @@ var template = ''
 var localtemplatedir=''
 var project = 'newproject'
 var object = 'newko'
+var version = 'v-0-0-1'
 const choices = [
   'jslegacy'
   ,'pythonlegacy'
-  ,'sample'
+  ,'kotemplate'
 ]
 var tmp = 'tmp'
 var srccontainer= 'src'
 var dest = project.replace(/[\/:]/g, '-')
 var gittemplate='kgrid/ko-templates'
 var src=path.join(tmp,template)
-var prop = {'template':'','project':'','object':'','adapters':[]}
+var prop = {'template':'','project':'','object':'','version':'','adapters':[]}
 
 if (program.args.length<2 && !program.input) {
   program.help()
@@ -44,7 +45,10 @@ if (program.args.length<2 && !program.input) {
     object=project
   }
   var inx=choices.indexOf(template)
-  if (inx==-1) inx=0
+  if (inx==-1) {
+    console.log("Unknown template. The default template will be used.")
+    inx=2
+  }
   if (program.input) {
     inquirer.prompt([
             {
@@ -93,6 +97,12 @@ if (program.args.length<2 && !program.input) {
         name: 'object',
         message: 'Object Name: ',
         default:function(a){ return a.project}
+      },
+      {
+        type: 'input',
+        name: 'version',
+        message: 'Version: ',
+        default:function(a){ return 'v-0-0-1'}
       }
     ]).then(answers=>{
       if(answers.localtemp){
@@ -103,6 +113,7 @@ if (program.args.length<2 && !program.input) {
       }
       project=answers.project
       object=answers.object
+      version = answers.version
       checkproject(project)
     })
   }else {
@@ -144,6 +155,7 @@ function initproject(local){
   prop.template=template
   prop.project=project
   prop.object=dest
+  prop.version=version
   switch (template){
     case 'jslegacy':
       prop.adapters.push('JS')
@@ -152,6 +164,7 @@ function initproject(local){
       prop.adapters.push('PYTHON')
       break
     default:
+      prop.adapters.push('JS')
       break
   }
   console.log(JSON.stringify(prop))
@@ -169,13 +182,13 @@ function initproject(local){
 }
 
 function copytemplate(local){
-  var source = src
+  var source = src+'/ko'
   if(local) source =localtemplatedir
-  fs.ensureDir(project+'/'+srccontainer+'/'+dest, err => {
+  fs.ensureDir(project+'/'+dest+'/'+version, err => {
     if(err!=null){
       console.log(err)
     }else{
-      ncp(source, project+'/'+srccontainer+'/'+dest, function(err) {
+      ncp(source, project+'/'+dest+'/'+version, function(err) {
         if(err!=null){
           console.error(err)
         }else{

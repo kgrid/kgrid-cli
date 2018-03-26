@@ -20,6 +20,7 @@
     "gulp": "^3.9.1",
     "gulp-zip": "^4.1.0",
     "inquirer": "^5.1.0",
+    "klaw-sync": "^3.0.2",
     "ncp": "^2.0.0",
     "superagent": "^3.8.2"
   }

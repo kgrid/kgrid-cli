@@ -3,6 +3,8 @@ const gulp = require('gulp');
 const zip = require('gulp-zip');
 const fs=require('fs-extra');
 const path=require('path')
+
+
 var prop= JSON.parse(fs.readFileSync('project.json', 'utf8'))
 var packfile=prop.object
 var srcpath = prop.object+'/'
@@ -31,3 +33,9 @@ files.forEach(function(e){
         });
 
   });
+
+  // gulp.task('default', () =>{
+  //   gulp.src(srcglob).pipe(gulp.dest('target')).on('end', function() {
+  //     console.log(srcglob)
+  //   });
+  //   });

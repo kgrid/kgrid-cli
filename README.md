@@ -67,9 +67,18 @@ To extract using legacy model, use option `-l`
 If not using local template, the template will be downloaded from GitHub
 
 
-### Additional commands
+### List Knowledge Grid components and files
 
 ``` kgrid list ```
+
+To list available templates, use option `-t`
+
+To list the knowledge object project directory, use option `-f`
+
+To list the shelf directory, use option `-s`
+
+A string can be used to filter the result. Example: `kgrid list -s metadata`
+
 
 
 For details in using these command, run the commands with -h option.

@@ -58,13 +58,29 @@ To start the activator on a different port (Default port: 8082), use
 ``` kgrid run -p <port>```
 
 
-### Extract a legacy knowledge object
+### Start the shelf
 
-``` kgrid extract ```
+``` kgrid shelfup ```
 
-To extract using legacy model, use option `-l`
+To start the shelf in development mode
 
-If not using local template, the template will be downloaded from GitHub
+``` kgrid shelfup --dev ```
+
+To start the shelf on a different port (Default port: 8083), use
+
+``` kgrid shelfup -p <port>```
+
+Note: If the shelf starts at a different port, you may need to start a new terminal to run other Kgrid CLI commands.
+
+
+### Upload a knowledge object zip file to the shelf
+
+``` kgrid putko <filename> ```
+
+
+### Retrieve a knowledge object from the shelf
+
+``` kgrid getko <arkid> ```
 
 
 ### List Knowledge Grid components and files
@@ -75,9 +91,16 @@ To list available templates, use option `-t`
 
 To list the knowledge object project directory, use option `-f`
 
-To list the shelf directory, use option `-s`
+To list  the knowledge object on the shelf, use option `-s`
 
-A string can be used to filter the result. Example: `kgrid list -s metadata`
+
+### Extract a legacy knowledge object
+
+``` kgrid extract ```
+
+To extract using legacy model, use option `-l`
+
+If not using local template, the template will be downloaded from GitHub
 
 
 

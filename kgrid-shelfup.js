@@ -8,39 +8,41 @@ const exists = require('fs').existsSync
 var child=null
 
 program
-  .name('kgrid run')
-  .description('This will start the K-Grid activator with default port of 8082.\n\n  Use the option -p to specify a port.\n\n  Example: \n\n      kgrid run -p 8083')
+  .name('kgrid shelfup')
+  .description('This will start the K-Grid shelf gateway with default port of 8083.\n\n  Use the option -p to specify a port.\n\n  Example: \n\n      kgrid shelfup -p 8083')
   .usage('[options]')
   .option('-p, --port','Specify a different port')
   .option('--dev','Run in development mode')
 	.parse(process.argv)
 
 var arkid = path.basename(process.cwd()).replace(/[\-:]/g, '/')
-var port = '8082'
-var options=' --activator.home=tools --activator.shelf.path=target'
+var port = '8083'
+var options=' --shelf.path=target'
 if(!program.dev){options=""}
 
 if(program.port){
   port=program.args[0]
 }
-execsync('setx ACTIVATOR_PORT '+port)
-const activatorfile='./tools/activator-0.5.8-SNAPSHOT.war'
-
-if(!exists(activatorfile)){
-    console.log('Cannot find the activator file. Please run kgrid install and then try again.')
+const shelfapifile='./shelf-0.5.8-SNAPSHOT.jar'
+execsync('setx SHELF_PORT '+port)
+if(!exists(shelfapifile)){ 
+    console.log('Cannot find the shelf gateway file. Please run kgrid install and then try again.')
   }else {
+
     request.get('http://localhost:'+port+'/health')
        .end(function(err,res){
             if(res==null){
-              console.log('Starting Activator...')
-              child=exec('java -jar tools/activator-0.5.8-SNAPSHOT.war --server.port='+port+options,
+              console.log('Starting up the shelf...')
+
+              child=exec('java -jar '+shelfapifile+' --server.port='+port+options,
                     function (error, stdout, stderr){
                         console.log('Output -> ' + stdout);
                         if(error !== null){
                           console.log("Error -> "+error);
                         }
+
                       })
-                      child.stdout.on('data', (data) => {
+              child.stdout.on('data', (data) => {
                         console.log(`${data}`)
                         })
 

@@ -114,9 +114,12 @@ function extractlegacy(srcfile){
      var ark=myobject.metadata.arkId.replace('ark:\/', '')
      koid=ark.replace(/[\/:]/g, '-')
    }
-  var ver= 'v0.0.1'
+  var ver= 'v-0-0-1'
   if(myobject.metadata.version){
-    if(myobject.metadata.version!='')ver=myobject.metadata.version
+    if(myobject.metadata.version!=''){
+      ver=myobject.metadata.version.replace(/[.]/g, '-')
+      ver=ver.replace('v','v-')
+    }
   }
   var payload = myobject.payload.content
   var enginetype= myobject.payload.engineType.toUpperCase()

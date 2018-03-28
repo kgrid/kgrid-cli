@@ -11,6 +11,7 @@ program
   .option('-t, --template','template list')
   .option('-f, --filetree','project file list')
   .option('-s, --shelf','shelf list')
+  .option('-e, --env','env')
  	.parse(process.argv)
 
 var curpath = process.cwd()
@@ -20,6 +21,11 @@ var filefilter=''
 if(program.args.length>0){
   filefilter=program.args[0].toLowerCase()
 }
+if(program.env){
+
+    console.log(process.env.SHELF_PORT)
+
+} else
 if(program.template){
   var l = ['jslegacy','pythonlegacy','kotemplate']
   l.forEach(function(e){

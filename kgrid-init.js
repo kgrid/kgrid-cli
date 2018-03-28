@@ -19,7 +19,7 @@ var template = ''
 var localtemplatedir=''
 var project = 'newproject'
 var object = 'newko'
-var version = 'v-0-0-1'
+var version = 'v0.0.1'
 const choices = [
   'jslegacy'
   ,'pythonlegacy'
@@ -102,7 +102,7 @@ if (program.args.length<2 && !program.input) {
         type: 'input',
         name: 'version',
         message: 'Version: ',
-        default:function(a){ return 'v-0-0-1'}
+        default:function(a){ return 'v0.0.1'}
       }
     ]).then(answers=>{
       if(answers.localtemp){
@@ -193,6 +193,13 @@ function copytemplate(local){
           console.error(err)
         }else{
           console.log('Successfully initiated your object!')
+          var metadata= JSON.parse(fs.readFileSync(project+'/'+dest+'/'+version+'/metadata.json', 'utf8'))
+
+          metadata.version=version
+          metadata.metadata.arkId.fedoraPath=dest
+          metadata.metadata.arkId.arkId='ark:/'+dest.replace('-','\/')
+          console.log(JSON.stringify(metadata))
+          fs.writeFileSync(project+'/'+dest+'/'+version+'/metadata.json',JSON.stringify(metadata))
           fs.writeFileSync(project+'/project.json',JSON.stringify(prop))
           if(!local) fs.remove(tmp,err=>{ if(err) console.log(err)})
         }

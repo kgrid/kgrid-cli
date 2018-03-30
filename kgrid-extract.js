@@ -117,8 +117,7 @@ function extractlegacy(srcfile){
   var ver= 'v-0-0-1'
   if(myobject.metadata.version){
     if(myobject.metadata.version!=''){
-      ver=myobject.metadata.version.replace(/[.]/g, '-')
-      ver=ver.replace('v','v-')
+      ver=myobject.metadata.version
     }
   }
   var payload = myobject.payload.content

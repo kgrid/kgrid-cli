@@ -5,6 +5,7 @@ var path=require('path')
 var exec = require('child_process').exec
 var execsync = require('child_process').execSync
 const exists = require('fs').existsSync
+const minimist = require('minimist')
 var child=null
 
 program
@@ -15,37 +16,37 @@ program
   .option('--dev','Run in development mode')
 	.parse(process.argv)
 
+var argv=minimist(process.argv.slice(2))
+
 var arkid = path.basename(process.cwd()).replace(/[\-:]/g, '/')
 var port = '8083'
-var options=' --shelf.path=target'
-if(!program.dev){options=""}
+var options=' --shelf.path=./'
 
+if(!program.dev){options=""}
 if(program.port){
-  port=program.args[0]
+  port=argv.port
 }
-const shelfapifile='./shelf-0.5.8-SNAPSHOT.jar'
-execsync('setx SHELF_PORT '+port)
-if(!exists(shelfapifile)){ 
+execsync('setx KGRID_SHELF_PORT '+port)
+
+const shelfgatewayfile='./shelf-gateway-0.5.8-SNAPSHOT.jar'
+
+if(!exists(shelfgatewayfile)){
     console.log('Cannot find the shelf gateway file. Please run kgrid install and then try again.')
   }else {
-
     request.get('http://localhost:'+port+'/health')
        .end(function(err,res){
             if(res==null){
               console.log('Starting up the shelf...')
-
-              child=exec('java -jar '+shelfapifile+' --server.port='+port+options,
+              child=exec('java -jar '+shelfgatewayfile+' --server.port='+port+options,
                     function (error, stdout, stderr){
                         console.log('Output -> ' + stdout);
                         if(error !== null){
                           console.log("Error -> "+error);
                         }
-
                       })
               child.stdout.on('data', (data) => {
                         console.log(`${data}`)
                         })
-
             }else {
 							console.log('There is one activator running on Port '+port+'.')
 							console.log('Your knowledge object operation will be directed to this instance.')

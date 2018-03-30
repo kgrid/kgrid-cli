@@ -8,7 +8,7 @@ const fs=require('fs-extra')
 const ncp=require('ncp').ncp
 const exists = require('fs').existsSync
 const BASE_URL = 'http://localhost';
-const ACTIVATOR_PORT = '3080';
+const KGRID_ACTIVATOR_PORT = '3080';
 const ADAPTERGATEWAY_PORT_START = '3081';
 const ACTIVATOR_DOWNLOAD = {'filename':'activator-0.5.8-SNAPSHOT.war','url':'https://github.com/kgrid/kgrid-starter/releases/download/0.6/activator-0.5.8-SNAPSHOT.war'};
 const ADAPTERGATEWAY_DOWNLOAD_URLs = [
@@ -41,20 +41,22 @@ if(exists('project.json')){
 					   }
 					})
 var promises = []
-const b = 	'./tools/'+ACTIVATOR_DOWNLOAD.filename
+
+var act_entry=prop.tools.filter(function(e){return e.name=='activator'})
+var fn = 	'./tools/'+act_entry[0].filename
 if(!exists(b)){
     console.log('Downloading activator ...')
-    promises.push(downloadurl(ACTIVATOR_DOWNLOAD.url,'tools'))
+    promises.push(downloadurl(act_entry[0].download_url+act_entry[0].filename,'tools'))
   }
 adapters.forEach(function(e){
-    var link = ADAPTER_DOWNLOAD_URLs.filter(function(el){
+    var link = prop.tools.filter(function(el){
       return el.adapter==e
     })
     if(link[0].filename!=''){
       var bl = './tools/adapters/'+link[0].filename
       if(!exists(bl)){
         console.log('Downloading '+e+' adapter ...')
-        promises.push(downloadurl(link[0].url,'tools/adapters'))
+        promises.push(downloadurl(link[0].download_url+link[0].filename,'tools/adapters'))
       }
     }
   })

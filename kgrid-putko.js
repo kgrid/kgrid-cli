@@ -4,7 +4,7 @@ const program = require('commander')
 const path=require('path')
 const exists = require('fs').existsSync
 
-const PORT = process.env.SHELF_PORT || 8083;
+const PORT = process.env.KGRID_SHELF_PORT || 8083;
 program
   .name('kgrid putko')
   .description('This will upload the specified knowledge object to the shelf.\n\n    Example: \n\n      kgrid putko target/hello-world.zip')

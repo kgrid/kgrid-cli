@@ -7,7 +7,7 @@ const inquirer = require('inquirer')
 const fs=require('fs-extra')
 const ncp=require('ncp').ncp
 const exists = require('fs').existsSync
-
+const minimist = require('minimist')
 program
   .name('kgrid init')
   .description('This will initialize the knowledge object based on the specified template. \n\n  If object-name is omitted, the object will have the same name as project-name.\n\n  Use kgrid list -t to find the available templates. \n\n  Example:\n\n        kgrid init jslegacy myproject 99999-trial\n\n        cd myproject \n\n        kgrid install')
@@ -32,6 +32,8 @@ var gittemplate='kgrid/ko-templates'
 var src=path.join(tmp,template)
 var prop = {'template':'','project':'','object':'','version':'','adapters':[]}
 
+var argv=minimist(process.argv.slice(2))
+console.log(argv)
 if (program.args.length<2 && !program.input) {
   program.help()
 }else {
@@ -48,6 +50,7 @@ if (program.args.length<2 && !program.input) {
   if (inx==-1) {
     console.log("Unknown template. The default template will be used.")
     inx=2
+    template=choices[inx]
   }
   if (program.input) {
     inquirer.prompt([
@@ -194,12 +197,13 @@ function copytemplate(local){
         }else{
           console.log('Successfully initiated your object!')
           var metadata= JSON.parse(fs.readFileSync(project+'/'+dest+'/'+version+'/metadata.json', 'utf8'))
-
           metadata.version=version
           metadata.metadata.arkId.fedoraPath=dest
           metadata.metadata.arkId.arkId='ark:/'+dest.replace('-','\/')
           console.log(JSON.stringify(metadata))
           fs.writeFileSync(project+'/'+dest+'/'+version+'/metadata.json',JSON.stringify(metadata))
+          var p = JSON.parse(fs.readFileSync(project+'/project.json'))
+          prop.tools=JSON.parse(JSON>stringify(p.tools))
           fs.writeFileSync(project+'/project.json',JSON.stringify(prop))
           if(!local) fs.remove(tmp,err=>{ if(err) console.log(err)})
         }

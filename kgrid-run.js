@@ -23,7 +23,7 @@ if(!program.dev){options=""}
 if(program.port){
   port=program.args[0]
 }
-execsync('setx ACTIVATOR_PORT '+port)
+execsync('setx KGRID_ACTIVATOR_PORT '+port)
 const activatorfile='./tools/activator-0.5.8-SNAPSHOT.war'
 
 if(!exists(activatorfile)){

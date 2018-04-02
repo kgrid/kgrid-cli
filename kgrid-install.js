@@ -44,14 +44,25 @@ var promises = []
 
 var act_entry=prop.tools.filter(function(e){return e.name=='activator'})
 var fn = 	'./tools/'+act_entry[0].filename
-if(!exists(b)){
+if(!exists(fn)){
     console.log('Downloading activator ...')
     promises.push(downloadurl(act_entry[0].download_url+act_entry[0].filename,'tools'))
   }
+
+  var shelf_entry=prop.tools.filter(function(e){return e.name=='shelf'})
+  var fn_shelf = 	'./tools/'+shelf_entry[0].filename
+  if(!exists(fn_shelf)){
+      console.log('Downloading shelf gateway ...')
+      promises.push(downloadurl(shelf_entry[0].download_url+shelf_entry[0].filename,'tools'))
+    }
+
 adapters.forEach(function(e){
     var link = prop.tools.filter(function(el){
-      return el.adapter==e
+      return el.name==e
     })
+    if(link.length==0){
+
+    }else{
     if(link[0].filename!=''){
       var bl = './tools/adapters/'+link[0].filename
       if(!exists(bl)){
@@ -59,6 +70,7 @@ adapters.forEach(function(e){
         promises.push(downloadurl(link[0].download_url+link[0].filename,'tools/adapters'))
       }
     }
+  }
   })
 if(promises.length>0){
   Promise.all(promises).then(()=>{

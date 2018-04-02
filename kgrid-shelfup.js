@@ -28,7 +28,7 @@ if(program.port){
 }
 execsync('setx KGRID_SHELF_PORT '+port)
 
-const shelfgatewayfile='./shelf-gateway-0.5.8-SNAPSHOT.jar'
+const shelfgatewayfile='./tools/shelf-gateway-0.5.8-SNAPSHOT.jar'
 
 if(!exists(shelfgatewayfile)){
     console.log('Cannot find the shelf gateway file. Please run kgrid install and then try again.')

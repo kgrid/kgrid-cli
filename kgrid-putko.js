@@ -21,8 +21,8 @@ if(program.args.length==0){
   console.log('Please specify the knowledge object zip file and try again. \n\n   Format for the knowledge object id: {naan}-{name}.zip \n\n   Example:  kgrid putko hello-world.zip')
 }else {
   filename=program.args[0]
-  var index=filename.lastIndexOf('/')
-  var l= filename.length
+  var index = filename.lastIndexOf('/')
+  var l = filename.length
   var s = filename.slice(index+1,l)
   arkid='ark:/'+s.replace('.zip','').replace('-','/')
   if(!exists(filename)){

@@ -58,21 +58,24 @@ if(program.env){
           if(res!=null){
             var rawlist=res.body
             var kolist =[]
-            var objlist={}
-            rawlist.forEach(function(e){
-              if(objlist[e.metadata.arkId.arkId]==null){
-                objlist[e.metadata.arkId.arkId]=[]
-              }
-              objlist[e.metadata.arkId.arkId].push(e.version)
-            })
-            for(var key in objlist)    {
-              if(objlist.hasOwnProperty(key)) {
-                kolist.push({"id": key, versions: objlist[key] });
-              }
+            var l = [];
+            for(var key in rawlist){
+              var obj={}
+              obj[key]=rawlist[key]
+              l.push(obj)
             }
-            console.log('\n  Number of Knowledge Obejcts on the shelf:  '+kolist.length+'\n')
+            l.forEach(function(e){
+              for(var key in e){
+                var ko = e[key]
+                var versions=[]
+                for(var k in ko){
+                  versions.push(k)
+                }
+                kolist.push({"id": key, "versions":versions});
+              }
+            })
             kolist.forEach(function(e){
-              var txt=e.id.padEnd(20)
+              var txt=e.id.padEnd(25)
               e.versions.forEach(function(ee, index){
                   txt=txt+"    "+ee
               })

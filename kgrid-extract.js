@@ -22,13 +22,13 @@ var payloadext = 'js'
 const metadatafile='metadata.json'
 const basefile='base.json'
 
- var template = 'kotemplate'
- var localtemplatedir=''
-  var koid='99999-newko'
- var tmp = 'tmp'
- var dest = koid.replace(/[\/:]/g, '-')
- var gittemplate='kgrid/ko-templates'
- var src=path.join(tmp,template)
+var template = 'kotemplate'
+var localtemplatedir=''
+var koid='99999-newko'
+var tmp = 'tmp'
+var dest = koid.replace(/[\/:]/g, '-')
+var gittemplate='kgrid/ko-templates'
+var src=path.join(tmp,template)
 
 inquirer.prompt([{
         type: 'input',
@@ -114,7 +114,7 @@ function extractlegacy(srcfile){
      var ark=myobject.metadata.arkId.replace('ark:\/', '')
      koid=ark.replace(/[\/:]/g, '-')
    }
-  var ver= 'v-0-0-1'
+  var ver= 'v0.0.1'
   if(myobject.metadata.version){
     if(myobject.metadata.version!=''){
       ver=myobject.metadata.version

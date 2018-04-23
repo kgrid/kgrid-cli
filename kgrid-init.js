@@ -34,7 +34,7 @@ var src=path.join(tmp,template)
 var prop = {'template':'','project':'','object':'','version':'','adapters':[]}
 
 var argv=minimist(process.argv.slice(2))
-console.log(argv)
+// console.log(argv)
 if (program.args.length<2 && !program.input) {
   program.help()
 }else {
@@ -47,12 +47,18 @@ if (program.args.length<2 && !program.input) {
   } else {
     object=project
   }
+
   var inx=choices.indexOf(template)
-  if (inx==-1) {
-    console.log("Unknown template. The default template will be used.")
+  if(template){
+    if (inx==-1) {
+      console.log("Unknown template. The default template will be used.")
+      inx=2      
+    }
+  }else {
+    console.log("No template specified. The default template will be used.")
     inx=2
-    template=choices[inx]
   }
+  template=choices[inx]
   if (program.input) {
     inquirer.prompt([
             {

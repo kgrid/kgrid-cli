@@ -29,6 +29,7 @@ var tmp = 'tmp'
 var dest = koid.replace(/[\/:]/g, '-')
 var gittemplate='kgrid/ko-templates'
 var src=path.join(tmp,template)
+var prop = {'template':'','project':'','object':'','version':'','adapters':[]}
 
 inquirer.prompt([{
         type: 'input',
@@ -58,6 +59,9 @@ inquirer.prompt([{
         }
         fs.pathExists(answers.srcfile, (err, exists)=>{
           if(exists){
+            var array = file.split('.')
+            koid=array[0]
+            dest = koid.replace(/[\/:]/g, '-')
         if(program.legacy){
           console.log('Start extracting '+answers.srcfile+' into legacy template ...')
           extractinglegacytolegacy(answers.srcfile)

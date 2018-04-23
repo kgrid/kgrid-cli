@@ -6,7 +6,7 @@ const prettyjson = require('prettyjson');
 const PORT = process.env.KGRID_SHELF_PORT || 8083;
 program
   .name('kgrid viewko')
-  .description('This will display the specified knowledge object from the shelf.\n\n    Example: \n\n      kgrid viewko ark:/hello/world/v-0-0-1')
+  .description('This will display the specified knowledge object from the shelf.\n\n    Example: \n\n      kgrid viewko ark:/hello/world/v.0.0.1')
   .usage('<ko>')
 	.parse(process.argv)
 

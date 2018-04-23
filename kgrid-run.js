@@ -17,7 +17,7 @@ program
 
 var arkid = path.basename(process.cwd()).replace(/[\-:]/g, '/')
 var port = '8082'
-var options=' --activator.home=tools --activator.shelf.path=target'
+var options=' --activator.home=tools --activator.shelf.path=./'
 if(!program.dev){options=""}
 
 if(program.port){

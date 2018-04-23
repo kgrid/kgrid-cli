@@ -10,16 +10,10 @@ const exists = require('fs').existsSync
 const BASE_URL = 'http://localhost';
 const KGRID_ACTIVATOR_PORT = '3080';
 const ADAPTERGATEWAY_PORT_START = '3081';
-const ACTIVATOR_DOWNLOAD = {'filename':'activator-0.5.8-SNAPSHOT.war','url':'https://github.com/kgrid/kgrid-starter/releases/download/0.6/activator-0.5.8-SNAPSHOT.war'};
-const ADAPTERGATEWAY_DOWNLOAD_URLs = [
-   {'adapter':'PYTHON','filename':'','url':''}
-  ,{'adapter':'JS','filename':'','url':''}
-]
-const ADAPTER_DOWNLOAD_URLs = [
-    {'adapter':'PYTHON','filename':'python-adapter-0.5.8-SNAPSHOT-jar-with-dependencies.jar','url':'https://github.com/kgrid/python-adapter/releases/download/0.5.8-SNAPSHOT/python-adapter-0.5.8-SNAPSHOT-jar-with-dependencies.jar'}
-   ,{'adapter':'JS','filename':'','url':''}
- ]
-
+var template = 'kotemplate'
+var tmp = 'tmp'
+var gittemplate='kgrid/ko-templates'
+var adapters = ['JS','PYTHON']
 program
   .name('kgrid install')
   .parse(process.argv)
@@ -27,7 +21,21 @@ program
 var prop= {}
 if(exists('project.json')){
   prop=JSON.parse(fs.readFileSync('project.json', 'utf8'))
-  const adapters=prop.adapters
+  adapters=prop.adapters
+} else {
+    console.log('project.json not found. Default setting will be used for installing K-Grid components.')
+    download(gittemplate, tmp, err => {
+      if(err!=null){
+        console.log(err)
+      }else {
+        prop=JSON.parse(fs.readFileSync('tmp/kotemplate/project.json', 'utf8'))
+        downloadandinstall()
+      }
+    })
+}
+
+function downloadandinstall() {
+
   fs.ensureDir('tools', err => {
 					if(err!=null){
 					   console.log(err)
@@ -35,9 +43,6 @@ if(exists('project.json')){
 					   fs.ensureDir('tools/adapters', err => {
 								if(err!=null){console.log(err) }
               })
-					   // fs.ensureDir('activator/shelf', err => {
-					   //   if(err!=null){console.log(err) }
-             // })
 					   }
 					})
 var promises = []
@@ -63,14 +68,16 @@ adapters.forEach(function(e){
     if(link.length==0){
 
     }else{
-    if(link[0].filename!=''){
-      var bl = './tools/adapters/'+link[0].filename
-      if(!exists(bl)){
-        console.log('Downloading '+e+' adapter ...')
-        promises.push(downloadurl(link[0].download_url+link[0].filename,'tools/adapters'))
-      }
+      link.forEach(function(e){
+        if(e.name!=''){
+          var bl = './tools/adapters/'+e.filename
+          if(!exists(bl)){
+            console.log('Downloading '+e.filename)
+            promises.push(downloadurl(e.download_url+e.filename,'tools/adapters'))
+          }
+        }
+      })
     }
-  }
   })
 if(promises.length>0){
   Promise.all(promises).then(()=>{
@@ -79,12 +86,11 @@ if(promises.length>0){
     }else {
       console.log(promises.length+' files downloaded.')
     }
+    fs.remove(tmp,err=>{ if(err) console.log(err)})
   },err=>{
     console.log(err)
   })
 }else {
   console.log('All needed files are already installed.')
 }
-}else {
-    console.log('project.json not found.')
 }

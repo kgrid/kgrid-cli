@@ -78,9 +78,9 @@ Note: If the shelf starts at a different port, you may need to start a new termi
 ``` kgrid putko <filename> ```
 
 
-### Retrieve a knowledge object from the shelf
+### View a knowledge object currently on the shelf
 
-``` kgrid getko <arkid> ```
+``` kgrid viewko <arkid> ```
 
 
 ### List Knowledge Grid components and files

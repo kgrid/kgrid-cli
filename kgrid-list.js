@@ -5,31 +5,40 @@ const fs=require('fs-extra');
 const path=require('path')
 const klawSync = require('klaw-sync')
 const exists = require('fs').existsSync
-const PORT = process.env.KGRID_SHELF_PORT || 8083;
+const PORT = process.env.KGRID_ACTIVATOR_PORT || 8083;
+const prettyjson = require('prettyjson');
+const minimist = require('minimist')
+
+var options = {  noColor: false }
 program
   .name('kgrid list')
-  .description('List components. \n\n  A file name can be used to filter the result when listing files.\n\n  Example:\n\n        kgrid list -s metadata ')
+  .description('List components. \n\n  Example:\n\n      kgrid list -s  \n\n      kgrid list --ko=ark:/hello/world')
+  .usage('[options]')
   .option('-t, --template','template list')
-  .option('-f, --filetree','project file list')
-  .option('-s, --shelf','shelf list')
+  .option('-s, --shelf','shelf ko list')
   .option('-e, --env','env')
+  .option('--ko','knowledge object')
  	.parse(process.argv)
 
 // console.log(process.argv)
+var argv=minimist(process.argv.slice(2))
+
 var curpath = process.cwd()
 var paths =[]
 var rawpaths =[]
 var filefilter=''
+
 if(program.args.length>0){
   filefilter=program.args[0].toLowerCase()
 }
+
 if(program.env){
     console.log(process.env)
 } else
   if(program.template){
     var l = ['jslegacy','pythonlegacy','kotemplate']
     l.forEach(function(e){
-    console.log(e)
+      console.log(e)
   })
 } else
   if(program.filetree){
@@ -46,7 +55,7 @@ if(program.env){
       })
       paths.forEach(function(e){
         console.log(e.path.replace(curpath,''))
-    })
+      })
   }
 } else
   if(program.shelf){
@@ -56,34 +65,37 @@ if(program.env){
           console.log('Cannot connect to the shelf. Please check if the shelf is running properly.')
         }else {
           if(res!=null){
-            var rawlist=res.body
-            var kolist =[]
-            var l = [];
-            for(var key in rawlist){
-              var obj={}
-              obj[key]=rawlist[key]
-              l.push(obj)
-            }
-            l.forEach(function(e){
-              for(var key in e){
-                var ko = e[key]
-                var versions=[]
-                for(var k in ko){
-                  versions.push(k)
-                }
-                kolist.push({"id": key, "versions":versions});
+            var rawlist={}
+            for(var key in res.body){
+              var obj = res.body[key]
+              var subobj ={}
+              for(var subkey in obj){
+                subobj[subkey] = {}
               }
-            })
-            kolist.forEach(function(e){
-              var txt=e.id.padEnd(25)
-              e.versions.forEach(function(ee, index){
-                  txt=txt+"    "+ee
-              })
-              console.log(txt)
-            })
+              rawlist[key]=subobj
+            }
+            console.log(rawlist)
+            console.log(prettyjson.render(rawlist, options))
           }
         }
   })
-} else {
-  program.help()
-}
+} else
+  if(program.ko){
+    if(argv.ko){
+      request.get('http://localhost:'+PORT+'/'+argv.ko)
+         .end(function(err,res){
+            if(err!=null){
+              console.error("Not Found.")
+            }else {
+              if(res!=null){
+                console.log(prettyjson.render(res.body, options))
+              }
+            }
+      })
+    } else {
+      console.log('Please specify the knowledge object with the arkid.')
+    }
+  }
+  else {
+    program.help()
+  }

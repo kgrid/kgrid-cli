@@ -38,10 +38,12 @@ After the initilization, go to the project folder,
 `cd <project-name>`
 
 ### Install needed K-Grid components, including activator and adapters
+
 ``` kgrid install ```
 
 
 ### Package the knowledge object for activation
+
 ``` kgrid package ```
 
 For legacy models, use
@@ -53,34 +55,17 @@ For legacy models, use
 
 ``` kgrid run ```
 
-To start the activator on a different port (Default port: 8082), use
+To start the activator on a different port (Default port: 8083), use
 
 ``` kgrid run -p <port>```
 
+For development mode, option `--dev` will use the current working directory as the shelf root.
 
-### Start the shelf
-
-``` kgrid shelfup ```
-
-To start the shelf in development mode
-
-``` kgrid shelfup --dev ```
-
-To start the shelf on a different port (Default port: 8083), use
-
-``` kgrid shelfup -p <port>```
-
-Note: If the shelf starts at a different port, you may need to start a new terminal to run other Kgrid CLI commands.
+To start the shelf only, use option `--shelfonly`
 
 
-### Upload a knowledge object zip file to the shelf
+Note: If the activator/shelf starts at a different port, you may need to start a new terminal to run other Kgrid CLI commands.
 
-``` kgrid putko <filename> ```
-
-
-### View a knowledge object currently on the shelf
-
-``` kgrid viewko <arkid> ```
 
 
 ### List Knowledge Grid components and files
@@ -89,9 +74,9 @@ Note: If the shelf starts at a different port, you may need to start a new termi
 
 To list available templates, use option `-t`
 
-To list the knowledge object project directory, use option `-f`
+To list  the knowledge objects on the shelf, use option `-s`
 
-To list  the knowledge object on the shelf, use option `-s`
+To View a knowledge object on the shelf, use option `--ko <arkid>`
 
 
 ### Extract a legacy knowledge object
@@ -102,6 +87,10 @@ To extract using legacy model, use option `-l`
 
 If not using local template, the template will be downloaded from GitHub
 
+
+### Upload a knowledge object zip file to the shelf
+
+``` kgrid putko <filename> ```
 
 
 For details in using these command, run the commands with -h option.

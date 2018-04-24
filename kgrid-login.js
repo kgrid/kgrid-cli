@@ -9,7 +9,13 @@ program
   .usage('')
   .parse(process.argv)
 
+var serverurl = 'http://kgrid.med.umich.edu/library2'
 inquirer.prompt([{
+            type: 'input',
+            name: 'url',
+            message: 'Library URL: ',
+            default: serverurl
+          },{
             type: 'input',
             name: 'username',
             message: 'Username: '
@@ -20,7 +26,7 @@ inquirer.prompt([{
             mask:'*'
           }]).then(ans=>{
             request
-             .post('http://kgrid.med.umich.edu/library2/login?username='+ans.username+'&password='+ans.password)
+             .post(ans.url+'/login?username='+ans.username+'&password='+ans.password)
              .end(function (err, res) {
                 if(err!=null){
                   console.log('Login failed. Please try again late.')

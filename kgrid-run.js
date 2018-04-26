@@ -5,6 +5,7 @@ var path=require('path')
 var exec = require('child_process').exec
 var execsync = require('child_process').execSync
 const exists = require('fs').existsSync
+const fs=require('fs-extra')
 const minimist = require('minimist')
 var child=null
 
@@ -34,13 +35,20 @@ if(program.port){
 }
 port='8083'
 execsync('setx KGRID_ACTIVATOR_PORT '+port)
-const activatorfile='./tools/activator-0.5.8-SNAPSHOT.war'
-const shelfgatewayfile='./tools/shelf-gateway-0.5.8-SNAPSHOT.jar'
+const toolpath='./tools/'
 
-if(program.shelfonly){
-  if(!exists(shelfgatewayfile)){
+if(!exists('project.json')){
+  console.log('Please run kgrid install and then try again.')
+} else {
+
+  var prop=JSON.parse(fs.readFileSync('project.json', 'utf8'))
+  adapters=prop.adapters
+  var activatorfile = toolpath + prop.activator.filename
+  var shelfgatewayfile = toolpath + prop.shelf.filename
+  if(program.shelfonly){
+    if(!exists(shelfgatewayfile)){
       console.log('Cannot find the shelf gateway file. Please run kgrid install and then try again.')
-    }else {
+    } else {
       request.get('http://localhost:'+port+'/health')
          .end(function(err,res){
               if(res==null){
@@ -69,7 +77,7 @@ if(program.shelfonly){
        .end(function(err,res){
             if(res==null){
               console.log('Starting Activator...')
-              child=exec('java -jar tools/activator-0.5.8-SNAPSHOT.war --server.port='+port+options,
+              child=exec('java -jar '+activatorfile+' --server.port='+port+options,
                     function (error, stdout, stderr){
                         console.log('Output -> ' + stdout);
                         if(error !== null){
@@ -86,4 +94,5 @@ if(program.shelfonly){
             }
     })
   }
+}
 }

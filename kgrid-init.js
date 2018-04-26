@@ -52,7 +52,7 @@ if (program.args.length<2 && !program.input) {
   if(template){
     if (inx==-1) {
       console.log("Unknown template. The default template will be used.")
-      inx=2      
+      inx=2
     }
   }else {
     console.log("No template specified. The default template will be used.")
@@ -192,8 +192,14 @@ function initproject(local){
 }
 
 function copytemplate(local){
-  var source = src+'/ko'
-  if(local) source =localtemplatedir
+
+  var src_path = ''
+  if(local) {
+    src_path=localtemplatedir
+  } else {
+    src_path = src
+  }
+  var source = src_path+'/ko'
   fs.ensureDir(project+'/'+dest+'/'+version, err => {
     if(err!=null){
       console.log(err)
@@ -211,8 +217,10 @@ function copytemplate(local){
           metadata.metadata.arkId.arkId='ark:/'+dest.replace('-','\/')
           console.log(JSON.stringify(metadata))
           fs.writeFileSync(project+'/'+dest+'/'+version+'/metadata.json',JSON.stringify(metadata))
-          var p = JSON.parse(fs.readFileSync(src+'/project.json'))
-          prop.tools=JSON.parse(JSON.stringify(p.tools))
+          var p = JSON.parse(fs.readFileSync(src_path+'/project.json'))
+          prop.adapters=p.adapters
+          prop.activator=p.activator
+          prop.shelf=p.shelf
           fs.writeFileSync(project+'/project.json',JSON.stringify(prop))
           if(!local) fs.remove(tmp,err=>{ if(err) console.log(err)})
         }

@@ -74,7 +74,7 @@ if(program.env){
               }
               rawlist[key]=subobj
             }
-            console.log(rawlist)
+            // console.log(rawlist)
             console.log(prettyjson.render(rawlist, options))
           }
         }

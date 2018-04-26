@@ -14,6 +14,8 @@ var template = 'kotemplate'
 var tmp = 'tmp'
 var gittemplate='kgrid/ko-templates'
 var adapters = []
+var activator = {"name":"", "version":"","filename":"","download_url":""}
+var shelf = {"name":"", "version":"","filename":"","download_url":""}
 program
   .name('kgrid install')
   .parse(process.argv)
@@ -33,17 +35,31 @@ if(exists('project.json')){
       paths.push(e)
     }
   })
+  var adapterentrylist = []
   paths.forEach(function(e){
     var content = JSON.parse(fs.readFileSync(e.path, 'utf8'))
-    var names = jsonpath.query(content, '$..adapterType');
-    names.forEach(function(e){
-      if(adapters.indexOf(e)==-1){
-        adapters.push(e)
-      }
+    var adapterlist = jsonpath.query(content, '$..adapters');
+    console.log('QUERY REsult:'+JSON.stringify(adapterlist))
+    adapterlist.forEach(function(e){
+      e.forEach(function(el){
+        var entry = el.name+'-'+el.version
+        adapterentrylist = adapters.map(function(e){ return e.name+'-'+e.version})
+        if(adapterentrylist.indexOf(entry)==-1){
+          adapters.push(el)
+        }
+      })
     })
+    var activatorlist = jsonpath.query(content, '$..activator');
+    if(activatorlist.length>0){
+      activator = activatorlist[0]
+    }
+    var shelflist = jsonpath.query(content, '$..shelf');
+    if(shelflist.length>0){
+      shelf = shelflist[0]
+    }
   })
   adapters.forEach(function(e){
-    console.log('Found adapter type: '+ e)
+    console.log('Found adapter type: '+ e.name+'-'+e.version)
   })
   download(gittemplate, tmp, err => {
       if(err!=null){
@@ -53,6 +69,8 @@ if(exists('project.json')){
         prop.project="shelf"
         prop.object='99999-shelf'
         prop.adapters = adapters
+        prop.activator=activator
+        prop.shelf=shelf
         console.log('Generating project.json ...')
         fs.writeFileSync('project.json',JSON.stringify(prop))
         downloadandinstall()
@@ -72,27 +90,20 @@ function downloadandinstall() {
 					   }
 					})
   var promises = []
-  var act_entry=prop.tools.filter(function(e){return e.name=='activator'})
-  var fn = 	'./tools/'+act_entry[0].filename
+  var act_entry=prop.activator
+  var fn = 	'./tools/'+act_entry.filename
   if(!exists(fn)){
     console.log('Downloading activator ...')
-    promises.push(downloadurl(act_entry[0].download_url+act_entry[0].filename,'tools'))
+    promises.push(downloadurl(act_entry.download_url+act_entry.filename,'tools'))
   }
-  var shelf_entry=prop.tools.filter(function(e){return e.name=='shelf'})
-  var fn_shelf = 	'./tools/'+shelf_entry[0].filename
+  var shelf_entry=prop.shelf
+  var fn_shelf = 	'./tools/'+shelf_entry.filename
   if(!exists(fn_shelf)){
       console.log('Downloading shelf gateway ...')
-      promises.push(downloadurl(shelf_entry[0].download_url+shelf_entry[0].filename,'tools'))
+      promises.push(downloadurl(shelf_entry.download_url+shelf_entry.filename,'tools'))
   }
   adapters.forEach(function(e){
-    var link = prop.tools.filter(function(el){
-      return el.name==e
-    })
-    if(link.length==0){
-
-    }else{
-      link.forEach(function(e){
-        if(e.name!=''){
+    if(e.name!=''){
           var bl = './tools/adapters/'+e.filename
           if(!exists(bl)){
             console.log('Downloading '+e.filename+'...')
@@ -100,8 +111,6 @@ function downloadandinstall() {
           }
         }
       })
-    }
-  })
   if(promises.length>0){
     Promise.all(promises).then(()=>{
       if(promises.length ==1){

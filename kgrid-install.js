@@ -39,7 +39,7 @@ if(exists('project.json')){
   paths.forEach(function(e){
     var content = JSON.parse(fs.readFileSync(e.path, 'utf8'))
     var adapterlist = jsonpath.query(content, '$..adapters');
-    console.log('QUERY REsult:'+JSON.stringify(adapterlist))
+    // console.log('QUERY REsult:'+JSON.stringify(adapterlist))
     adapterlist.forEach(function(e){
       e.forEach(function(el){
         var entry = el.name+'-'+el.version

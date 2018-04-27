@@ -13,7 +13,7 @@ program
   .name('kgrid run')
   .description('This will start the K-Grid activator.\n\n  Use the option -p to specify a port.\n\n  Example: \n\n      kgrid run --shelfonly --dev -p 8083')
   .usage('[options]')
-  .option('-p, --port','Specify a different port')
+  .option('--port','Specify a different port')
   .option('--shelfonly','Start shelf gateway only')
   .option('--dev','Run in development mode')
 	.parse(process.argv)
@@ -33,8 +33,11 @@ var argv=minimist(process.argv.slice(2))
 if(program.port){
   port=argv.port
 }
-port='8083'
-execsync('setx KGRID_ACTIVATOR_PORT '+port)
+if(process.platform === "win32") {
+  execsync('setx KGRID_ACTIVATOR_PORT '+port)
+} else {
+
+}
 const toolpath='./tools/'
 
 if(!exists('project.json')){

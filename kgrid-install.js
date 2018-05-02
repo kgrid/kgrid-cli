@@ -22,10 +22,13 @@ program
 
 var prop= {}
 var paths =[]
+var kopath = ''
 if(exists('project.json')){
   prop=JSON.parse(fs.readFileSync('project.json', 'utf8'))
   adapters=prop.adapters
+  kopath=prop.object
   downloadandinstall()
+  loadkotoshelf()
 } else {
   console.log('project.json not found. Checking all knowledge objects in the working directory...')
   var srcpath = process.cwd()
@@ -73,41 +76,59 @@ if(exists('project.json')){
         prop.shelf=shelf
         console.log('Generating project.json ...')
         fs.writeFileSync('project.json',JSON.stringify(prop))
+        kopath=process.cwd()
         downloadandinstall()
+        loadkotoshelf()
       }
   })
 }
 
+function loadkotoshelf() {
+  var shelfdir='runtime/shelf/'+kopath
+  fs.ensureDir(shelfdir, err=>{
+    if(err!=null) {
+      console.log(err)
+    } else {
+      ncp(kopath, shelfdir, function(err){
+        if(err!=null){
+          console.log(err)
+        }else {
+          console.log('Successfully loaded the knowledge object to runtime shelf.')
+        }
+      })
+    }
+  })
+}
 
 function downloadandinstall() {
-  fs.ensureDir('tools', err => {
+  fs.ensureDir('runtime', err => {
 					if(err!=null){
 					   console.log(err)
 					} else{
-					   fs.ensureDir('tools/adapters', err => {
+					   fs.ensureDir('runtime/adapters', err => {
 								if(err!=null){console.log(err) }
               })
 					   }
 					})
   var promises = []
   var act_entry=prop.activator
-  var fn = 	'./tools/'+act_entry.filename
+  var fn = 	'./runtime/'+act_entry.filename
   if(!exists(fn)){
     console.log('Downloading activator ...')
-    promises.push(downloadurl(act_entry.download_url+act_entry.filename,'tools'))
+    promises.push(downloadurl(act_entry.download_url+act_entry.filename,'runtime'))
   }
   var shelf_entry=prop.shelf
-  var fn_shelf = 	'./tools/'+shelf_entry.filename
+  var fn_shelf = 	'./runtime/'+shelf_entry.filename
   if(!exists(fn_shelf)){
       console.log('Downloading shelf gateway ...')
-      promises.push(downloadurl(shelf_entry.download_url+shelf_entry.filename,'tools'))
+      promises.push(downloadurl(shelf_entry.download_url+shelf_entry.filename,'runtime'))
   }
   adapters.forEach(function(e){
     if(e.name!=''){
-          var bl = './tools/adapters/'+e.filename
+          var bl = './runtime/adapters/'+e.filename
           if(!exists(bl)){
             console.log('Downloading '+e.filename+'...')
-            promises.push(downloadurl(e.download_url+e.filename,'tools/adapters'))
+            promises.push(downloadurl(e.download_url+e.filename,'runtime/adapters'))
           }
         }
       })

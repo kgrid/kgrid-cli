@@ -82,6 +82,7 @@ function extractinglegacytolegacy(srcfile){
   var myobject = JSON.parse(data)
   var metadata ={'metadata':{}}
   metadata.metadata = myobject.metadata
+  payloadfile=myobject.payload.functionName
   var payload = myobject.payload.content
   var enginetype= myobject.payload.engineType.toUpperCase()
   switch(enginetype){
@@ -102,7 +103,7 @@ function extractinglegacytolegacy(srcfile){
     if(err!=null){console.log(err) }
     fs.writeFileSync('target/base.json',JSON.stringify(myobject))
     fs.writeFileSync('target/metadata.json',JSON.stringify(metadata))
-    fs.writeFileSync('target/payload.'+payloadext,payload)
+    fs.writeFileSync('target/'+payloadfile+'.'+payloadext,payload)
     fs.writeFileSync('target/input.xml',input)
     fs.writeFileSync('target/output.xml',output)
     console.log('Extracted files can be found in the folder of target.')

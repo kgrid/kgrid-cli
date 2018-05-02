@@ -27,11 +27,11 @@ The listed subcommands are prototypes and subject to change during development.
 
 ### Initialize the knowledge object
 
-`kgrid init <template-name> <project-name> [object-name]`
+`kgrid create <template-name> <project-name> [object-name]`
 
 or using the interactive mode
 
-`kgrid init -i`
+`kgrid create -i`
 
 After the initilization, go to the project folder,
 

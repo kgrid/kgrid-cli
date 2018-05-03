@@ -11,124 +11,98 @@ const jsonpath = require('jsonpath')
 const klawSync = require('klaw-sync')
 const BASE_URL = 'http://localhost';
 var template = 'kotemplate'
-var tmp = 'tmp'
 var gittemplate='kgrid/ko-templates'
 var adapters = []
 var activator = {"name":"", "version":"","filename":"","download_url":""}
 var shelf = {"name":"", "version":"","filename":"","download_url":""}
 program
   .name('kgrid install')
+  .option('--dev','Run in development mode')
+  .option('--prod','Run in production mode')
   .parse(process.argv)
 
 var prop= {}
 var paths =[]
+var srcpath = process.cwd()
 var kopath = ''
-if(exists('project.json')){
-  prop=JSON.parse(fs.readFileSync('project.json', 'utf8'))
+var kopaths=[]
+var runtime=''
+if(!program.prod) {
+  runtime='runtime/'
+}else{
+  runtime='./'
+}
+if(exists(runtime+'manifest.json')){
+  prop=JSON.parse(fs.readFileSync(runtime+'manifest.json', 'utf8'))
   adapters=prop.adapters
-  kopath=prop.object
-  downloadandinstall()
-  loadkotoshelf()
-} else {
-  console.log('project.json not found. Checking all knowledge objects in the working directory...')
-  var srcpath = process.cwd()
-  rawpaths=klawSync(srcpath)
-  rawpaths.forEach(function(e){
-    if((e.path.toLowerCase().includes('metadata'))){
-      paths.push(e)
-    }
-  })
-  var adapterentrylist = []
-  paths.forEach(function(e){
-    var content = JSON.parse(fs.readFileSync(e.path, 'utf8'))
-    var adapterlist = jsonpath.query(content, '$..adapters');
-    // console.log('QUERY REsult:'+JSON.stringify(adapterlist))
-    adapterlist.forEach(function(e){
-      e.forEach(function(el){
-        var entry = el.name+'-'+el.version
-        adapterentrylist = adapters.map(function(e){ return e.name+'-'+e.version})
-        if(adapterentrylist.indexOf(entry)==-1){
-          adapters.push(el)
-        }
-      })
+  kopaths=prop.objects
+  if(!program.prod){
+    kopaths.forEach(function(e){
+      loadkotoshelf(e.id)
     })
-    var activatorlist = jsonpath.query(content, '$..activator');
-    if(activatorlist.length>0){
-      activator = activatorlist[0]
+  }else {
+    // console.log('The function to load remote knowledge objects will be implemented in the future release.')
+  }
+  downloadandinstall()
+} else {
+    if(!program.prod){
+      console.log('manifest.json not found. Please run `kgrid setup` and then try again.')
+    }else {
+      console.log('manifest.json not found. Please run `kgrid setup --prod` and then try again.')
     }
-    var shelflist = jsonpath.query(content, '$..shelf');
-    if(shelflist.length>0){
-      shelf = shelflist[0]
-    }
-  })
-  adapters.forEach(function(e){
-    console.log('Found adapter type: '+ e.name+'-'+e.version)
-  })
-  download(gittemplate, tmp, err => {
-      if(err!=null){
-        console.log(err)
-      }else {
-        prop=JSON.parse(fs.readFileSync('tmp/kotemplate/project.json', 'utf8'))
-        prop.project="shelf"
-        prop.object='99999-shelf'
-        prop.adapters = adapters
-        prop.activator=activator
-        prop.shelf=shelf
-        console.log('Generating project.json ...')
-        fs.writeFileSync('project.json',JSON.stringify(prop))
-        kopath=process.cwd()
-        downloadandinstall()
-        loadkotoshelf()
-      }
-  })
 }
 
-function loadkotoshelf() {
-  var shelfdir='runtime/shelf/'+kopath
+
+function loadkotoshelf(kopath) {
+  var shelfdir=runtime+'/shelf/'+kopath
   fs.ensureDir(shelfdir, err=>{
     if(err!=null) {
       console.log(err)
     } else {
+      if(exists(kopath)){
       ncp(kopath, shelfdir, function(err){
         if(err!=null){
           console.log(err)
         }else {
-          console.log('Successfully loaded the knowledge object to runtime shelf.')
+          console.log('Successfully loaded Knowledge Object '+kopath+' to runtime shelf.')
         }
       })
+    }else {
+      console.log('Knowledge Object '+kopath+' not found.')
+    }
     }
   })
 }
 
 function downloadandinstall() {
-  fs.ensureDir('runtime', err => {
+  fs.ensureDir(runtime, err => {
 					if(err!=null){
 					   console.log(err)
 					} else{
-					   fs.ensureDir('runtime/adapters', err => {
+					   fs.ensureDir(runtime+'/adapters', err => {
 								if(err!=null){console.log(err) }
               })
 					   }
 					})
   var promises = []
   var act_entry=prop.activator
-  var fn = 	'./runtime/'+act_entry.filename
+  var fn = 	runtime+'/'+act_entry.filename
   if(!exists(fn)){
     console.log('Downloading activator ...')
-    promises.push(downloadurl(act_entry.download_url+act_entry.filename,'runtime'))
+    promises.push(downloadurl(act_entry.download_url+act_entry.filename,runtime))
   }
   var shelf_entry=prop.shelf
-  var fn_shelf = 	'./runtime/'+shelf_entry.filename
+  var fn_shelf = 	runtime+'/'+shelf_entry.filename
   if(!exists(fn_shelf)){
       console.log('Downloading shelf gateway ...')
-      promises.push(downloadurl(shelf_entry.download_url+shelf_entry.filename,'runtime'))
+      promises.push(downloadurl(shelf_entry.download_url+shelf_entry.filename,runtime))
   }
   adapters.forEach(function(e){
     if(e.name!=''){
-          var bl = './runtime/adapters/'+e.filename
+          var bl = runtime+'/adapters/'+e.filename
           if(!exists(bl)){
             console.log('Downloading '+e.filename+'...')
-            promises.push(downloadurl(e.download_url+e.filename,'runtime/adapters'))
+            promises.push(downloadurl(e.download_url+e.filename,runtime+'/adapters'))
           }
         }
       })
@@ -139,12 +113,10 @@ function downloadandinstall() {
       }else {
         console.log(promises.length+' files downloaded.')
       }
-      fs.remove(tmp,err=>{ if(err) console.log(err)})
     },err=>{
       console.log(err)
     })
   }else {
-    if(exists(tmp)){fs.remove(tmp,err=>{ if(err) console.log(err)})}
     console.log('All needed files are already installed.')
   }
 }

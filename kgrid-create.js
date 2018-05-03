@@ -14,6 +14,8 @@ program
   .description('This will initialize the knowledge object based on the specified template. \n\n  If object-name is omitted, the object will have the same name as project-name.\n\n  Use kgrid list -t to find the available templates. \n\n  Example:\n\n        kgrid create jslegacy myproject 99999-trial\n\n        cd myproject \n\n        kgrid install')
   .usage('<template-name> <project-name> [object-name]')
   .option('-i, --input','An optional mode to enter the set-up information interactively.')
+  .option('-a, --auto','An optional mode to enter the set-up information interactively.')
+
  	.parse(process.argv)
 
 var template = ''
@@ -21,6 +23,10 @@ var localtemplatedir=''
 var project = 'newproject'
 var object = 'newko'
 var version = 'v0.0.1'
+var owners =''
+var contributors =''
+var description=''
+var title=''
 const choices = [
   'jslegacy'
   ,'pythonlegacy'
@@ -31,11 +37,11 @@ var srccontainer= 'src'
 var dest = project.replace(/[\/:]/g, '-')
 var gittemplate='kgrid/ko-templates'
 var src=path.join(tmp,template)
-var prop = {'template':'','project':'','object':'','version':'','adapters':[]}
+var prop = {}
 
 var argv=minimist(process.argv.slice(2))
 // console.log(argv)
-if (program.args.length<2 && !program.input) {
+if (program.args.length<2 && program.auto) {
   program.help()
 }else {
   template=program.args[0]
@@ -49,7 +55,8 @@ if (program.args.length<2 && !program.input) {
   }
 
   var inx=choices.indexOf(template)
-  if(template){
+  if(program.auto){
+  if(template!=''){
     if (inx==-1) {
       console.log("Unknown template. The default template will be used.")
       inx=2
@@ -58,8 +65,9 @@ if (program.args.length<2 && !program.input) {
     console.log("No template specified. The default template will be used.")
     inx=2
   }
-  template=choices[inx]
-  if (program.input) {
+    template=choices[inx]
+  }
+  if (!program.auto) {
     inquirer.prompt([
             {
               type: 'confirm',
@@ -72,7 +80,7 @@ if (program.args.length<2 && !program.input) {
         name: 'template',
         message: 'Please select one of the available templates:',
         choices:choices,
-        default:inx,
+        default:2,
         when:function(answers){
           return !answers.localtemp
         }
@@ -113,6 +121,30 @@ if (program.args.length<2 && !program.input) {
         name: 'version',
         message: 'Version: ',
         default:function(a){ return 'v0.0.1'}
+      },
+      {
+        type: 'input',
+        name: 'title',
+        message: 'Title: ',
+        default:function(a){ return 'Knowledge Object Title'}
+      },
+      {
+        type: 'input',
+        name: 'owners',
+        message: 'Organization: ',
+        default:function(a){ return 'DLHS'}
+      },
+      {
+        type: 'input',
+        name: 'contributors',
+        message: 'Created by: ',
+        default:function(a){ return 'KGRID Team'}
+      },
+      {
+        type: 'input',
+        name: 'description',
+        message: 'Brief Description: ',
+        default:function(a){ return 'A new knowledge object.'}
       }
     ]).then(answers=>{
       if(answers.localtemp){
@@ -124,6 +156,10 @@ if (program.args.length<2 && !program.input) {
       project=answers.project
       object=answers.object
       version = answers.version
+      owners=answers.owners
+      title=answers.title
+      contributors=answers.contributors
+      description=answers.description
       checkproject(project)
     })
   }else {
@@ -159,25 +195,9 @@ function checkproject(proj){
 
 function initproject(local){
   if(object!=null){
-		console.log('Your Object Name:'+object)
+		console.log('Creating Knowledge Object '+object+' ...')
 		dest = object.replace(/[\/:]/g, '-')
   }
-  prop.template=template
-  prop.project=project
-  prop.object=dest
-  prop.version=version
-  switch (template){
-    case 'jslegacy':
-      prop.adapters.push('JS')
-      break
-    case 'pythonlegacy':
-      prop.adapters.push('PYTHON')
-      break
-    default:
-      prop.adapters.push('JS')
-      break
-  }
-  console.log(JSON.stringify(prop))
   if(!local){
     download(gittemplate, tmp, err => {
 		  if(err!=null){
@@ -207,20 +227,30 @@ function copytemplate(local){
         if(err!=null){
           console.error(err)
         }else{
-          console.log('Successfully initiated your object!')
           var metadata= JSON.parse(fs.readFileSync(project+'/'+dest+'/'+version+'/metadata.json', 'utf8'))
           metadata.version=version
+          metadata.metadata.version=version
+          metadata.metadata.title=title
+          metadata.metadata.owners=owners
+          metadata.metadata.contributors=contributors
+          metadata.metadata.description=description
           metadata.metadata.arkId.fedoraPath=dest
           metadata.metadata.createdOn=moment().valueOf()
           metadata.metadata.lastModified=moment().valueOf()
           metadata.metadata.arkId.arkId='ark:/'+dest.replace('-','\/')
-          console.log(JSON.stringify(metadata))
+          // console.log(JSON.stringify(metadata))
           fs.writeFileSync(project+'/'+dest+'/'+version+'/metadata.json',JSON.stringify(metadata))
           var p = JSON.parse(fs.readFileSync(src_path+'/project.json'))
-          prop.adapters=p.adapters
-          prop.activator=p.activator
-          prop.shelf=p.shelf
+          prop.template=template
+          prop.project=project
+          // prop.object=dest
+          // prop.version=version
+          prop.objects=[]
+          prop.objects.push({'id':dest,'version':version})
+          prop.kodependencies=[]
           fs.writeFileSync(project+'/project.json',JSON.stringify(prop))
+          console.log('Project '+project+ 'with Knowledge Object '+ object+' has been successfully created.\n ')
+          console.log('Go to the project folder by `cd '+project+'`')
           if(!local) fs.remove(tmp,err=>{ if(err) console.log(err)})
         }
       })

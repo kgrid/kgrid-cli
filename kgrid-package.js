@@ -28,8 +28,8 @@ const basefile='base.json'
 const project=path.basename(process.cwd())
 
 var prop= JSON.parse(fs.readFileSync('project.json', 'utf8'))
-var packfile=prop.object
-var srcpath = prop.object+'/'
+var packfile=prop.objects[0].id
+var srcpath = packfile+'/'
 switch(prop.template){
   case 'jslegacy':
     payloadext ='js'
@@ -66,7 +66,7 @@ if(program.legacy){
 }
 
 function packaginglegacy(){
-  srcpath=srcpath+prop.version+"/"
+  srcpath=srcpath+prop.objects[0].version+"/"
   var data = fs.readFileSync(srcpath+basefile, 'utf8')
   var myobject = JSON.parse(data)
   data = fs.readFileSync(srcpath+inputfile, 'utf8')

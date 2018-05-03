@@ -16,9 +16,11 @@ var gittemplate='kgrid/ko-templates'
 var adapters = []
 var activator = {"name":"", "version":"","filename":"","download_url":""}
 var shelf = {"name":"", "version":"","filename":"","download_url":""}
+  var manifestjson ={}
 program
   .name('kgrid setup')
   .option('--dev','Run in development mode')
+  .option('--prod','Run in production mode')
   .parse(process.argv)
 
 var srcpath = process.cwd()
@@ -34,16 +36,19 @@ if(process.platform === "win32") {
 } else {
   pathsep='/'
 }
-if(program.dev) {
+if(!program.prod) {
   runtime='runtime/'
 }else{
   runtime='./'
 }
+  manifestjson.objects=[]
 if(exists('project.json')){
   prop=JSON.parse(fs.readFileSync('project.json', 'utf8'))
   kolist = prop.objects
+  kodeplist=prop.kodependencies
   if(kolist.length>0){
     kolist.forEach(function(e){
+      manifestjson.objects.push(e)
       kopaths.push(srcpath+'\\'+e.id+'\\'+e.version)
       console.log('Found Knowledge Object: '+ e.id+'-'+e.version)
     })
@@ -51,6 +56,17 @@ if(exists('project.json')){
   }else{
     console.log('No Knowledge Object is specified in project.json. ')
   }
+  if(kodeplist){
+  if(kodeplist.length>0){
+    kodeplist.forEach(function(e){
+      manifestjson.objects.push(e)
+      kopaths.push(srcpath+'\\'+e.id+'\\'+e.version)
+      console.log('Found Dependency Knowledge Object: '+ e.id+'-'+e.version)
+    })
+  }else{
+    console.log('No Dependency Knowledge Object is specified in project.json. ')
+  }
+}
 }else {
   if(exists(srcpath+'/shelf')){
     var klawshelf =klawSync(srcpath+'/shelf')
@@ -71,6 +87,7 @@ if(exists('project.json')){
       obj.id=p[2]
       obj.version=p[3]
       // console.log('Found Knowledge Object: '+ obj.id+'-'+obj.version)
+      manifestjson.objects.push(obj)
       kolist.push(obj)
       kopaths.push(e)
     })
@@ -83,7 +100,7 @@ if(exists('project.json')){
 }
 
 if(ready){
-    console.log(JSON.stringify(kopaths))
+//  if(program.debug) console.log(JSON.stringify(kopaths))
   var klawedpaths=klawSync(srcpath)
    // console.log('KLAW:'+JSON.stringify(klawedpaths))
   var rawpaths = klawedpaths.filter(function(e){
@@ -128,8 +145,8 @@ if(ready){
   adapters.forEach(function(e){
     console.log('Found adapter type: '+ e.name+'-'+e.version)
   })
-  var manifestjson ={}
-  manifestjson.objects=kolist
+
+
   manifestjson.adapters = adapters
   manifestjson.activator=activator
   manifestjson.shelf=shelf

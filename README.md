@@ -25,21 +25,54 @@ You should be able to run `kgrid` as a node command globally in your working dir
 
 The listed subcommands are prototypes and subject to change during development.
 
-### Initialize the knowledge object
+### Create the knowledge object project
 
-`kgrid create <template-name> <project-name> [object-name]`
+`kgrid create `
 
-or using the interactive mode
+It will prompt for entering project information.
 
-`kgrid create -i`
+Or using the auto mode. By supplying template-name and project name, the project will be created using the default value from the template. The project information can be modified later.
+
+`kgrid create -a <template-name> <project-name> [object-name]`
 
 After the initilization, go to the project folder,
 
 `cd <project-name>`
 
+
+### Setup runtime environment
+
+``` kgrid setup ```
+
+By default, it is development mode, `--dev`, which will create `runtime` folder and generate `manifest.json` in the runtime folder
+
+Production mode, enabled with option `--prod`, which will generate `manifest.json` in the working directory if there exists a `shelf` containing knowledge objects.
+
+
 ### Install needed K-Grid components, including activator and adapters
 
 ``` kgrid install ```
+
+By default, it is development mode, `--dev`, which will download and install needed files in the runtime folder.
+
+Production mode, enabled with option `--prod`, which will download and install needed files in the working directory.
+
+### Start the activator and activate the knowledge object
+
+``` kgrid run ```
+
+To start the activator on a different port (Default port: 8083), use
+
+``` kgrid run -p <port>```
+
+To start the shelf only, use option `--shelfonly`
+
+To start the adapter gateway only, use option `--adapteronly`
+
+Note: At current development stage, you may need to change the working directory to runtime if applicable.
+
+Note: If the activator/shelf starts at a different port, you may need to start a new terminal to run other Kgrid CLI commands.
+
 
 
 ### Package the knowledge object for activation
@@ -51,20 +84,14 @@ For legacy models, use
 ``` kgrid package -l```
 
 
-### Start the activator and activate the knowledge object
+### Extract a legacy knowledge object
 
-``` kgrid run ```
+``` kgrid extract ```
 
-To start the activator on a different port (Default port: 8083), use
+To extract using legacy model, use option `-l`
 
-``` kgrid run -p <port>```
+If not using local template, the template will be downloaded from GitHub
 
-For development mode, option `--dev` will use the current working directory as the shelf root.
-
-To start the shelf only, use option `--shelfonly`
-
-
-Note: If the activator/shelf starts at a different port, you may need to start a new terminal to run other Kgrid CLI commands.
 
 
 
@@ -78,14 +105,6 @@ To list  the knowledge objects on the shelf, use option `-s`
 
 To View a knowledge object on the shelf, use option `--ko <arkid>`
 
-
-### Extract a legacy knowledge object
-
-``` kgrid extract ```
-
-To extract using legacy model, use option `-l`
-
-If not using local template, the template will be downloaded from GitHub
 
 
 ### Upload a knowledge object zip file to the shelf

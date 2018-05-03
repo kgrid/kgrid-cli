@@ -29,7 +29,6 @@ var tmp = 'tmp'
 var dest = koid.replace(/[\/:]/g, '-')
 var gittemplate='kgrid/ko-templates'
 var src=path.join(tmp,template)
-var prop = {'template':'','project':'','object':'','version':'','adapters':[]}
 
 inquirer.prompt([{
         type: 'input',
@@ -57,24 +56,23 @@ inquirer.prompt([{
           template=answers.templatetype
           localtemplatedir = answers.localtemplatedir
         }
-        fs.pathExists(answers.srcfile, (err, exists)=>{
+        file=answers.srcfile
+        fs.pathExists(file, (err, exists)=>{
           if(exists){
             var array = file.split('.')
             koid=array[0]
             dest = koid.replace(/[\/:]/g, '-')
-        if(program.legacy){
-          console.log('Start extracting '+answers.srcfile+' into legacy template ...')
-          extractinglegacytolegacy(answers.srcfile)
-        }else {
-          console.log('Start extracting '+answers.srcfile+' ...')
-          // extractinglegacy(answers.srcfile)
-          extractlegacy(answers.srcfile)
+            if(program.legacy){
+              console.log('Start extracting '+file+' into legacy template ...')
+              extractinglegacytolegacy(file)
+            }else {
+              console.log('Start extracting '+file+' ...')
+              extractlegacy(file)
+            }
+          }else {
+            console.log('The file is not found. Please check the path and try again.')
           }
-        }else {
-          console.log('The file is not found. Please check the path and try again.')
-        }
-
-      })
+        })
     })
 
 function extractinglegacytolegacy(srcfile){
@@ -125,6 +123,7 @@ function extractlegacy(srcfile){
       ver=myobject.metadata.version
     }
   }
+  var fn = myobject.payload.functionName
   var payload = myobject.payload.content
   var enginetype= myobject.payload.engineType.toUpperCase()
   switch(enginetype){
@@ -136,20 +135,24 @@ function extractlegacy(srcfile){
       break;
   }
   dest='target/'+koid+'/'+ver
-  var input=myobject.inputMessage
-  var output = myobject.outputMessage
+  // console.log(dest)
+
+  var iospec = {}
+  iospec.inputMessage = myobject.inputMessage
+  iospec.outputMessage = myobject.outputMessage
+
   console.log("Object ID: "+koid)
   console.log("Version: "+ver)
-  fs.ensureDir('target').then(() => {
+  fs.ensureDir(dest).then(() => {
     console.log('Creating template ...')
     initproject(localtemplatedir!='', function(){
       console.log('Extracting top-level metadata ...')
       fs.writeFileSync(dest+'/metadata.json',JSON.stringify(metadata))
       console.log('Extracting payload code ...')
-      fs.writeFileSync(dest+'/models/resource/payload.'+payloadext,payload)
+      fs.writeFileSync(dest+'/models/resource/'+fn+'.'+payloadext,payload)
       console.log('Extracting I/O specifications ...')
-      fs.writeFileSync(dest+'/models/service/input.xml',input)
-      fs.writeFileSync(dest+'/models/service/output.xml',output)
+      fs.writeFileSync(dest+'/models/service/iospec.json',iospec)
+      // fs.writeFileSync(dest+'/models/service/output.xml',output)
       console.log('Extraction Complete!')
     })
   }).catch(err=>{

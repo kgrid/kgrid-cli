@@ -6,8 +6,8 @@ const path=require('path')
 
 
 var prop= JSON.parse(fs.readFileSync('project.json', 'utf8'))
-var packfile=prop.object
-var srcpath = prop.object+'/'
+var packfile=prop.objects[0].id
+var srcpath = packfile+'/'
 
 /* Here are the code for hand picking the files/folders to be included in the zip file*/
 var srcdirectory = path.join(srcpath,'**/*')

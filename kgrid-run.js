@@ -17,6 +17,7 @@ program
   .option('--shelfonly','Start shelf gateway only')
   .option('--adapteronly','Start adapter gateway only')
   .option('--dev','Run in development mode')
+  .option('--prod','Run in production mode')
 	.parse(process.argv)
 
 var port = process.env.KGRID_ACTIVATOR_PORT || 8083
@@ -24,7 +25,11 @@ var activator_options=' --activator.home=runtime --activator.shelf.path=./'
 var adapter_options=' --activator.home=runtime --activator.shelf.path=./'
 var shelf_options=' --shelf.location=./shelf/'
 var options=''
-if(program.dev) {
+
+//To run in runtime folder
+const runtime='./'
+
+if(!program.prod) {
   if(program.shelfonly){
     options=shelf_options
   }else if(program.adapteronly){
@@ -42,24 +47,24 @@ if(process.platform === "win32") {
 } else {
 
 }
-//To run at project folder
-// const toolpath='./runtime/'
-// const upper=''
-//To run in runtime folder
-const toolpath='./'
-const upper ='../'
-if(!exists(upper+'project.json')){
-  console.log('Please run kgrid install and then try again.')
+
+
+if(!exists(runtime+'manifest.json')){
+  if(!program.prod){
+    console.log('Please navigate to runtime folder by `cd runtime` and try again.')
+  }else {
+    console.log('Please run kgrid setup and then try again.')
+  }
 } else {
 
-  var prop=JSON.parse(fs.readFileSync(upper+'project.json', 'utf8'))
+  var prop=JSON.parse(fs.readFileSync(runtime+'manifest.json', 'utf8'))
   adapters=prop.adapters
-  var activatorfile = toolpath + prop.activator.filename
-  var shelfgatewayfile = toolpath + prop.shelf.filename
+  var activatorfile = runtime + prop.activator.filename
+  var shelfgatewayfile = runtime + prop.shelf.filename
   var adapters = prop.adapters.map(function(e){
     return e.filename}).filter(function(e){return e.includes('gateway')})
   // console.log(adapters)
-  var adapterfile = toolpath + 'adapters/'+ adapters[0]
+  var adapterfile = runtime + 'adapters/'+ adapters[0]
   if(program.shelfonly){
     if(!exists(shelfgatewayfile)){
       console.log('Cannot find the shelf gateway file. Please run kgrid install and then try again.')

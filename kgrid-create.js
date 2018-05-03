@@ -50,9 +50,7 @@ if (program.args.length<2 && program.auto) {
   }
   if (program.args[2]!=null) {
     object=program.args[2]
-  } else {
-    object=project
-  }
+  } 
 
   var inx=choices.indexOf(template)
   if(program.auto){

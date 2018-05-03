@@ -121,26 +121,27 @@ if(!exists(runtime+'manifest.json')){
   if(!exists(activatorfile)){
     console.log('Cannot find the activator file. Please run kgrid install and then try again.')
   } else {
-    request.get('http://localhost:'+port+'/health')
-       .end(function(err,res){
-            if(res==null){
-              console.log('Starting Activator...')
-              child=exec('java -jar '+activatorfile+' --server.port='+port+options,
-                    function (error, stdout, stderr){
-                        console.log('Output -> ' + stdout);
-                        if(error !== null){
-                          console.log("Error -> "+error);
-                        }
-                      })
-                      child.stdout.on('data', (data) => {
-                        console.log(`${data}`)
-                        })
-
-            }else {
-							console.log('There is one activator running on Port '+port+'.')
-							console.log('Your knowledge object operation will be directed to this instance.')
-            }
-    })
+    // request.get('http://localhost:'+port+'/health')
+    //    .end(function(err,res){
+    //         if(res==null){
+    //           console.log('Starting Activator...')
+    //           child=exec('java -jar '+activatorfile+' --server.port='+port+options,
+    //                 function (error, stdout, stderr){
+    //                     console.log('Output -> ' + stdout);
+    //                     if(error !== null){
+    //                       console.log("Error -> "+error);
+    //                     }
+    //                   })
+    //                   child.stdout.on('data', (data) => {
+    //                     console.log(`${data}`)
+    //                     })
+    //
+    //         }else {
+		// 					console.log('There is one activator running on Port '+port+'.')
+		// 					console.log('Your knowledge object operation will be directed to this instance.')
+    //         }
+    // })
+    console.log('Activator is under development. Please use `--shelfonly` to start shelf or use `--adapteronly` to start adapter gateway.')
   }
 }
 }

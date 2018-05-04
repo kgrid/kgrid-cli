@@ -49,7 +49,7 @@ if(exists('project.json')){
   if(kolist.length>0){
     kolist.forEach(function(e){
       manifestjson.objects.push(e)
-      kopaths.push(srcpath+'\\'+e.id+'\\'+e.version)
+      kopaths.push(srcpath+pathsep+e.id+pathsep+e.version)
       console.log('Found Knowledge Object: '+ e.id+'-'+e.version)
     })
     ready =true
@@ -60,7 +60,7 @@ if(exists('project.json')){
   if(kodeplist.length>0){
     kodeplist.forEach(function(e){
       manifestjson.objects.push(e)
-      kopaths.push(srcpath+'\\'+e.id+'\\'+e.version)
+      kopaths.push(srcpath+pathsep+e.id+pathsep+e.version)
       console.log('Found Dependency Knowledge Object: '+ e.id+'-'+e.version)
     })
   }else{
@@ -77,6 +77,7 @@ if(exists('project.json')){
       if(p.length==4){
         b=true
       }
+
       return b
     })
     kolist=[]

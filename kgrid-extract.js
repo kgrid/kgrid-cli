@@ -136,7 +136,7 @@ function extractlegacy(srcfile){
   }
   dest='target/'+koid+'/'+ver
   // console.log(dest)
-
+  var resfile = fn+'.'+payloadext
   var iospec = {}
   iospec.inputMessage = myobject.inputMessage
   iospec.outputMessage = myobject.outputMessage
@@ -149,7 +149,13 @@ function extractlegacy(srcfile){
       console.log('Extracting top-level metadata ...')
       fs.writeFileSync(dest+'/metadata.json',JSON.stringify(metadata))
       console.log('Extracting payload code ...')
-      fs.writeFileSync(dest+'/models/resource/'+fn+'.'+payloadext,payload)
+      var resmeta = fs.readFileSync(dest+'/models/resource/metadata.json')
+      // fs.unlink(dest+'/models/resource/metadata.json',err=>{})
+      fs.unlink(dest+'/models/resource/welcome.js',err=>{})
+      resmeta.list=[]
+      resmeta.list.push({filename:resfile})
+      fs.writeFileSync(dest+'/models/resource/metadata.json',resmeta)
+      fs.writeFileSync(dest+'/models/resource/'+resfile,payload)
       console.log('Extracting I/O specifications ...')
       fs.writeFileSync(dest+'/models/service/iospec.json',iospec)
       // fs.writeFileSync(dest+'/models/service/output.xml',output)

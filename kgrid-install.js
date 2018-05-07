@@ -1,15 +1,14 @@
 #!/usr/bin/env node
 
-var download = require('download-git-repo')
+// var download = require('download-git-repo')
 const downloadurl = require('download');
-var program = require('commander')
-var path=require('path')
+const program = require('commander')
+const path=require('path')
 const fs=require('fs-extra')
 const ncp=require('ncp').ncp
 const exists = require('fs').existsSync
-const jsonpath = require('jsonpath')
+// const jsonpath = require('jsonpath')
 const klawSync = require('klaw-sync')
-const BASE_URL = 'http://localhost';
 var template = 'kotemplate'
 var gittemplate='kgrid/ko-templates'
 var adapters = []
@@ -28,7 +27,7 @@ var kopath = ''
 var kopaths=[]
 var runtime=''
 if(!program.prod) {
-  runtime='runtime/'
+  runtime='activator/'
 }else{
   runtime='./'
 }
@@ -64,7 +63,7 @@ function loadkotoshelf(kopath) {
         if(err!=null){
           console.log(err)
         }else {
-          console.log('Successfully loaded Knowledge Object '+kopath+' to runtime shelf.')
+          console.log('Successfully loaded Knowledge Object '+kopath+' to activator shelf.')
         }
       })
     }else {
@@ -88,13 +87,13 @@ function downloadandinstall() {
   var act_entry=prop.activator
   var fn = 	runtime+'/'+act_entry.filename
   if(!exists(fn)){
-    console.log('Downloading activator ...')
+    console.log('Downloading '+act_entry.filename+ '...')
     promises.push(downloadurl(act_entry.download_url+act_entry.filename,runtime))
   }
   var shelf_entry=prop.shelf
   var fn_shelf = 	runtime+'/'+shelf_entry.filename
   if(!exists(fn_shelf)){
-      console.log('Downloading shelf gateway ...')
+      console.log('Downloading '+shelf_entry.filename+'...')
       promises.push(downloadurl(shelf_entry.download_url+shelf_entry.filename,runtime))
   }
   adapters.forEach(function(e){

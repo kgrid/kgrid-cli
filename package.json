@@ -1,6 +1,6 @@
 {
   "name": "kgrid-cli",
-  "version": "0.0.3",
+  "version": "0.0.5",
   "description": "A command-line tool for Kgrid workbench",
   "main": "index.js",
   "keywords": [
@@ -13,18 +13,23 @@
     "kgrid": "./kgrid.js"
   },
   "dependencies": {
+    "chalk": "^2.4.1",
     "commander": "^2.14.1",
     "download": "^6.2.5",
     "download-git-repo": "^1.0.2",
+    "figures": "^2.0.0",
     "fs-extra": "^5.0.0",
     "gulp": "^3.9.1",
     "gulp-zip": "^4.1.0",
     "inquirer": "^5.1.0",
     "jsonpath": "^1.0.0",
     "klaw-sync": "^3.0.2",
+    "lodash": "^4.17.10",
     "minimist": "^1.2.0",
     "moment": "^2.21.0",
+    "multispinner": "^0.2.1",
     "ncp": "^2.0.0",
+    "ora": "^2.1.0",
     "prettyjson": "^1.2.1",
     "superagent": "^3.8.2"
   }

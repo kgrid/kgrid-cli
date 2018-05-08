@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 const program = require('commander')
 const inquirer = require('inquirer')
-const download = require('download-git-repo')
+const downloadgit = require('download-git-repo')
 const path = require('path')
 const fs = require('fs-extra')
 const ncp = require('ncp').ncp
@@ -168,7 +168,7 @@ function extractlegacy (srcfile) {
 
 function initproject (local, callback) {
   if (!local) {
-    download(gittemplate, tmp, err => {
+    downloadgit(gittemplate, tmp, err => {
 		  if (err != null) {
 		    console.log(err)
 		  } else {

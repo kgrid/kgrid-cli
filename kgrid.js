@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 const program = require('commander')
+const _ = require('lodash');
+const chalk = require('chalk')
 
 program
   .version('0.0.5')
@@ -14,3 +16,11 @@ program
   .command('extract [filename]', 'extract the legacy KO ')
   // .command('login','log in to Kgrid library2')
   .parse(process.argv)
+
+  const subCmd = _.head(program.args);
+  const cmds = _.map(program.commands, '_name');
+
+  if (!_.includes(cmds, subCmd)) {
+    console.log(chalk.white.inverse('Error')+' Unkown Command: '+subCmd)
+    program.help();
+  }

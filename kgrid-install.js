@@ -1,14 +1,16 @@
 #!/usr/bin/env node
 
-// var download = require('download-git-repo')
-const downloadurl = require('download');
+const download = require('download');
 const program = require('commander')
 const path=require('path')
 const fs=require('fs-extra')
+const ora = require('ora')
 const ncp=require('ncp').ncp
 const exists = require('fs').existsSync
-// const jsonpath = require('jsonpath')
 const klawSync = require('klaw-sync')
+const figures = require('figures');
+var Multispinner = require('multispinner')
+
 var template = 'kotemplate'
 var gittemplate='kgrid/ko-templates'
 var adapters = []
@@ -35,14 +37,22 @@ if(exists(runtime+'manifest.json')){
   prop=JSON.parse(fs.readFileSync(runtime+'manifest.json', 'utf8'))
   adapters=prop.adapters
   kopaths=prop.objects
-  if(!program.prod){
-    kopaths.forEach(function(e){
-      loadkotoshelf(e.id)
-    })
-  }else {
-    // console.log('The function to load remote knowledge objects will be implemented in the future release.')
-  }
-  downloadandinstall()
+  // if(!program.prod){
+  //   kopaths.forEach(function(e){
+  //     loadkotoshelf(e.id)
+  //   })
+  // }else {
+  //   // console.log('The function to load remote knowledge objects will be implemented in the future release.')
+  // }
+  downloadandinstall(function(){
+    if(!program.prod){
+      kopaths.forEach(function(e){
+        loadkotoshelf(e.id)
+      })
+    }else {
+      // console.log('The function to load remote knowledge objects will be implemented in the future release.')
+    }
+  })
 } else {
     if(!program.prod){
       console.log('manifest.json not found. Please run `kgrid setup` and then try again.')
@@ -73,7 +83,7 @@ function loadkotoshelf(kopath) {
   })
 }
 
-function downloadandinstall() {
+function downloadandinstall(cb) {
   fs.ensureDir(runtime, err => {
 					if(err!=null){
 					   console.log(err)
@@ -84,38 +94,85 @@ function downloadandinstall() {
 					   }
 					})
   var promises = []
+  var spinnerarray = []
+  var urlarray=[]
   var act_entry=prop.activator
   var fn = 	runtime+'/'+act_entry.filename
   if(!exists(fn)){
-    console.log('Downloading '+act_entry.filename+ '...')
-    promises.push(downloadurl(act_entry.download_url+act_entry.filename,runtime))
+    spinnerarray.push(act_entry.filename)
+    urlarray.push(act_entry.download_url+act_entry.filename)
   }
   var shelf_entry=prop.shelf
   var fn_shelf = 	runtime+'/'+shelf_entry.filename
   if(!exists(fn_shelf)){
-      console.log('Downloading '+shelf_entry.filename+'...')
-      promises.push(downloadurl(shelf_entry.download_url+shelf_entry.filename,runtime))
+      spinnerarray.push(shelf_entry.filename)
+      urlarray.push(shelf_entry.download_url+shelf_entry.filename)
   }
   adapters.forEach(function(e){
     if(e.name!=''){
           var bl = runtime+'/adapters/'+e.filename
           if(!exists(bl)){
-            console.log('Downloading '+e.filename+'...')
-            promises.push(downloadurl(e.download_url+e.filename,runtime+'/adapters'))
+            spinnerarray.push(e.filename)
+            urlarray.push(e.download_url+e.filename)
           }
         }
       })
+
+  var multispinner = null
+  if(spinnerarray.length>0){
+    multispinner = new Multispinner(spinnerarray, {
+      preText: 'Downloading',
+      color: {
+        incomplete: 'yellow'
+      },
+      symbol: {
+        success: figures.tick,
+        error: figures.cross
+      }
+    })
+  }
+  if(!exists(fn)){
+    promises.push(downloadkgridcomponent(act_entry.download_url+act_entry.filename,runtime, act_entry.filename, multispinner))
+  }
+  if(!exists(fn_shelf)){
+      promises.push(downloadkgridcomponent(shelf_entry.download_url+shelf_entry.filename,runtime, shelf_entry.filename, multispinner))
+
+  }
+  adapters.forEach(function(e){
+    if(e.name!=''){
+          var bl = runtime+'/adapters/'+e.filename
+          if(!exists(bl)){
+            promises.push(downloadkgridcomponent(e.download_url+e.filename,runtime+'/adapters', e.filename, multispinner))
+          }
+        }
+      })
+
   if(promises.length>0){
     Promise.all(promises).then(()=>{
-      if(promises.length ==1){
-        console.log(promises.length+' file downloaded.')
-      }else {
-        console.log(promises.length+' files downloaded.')
-      }
+      multispinner.on('done', function(){
+        if(promises.length ==1){
+          console.log(promises.length+' file downloaded.')
+        }else {
+          console.log(promises.length+' files downloaded.')
+        }
+        cb()
+      })
+
     },err=>{
       console.log(err)
     })
   }else {
     console.log('All needed files are already installed.')
   }
+}
+
+function downloadkgridcomponent(url, tgt, spinnerID, spinners) {
+  download(url, tgt).then(success=>{
+    spinners.success(spinnerID)
+    return [spinnerID, success]
+  })
+  .catch(err=>{
+    spinners.error(spinnerID)
+     return [spinnerID, err]
+  })
 }

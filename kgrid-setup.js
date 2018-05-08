@@ -136,7 +136,7 @@ if (ready) {
     if (err != null) {
       console.log(err)
     } else {
-      fs.writeFileSync(runtime + 'manifest.json', JSON.stringify(manifestjson))
+      fs.writeFileSync(runtime + 'manifest.json', JSON.stringify(manifestjson, null, 2))
     }
   })
 }

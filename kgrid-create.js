@@ -1,6 +1,5 @@
 #!/usr/bin/env node
-const download = require('download-git-repo')
-// const downloadurl = require('download')
+const downloadgit = require('download-git-repo')
 const program = require('commander')
 const path = require('path')
 const inquirer = require('inquirer')
@@ -9,6 +8,7 @@ const ncp = require('ncp').ncp
 const exists = require('fs').existsSync
 const minimist = require('minimist')
 const moment = require('moment')
+
 program
   .name('kgrid create')
   .description('This will initialize the knowledge object based on the specified template. \n\n  If object-name is omitted, the object will have the same name as project-name.\n\n  Use kgrid list -t to find the available templates. \n\n  Example:\n\n        kgrid create\n\n           or\n\n        kgrid create -a jslegacy myproject 99999-trial\n\n')
@@ -197,7 +197,7 @@ function initproject (local) {
     dest = object.replace(/[\/:]/g, '-')
   }
   if (!local) {
-    download(gittemplate, tmp, err => {
+    downloadgit(gittemplate, tmp, err => {
 		  if (err != null) {
 		    console.log(err)
 		  } else {
@@ -236,17 +236,14 @@ function copytemplate (local) {
           metadata.metadata.createdOn = moment().valueOf()
           metadata.metadata.lastModified = moment().valueOf()
           metadata.metadata.arkId.arkId = 'ark:/' + dest.replace('-', '\/')
-          // console.log(JSON.stringify(metadata))
           fs.writeFileSync(project + '/' + dest + '/' + version + '/metadata.json', JSON.stringify(metadata))
           var p = JSON.parse(fs.readFileSync(src_path + '/project.json'))
           prop.template = template
           prop.project = project
-          // prop.object=dest
-          // prop.version=version
           prop.objects = []
           prop.objects.push({'id': dest, 'version': version})
           prop.kodependencies = []
-          fs.writeFileSync(project + '/project.json', JSON.stringify(prop))
+          fs.writeFileSync(project + '/project.json', JSON.stringify(prop, null, 4))
           console.log('Project ' + project + 'with Knowledge Object ' + object + ' has been successfully created.\n ')
           console.log('Go to the project folder by `cd ' + project + '`')
           if (!local) fs.remove(tmp, err => { if (err) console.log(err) })

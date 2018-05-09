@@ -13,7 +13,7 @@ const minimist = require('minimist')
 var options = { noColor: false }
 program
   .name('kgrid list')
-  .description('List components. \n\n  Example:\n\n      kgrid list -s  \n\n      kgrid list --ko=ark:/hello/world')
+  .description('List components. \n\n  Example:\n\n      kgrid list -s  \n\n      kgrid list --ko=hello-world')
   .usage('[options]')
   .option('-t, --template', 'template list')
   .option('-s, --shelf', 'shelf ko list')

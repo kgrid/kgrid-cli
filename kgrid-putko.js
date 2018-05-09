@@ -22,7 +22,7 @@ if (program.args.length == 0) {
   var index = filename.lastIndexOf('/')
   var l = filename.length
   var s = filename.slice(index + 1, l)
-  arkid = 'ark:/' + s.replace('.zip', '').replace('-', '/')
+  arkid = s.replace('.zip', '').replace('-', '/')
   // console.log(arkid)
   if (fs.lstatSync(filename).isDirectory()) {
     console.log('Please specified a ZIP file.')

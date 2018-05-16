@@ -226,7 +226,8 @@ function copytemplate (local) {
           console.error(err)
         } else {
           var metadata = JSON.parse(fs.readFileSync(project + '/' + dest + '/' + version + '/metadata.json', 'utf8'))
-          metadata.version = version
+          if(template=='template'){
+          // metadata.version = version
           metadata.metadata.version = version
           metadata.metadata.title = title
           metadata.metadata.owners = owners
@@ -236,7 +237,18 @@ function copytemplate (local) {
           metadata.metadata.createdOn = moment().valueOf()
           metadata.metadata.lastModified = moment().valueOf()
           metadata.metadata.arkId.arkId = 'ark:/' + dest.replace('-', '\/')
-          fs.writeFileSync(project + '/' + dest + '/' + version + '/metadata.json', JSON.stringify(metadata))
+  }else {
+          metadata['@graph'][0].version = version
+          metadata['@graph'][0].title = title
+          metadata['@graph'][0].owners = owners
+          metadata['@graph'][0].contributors = contributors
+          metadata['@graph'][0].description = description
+          metadata['@graph'][0].fedoraPath = dest
+          metadata['@graph'][0].created = moment().valueOf()
+          metadata['@graph'][0].lastModified = moment().valueOf()
+          metadata['@graph'][0].arkId = 'ark:/' + dest.replace('-', '\/')
+  }
+          fs.writeFileSync(project + '/' + dest + '/' + version + '/metadata.json', JSON.stringify(metadata, null,2))
           var p = JSON.parse(fs.readFileSync(src_path + '/project.json'))
           prop.template = template
           prop.project = project

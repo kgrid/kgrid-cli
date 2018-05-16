@@ -110,9 +110,9 @@ function extractinglegacytolegacy (srcfile) {
 
 function extractlegacy (srcfile) {
   var data = fs.readFileSync(srcfile, 'utf8')
+  // console.log(data)
   var myobject = JSON.parse(data)
-  var metadata = {'metadata': {}}
-  metadata.metadata = myobject.metadata
+
   if (myobject.metadata.arkId) {
     var ark = myobject.metadata.arkId.replace('ark:\/', '')
     koid = ark.replace(/[\/:]/g, '-')
@@ -135,29 +135,43 @@ function extractlegacy (srcfile) {
       break
   }
   dest = 'target/' + koid + '/' + ver
-  // console.log(dest)
+
   var resfile = fn + '.' + payloadext
-  var iospec = {}
-  iospec.inputMessage = myobject.inputMessage
-  iospec.outputMessage = myobject.outputMessage
+  // var iospec = {}
+  // iospec.inputMessage = myobject.inputMessage
+  // iospec.outputMessage = myobject.outputMessage
 
   console.log('Object ID: ' + koid)
   console.log('Version: ' + ver)
   fs.ensureDir(dest).then(() => {
     console.log('Creating template ...')
     initproject(localtemplatedir != '', function () {
+      var metadata =  JSON.parse(fs.readFileSync( src+'/ko' + '/metadata.json', 'utf8'))
+      // metadata.metadata = myobject.metadata
+      metadata['@graph'][0].version = myobject.metadata.version
+      metadata['@graph'][0].title = myobject.metadata.title
+      metadata['@graph'][0].owners = myobject.metadata.owners
+      metadata['@graph'][0].contributors = myobject.metadata.contributors
+      metadata['@graph'][0].description = myobject.metadata.description
+      metadata['@graph'][0].fedoraPath = koid
+      metadata['@graph'][0].arkId = 'ark:/' + koid
       console.log('Extracting top-level metadata ...')
-      fs.writeFileSync(dest + '/metadata.json', JSON.stringify(metadata))
+      fs.writeFileSync(dest + '/metadata.json', JSON.stringify(metadata, null,2))
+      var model_metadata =  JSON.parse(fs.readFileSync( src+'/ko' + '/models/metadata.json', 'utf8'))
+      model_metadata['@graph'][0].functionName = myobject.payload.functionName
+      model_metadata['@graph'][0].adapterType = myobject.payload.engineType.toUpperCase()
+
+      fs.writeFileSync(dest + '/models/metadata.json', JSON.stringify(model_metadata, null,2))
       console.log('Extracting payload code ...')
-      var resmeta = fs.readFileSync(dest + '/models/resource/metadata.json')
+      // var resmeta = fs.readFileSync(dest + '/models/resource/metadata.json')
       // fs.unlink(dest+'/models/resource/metadata.json',err=>{})
       fs.unlink(dest + '/models/resource/welcome.js', err => {})
-      resmeta.list = []
-      resmeta.list.push({filename: resfile})
-      fs.writeFileSync(dest + '/models/resource/metadata.json', resmeta)
+      // resmeta.list = []
+      // resmeta.list.push({filename: resfile})
+      // fs.writeFileSync(dest + '/models/resource/metadata.json', resmeta)
       fs.writeFileSync(dest + '/models/resource/' + resfile, payload)
-      console.log('Extracting I/O specifications ...')
-      fs.writeFileSync(dest + '/models/service/iospec.json', iospec)
+      // console.log('Extracting I/O specifications ...')
+      // fs.writeFileSync(dest + '/models/service/iospec.json', iospec)
       // fs.writeFileSync(dest+'/models/service/output.xml',output)
       console.log('Extraction Complete!')
     })
@@ -187,6 +201,7 @@ function copytemplate (local, callback) {
     if (err != null) {
       console.log(err)
     } else {
+      console.log(dest)
       ncp(source, dest, function (err) {
         if (err != null) {
           console.error(err)

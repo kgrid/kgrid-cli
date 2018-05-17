@@ -13,7 +13,7 @@ var Multispinner = require('multispinner')
 
 var template = 'kotemplate'
 var gittemplate='kgrid/ko-templates'
-var adapters = []
+var files = []
 var activator = {"name":"", "version":"","filename":"","download_url":""}
 var shelf = {"name":"", "version":"","filename":"","download_url":""}
 program
@@ -35,7 +35,7 @@ if(!program.prod) {
 }
 if(exists(runtime+'manifest.json')){
   prop=JSON.parse(fs.readFileSync(runtime+'manifest.json', 'utf8'))
-  adapters=prop.adapters
+  files=prop.files
   kopaths=prop.objects
   // if(!program.prod){
   //   kopaths.forEach(function(e){
@@ -88,7 +88,7 @@ function downloadandinstall(cb) {
 					if(err!=null){
 					   console.log(err)
 					} else{
-					   fs.ensureDir(runtime+'/adapters', err => {
+					   fs.ensureDir(runtime+'adapters', err => {
 								if(err!=null){console.log(err) }
               })
 					   }
@@ -96,21 +96,9 @@ function downloadandinstall(cb) {
   var promises = []
   var spinnerarray = []
   var urlarray=[]
-  var act_entry=prop.activator
-  var fn = 	runtime+'/'+act_entry.filename
-  if(!exists(fn)){
-    spinnerarray.push(act_entry.filename)
-    urlarray.push(act_entry.download_url+act_entry.filename)
-  }
-  var shelf_entry=prop.shelf
-  var fn_shelf = 	runtime+'/'+shelf_entry.filename
-  if(!exists(fn_shelf)){
-      spinnerarray.push(shelf_entry.filename)
-      urlarray.push(shelf_entry.download_url+shelf_entry.filename)
-  }
-  adapters.forEach(function(e){
+  files.forEach(function(e){
     if(e.name!=''){
-          var bl = runtime+'/adapters/'+e.filename
+          var bl = runtime+e.target+e.filename
           if(!exists(bl)){
             spinnerarray.push(e.filename)
             urlarray.push(e.download_url+e.filename)
@@ -131,18 +119,11 @@ function downloadandinstall(cb) {
       }
     })
   }
-  if(!exists(fn)){
-    promises.push(downloadkgridcomponent(act_entry.download_url+act_entry.filename,runtime, act_entry.filename, multispinner))
-  }
-  if(!exists(fn_shelf)){
-      promises.push(downloadkgridcomponent(shelf_entry.download_url+shelf_entry.filename,runtime, shelf_entry.filename, multispinner))
-
-  }
-  adapters.forEach(function(e){
+  files.forEach(function(e){
     if(e.name!=''){
-          var bl = runtime+'/adapters/'+e.filename
+          var bl = runtime+e.target+e.filename
           if(!exists(bl)){
-            promises.push(downloadkgridcomponent(e.download_url+e.filename,runtime+'/adapters', e.filename, multispinner))
+            promises.push(downloadkgridcomponent(e.download_url+e.filename,runtime+e.target, e.filename, multispinner))
           }
         }
       })

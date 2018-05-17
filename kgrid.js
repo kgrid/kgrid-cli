@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 const program = require('commander')
-const _ = require('lodash');
+const _ = require('lodash')
 const chalk = require('chalk')
 
 program
@@ -12,15 +12,15 @@ program
   .command('run [options] [port]', 'start the activator')
   .command('list [options]', 'listing utility')
   .command('package [options]', 'package the knowledge object')
-  .command('putko <ko>','upload the specified knowledge object to the shelf')
+  .command('putko <ko>', 'upload the specified knowledge object to the shelf')
   .command('extract [filename]', 'extract the legacy KO ')
   // .command('login','log in to Kgrid library2')
   .parse(process.argv)
 
-  const subCmd = _.head(program.args);
-  const cmds = _.map(program.commands, '_name');
+const subCmd = _.head(program.args)
+const cmds = _.map(program.commands, '_name')
 
-  if (!_.includes(cmds, subCmd)) {
-    console.log(chalk.white.inverse('Error')+' Unkown Command: '+subCmd)
-    program.help();
-  }
+if (!_.includes(cmds, subCmd)) {
+  console.log(chalk.white.inverse('Error') + ' Unkown Command: ' + subCmd)
+  program.help()
+}

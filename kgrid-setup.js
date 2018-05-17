@@ -1,15 +1,16 @@
 #!/usr/bin/env node
 const program = require('commander')
 const path = require('path')
+const inquirer = require('inquirer')
 const pathsep =path.sep
 const fs = require('fs-extra')
 const exists = require('fs').existsSync
 const jsonpath = require('jsonpath')
 const klawSync = require('klaw-sync')
 const BASE_URL = process.env.KGRID_BASE_URL ||'http://localhost'
-var adapters = []
-var activator = {'name': '', 'version': '', 'filename': '', 'download_url': ''}
-var shelf = {'name': '', 'version': '', 'filename': '', 'download_url': ''}
+var files = []
+var activator = {'name': '', 'version': '', 'filename': '', 'download_url': '','target':''}
+var shelf = {'name': '', 'version': '', 'filename': '', 'download_url': '','target':''}
 var manifestjson = {}
 program
   .name('kgrid setup')
@@ -24,17 +25,41 @@ var kolist = []
 var kopaths = []
 var runtime = ''
 var ready = false
-
+var overwrite = false
 if (!program.prod) {
   runtime = 'activator/'
 } else {
   runtime = './'
 }
 manifestjson.objects = []
+if(exists('activator/manifest.json')){
+  inquirer.prompt([
+  {
+    type: 'confirm',
+    name: 'overwrite',
+    message: 'Manifest.json exists, Would you like to continue to overwrite? ',
+    default: false
+  }
+  ]).then(answers => {
+    overwrite = answers.overwrite
+    if(overwrite){
+      generateManifest()
+    }else {
+      console.log("`kgrid install` install Kgrid components using existing manifest.json.")
+    }
+  })
+}else {
+  generateManifest()
+}
+
+
+function generateManifest(){
 if (exists('project.json')) {
   prop = JSON.parse(fs.readFileSync('project.json', 'utf8'))
   kolist = prop.objects
   kodeplist = prop.kodependencies
+  activator = prop.activator
+  files.push(activator)
   if (kolist.length > 0) {
     kolist.forEach(function (e) {
       manifestjson.objects.push(e)
@@ -109,28 +134,18 @@ if (ready) {
     adapterlist.forEach(function (e) {
       e.forEach(function (el) {
         var entry = el.name + '-' + el.version + '-' + el.filename
-        adapterentrylist = adapters.map(function (e) { return e.name + '-' + e.version + '-' + e.filename })
+        adapterentrylist = files.map(function (e) { return e.name + '-' + e.version + '-' + e.filename })
         if (adapterentrylist.indexOf(entry) == -1) {
-          adapters.push(el)
+          files.push(el)
         }
       })
     })
-    var activatorlist = jsonpath.query(content, '$..activator')
-    if (activatorlist.length > 0) {
-      activator = activatorlist[0]
-    }
-    var shelflist = jsonpath.query(content, '$..shelf')
-    if (shelflist.length > 0) {
-      shelf = shelflist[0]
-    }
   })
-  adapters.forEach(function (e) {
-    console.log('Found adapter type: ' + e.name + '-' + e.version)
+  files.forEach(function (e) {
+    console.log('Found required component: ' + e.name + ' - ' + e.version)
   })
 
-  manifestjson.adapters = adapters
-  manifestjson.activator = activator
-  manifestjson.shelf = shelf
+  manifestjson.files = files
   console.log('Generating manifest.json ...')
   fs.ensureDir(runtime, err => {
     if (err != null) {
@@ -139,4 +154,5 @@ if (ready) {
       fs.writeFileSync(runtime + 'manifest.json', JSON.stringify(manifestjson, null, 2))
     }
   })
+}
 }

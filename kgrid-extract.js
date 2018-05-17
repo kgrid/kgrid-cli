@@ -22,7 +22,7 @@ var payloadext = 'js'
 const metadatafile = 'metadata.json'
 const basefile = 'base.json'
 
-var template = 'kotemplate'
+var template = 'template'
 var localtemplatedir = ''
 var koid = '99999-newko'
 var tmp = 'tmp'
@@ -147,19 +147,21 @@ function extractlegacy (srcfile) {
     console.log('Creating template ...')
     initproject(localtemplatedir != '', function () {
       var metadata =  JSON.parse(fs.readFileSync( src+'/ko' + '/metadata.json', 'utf8'))
-      // metadata.metadata = myobject.metadata
-      metadata['@graph'][0].version = myobject.metadata.version
-      metadata['@graph'][0].title = myobject.metadata.title
-      metadata['@graph'][0].owners = myobject.metadata.owners
-      metadata['@graph'][0].contributors = myobject.metadata.contributors
-      metadata['@graph'][0].description = myobject.metadata.description
-      metadata['@graph'][0].fedoraPath = koid
-      metadata['@graph'][0].arkId = 'ark:/' + koid
+      metadata.metadata = myobject.metadata
+      // metadata['@graph'][0].version = myobject.metadata.version
+      // metadata['@graph'][0].title = myobject.metadata.title
+      // metadata['@graph'][0].owners = myobject.metadata.owners
+      // metadata['@graph'][0].contributors = myobject.metadata.contributors
+      // metadata['@graph'][0].description = myobject.metadata.description
+      // metadata['@graph'][0].fedoraPath = koid
+      // metadata['@graph'][0].arkId = 'ark:/' + koid
       console.log('Extracting top-level metadata ...')
       fs.writeFileSync(dest + '/metadata.json', JSON.stringify(metadata, null,2))
       var model_metadata =  JSON.parse(fs.readFileSync( src+'/ko' + '/models/metadata.json', 'utf8'))
-      model_metadata['@graph'][0].functionName = myobject.payload.functionName
-      model_metadata['@graph'][0].adapterType = myobject.payload.engineType.toUpperCase()
+      // model_metadata['@graph'][0].functionName = myobject.payload.functionName
+      // model_metadata['@graph'][0].adapterType = myobject.payload.engineType.toUpperCase()
+      model_metadata.functionName = myobject.payload.functionName
+      model_metadata.adapterType = myobject.payload.engineType.toUpperCase()
 
       fs.writeFileSync(dest + '/models/metadata.json', JSON.stringify(model_metadata, null,2))
       console.log('Extracting payload code ...')

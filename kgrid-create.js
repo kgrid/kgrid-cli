@@ -30,7 +30,8 @@ var title = ''
 const choices = [
   'jslegacy',
   'pythonlegacy',
-  'kotemplate'
+  'kotemplate',
+  'ldtemplate'
 ]
 var tmp = 'tmp'
 var srccontainer = 'src'
@@ -226,7 +227,7 @@ function copytemplate (local) {
           console.error(err)
         } else {
           var metadata = JSON.parse(fs.readFileSync(project + '/' + dest + '/' + version + '/metadata.json', 'utf8'))
-          if(template=='template'){
+          if(template=='kotemplate'){
           // metadata.version = version
           metadata.metadata.version = version
           metadata.metadata.title = title

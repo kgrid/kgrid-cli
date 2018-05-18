@@ -56,7 +56,7 @@ Production mode, enabled with option `--prod`, which will generate `manifest.jso
 
 ``` kgrid install ```
 
-By default, it is development mode, `--dev`, which will download and install needed files in the runtime folder.
+By default, it is development mode, `--dev`, which will download and install needed files in the activator folder.
 
 Production mode, enabled with option `--prod`, which will download and install needed files in the working directory.
 
@@ -73,8 +73,6 @@ To start the activator on a different port (Default port: 8083), use
 To start the shelf only, use option `--shelfonly`
 
 To start the adapter gateway only, use option `--adapteronly`
-
-Note: At current development stage, you may need to change the working directory to runtime if applicable.
 
 Note: If the activator/shelf starts at a different port, you may need to start a new terminal to run other Kgrid CLI commands.
 

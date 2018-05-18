@@ -22,13 +22,13 @@ program
 	.parse(process.argv)
 
 var port = process.env.KGRID_ACTIVATOR_PORT || 8083
-var activator_options = ' --activator.home=activator --shelf.location=shelf'
+var activator_options = ' --shelf.location=activator/shelf'
 var adapter_options = ' --activator.home=activator --activator.shelf.path=./'
 var shelf_options = ' --shelf.location=./shelf/'
 var options = ''
 
 // To run in activator folder
-var runtime = './'
+var runtime = 'activator/'
 
 if (!program.prod) {
   if (program.shelfonly) {
@@ -36,7 +36,7 @@ if (!program.prod) {
   } else if (program.adapteronly) {
     options = adapter_options
   } else {
-    // options = activator_options
+    options = activator_options
   }
   // runtime='activator/'
 }

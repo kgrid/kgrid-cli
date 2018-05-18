@@ -143,7 +143,8 @@ function downloadandinstall(cb) {
       console.log(err)
     })
   }else {
-    console.log('All needed files are already installed.')
+    console.log('All needed Knowledge Grid components are already installed.')
+    cb()
   }
 }
 

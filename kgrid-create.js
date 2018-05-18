@@ -19,7 +19,9 @@ program
  	.parse(process.argv)
 
 var template = ''
+var simpleVersion = true
 var localtemplatedir = ''
+var localtemp = false
 var project = 'newproject'
 var object = '99999-newko'
 var version = 'v0.0.1'
@@ -72,7 +74,8 @@ if (program.args.length < 2 && program.auto) {
         type: 'confirm',
         name: 'localtemp',
         message: 'Would you like to use a template from your local folder? ',
-        default: false
+        default: localtemp,
+        when: !simpleVersion
       },
       {
         type: 'rawlist',
@@ -81,7 +84,7 @@ if (program.args.length < 2 && program.auto) {
         choices: choices,
         default: 2,
         when: function (answers) {
-          return !answers.localtemp
+          return !simpleVersion && !answers.localtemp
         }
       },
       {
@@ -91,7 +94,7 @@ if (program.args.length < 2 && program.auto) {
         choices: choices,
         default: inx,
         when: function (answers) {
-          return answers.localtemp
+          return answers.localtemp && !simpleVersion
         }
       },
       {
@@ -100,7 +103,7 @@ if (program.args.length < 2 && program.auto) {
         message: 'Local Template Directory:',
         default: process.cwd(),
         when: function (answers) {
-          return answers.localtemp
+          return answers.localtemp && !simpleVersion
         }
       },
       {
@@ -119,46 +122,57 @@ if (program.args.length < 2 && program.auto) {
         type: 'input',
         name: 'version',
         message: 'Version: ',
-        default: function (a) { return 'v0.0.1' }
+        default: function (a) { return 'v0.0.1' },
+        when: !simpleVersion
       },
       {
         type: 'input',
         name: 'title',
         message: 'Title: ',
-        default: function (a) { return 'Knowledge Object Title' }
+        default: function (a) { return 'Knowledge Object Title' },
+        when: !simpleVersion
       },
       {
         type: 'input',
         name: 'owners',
         message: 'Organization: ',
-        default: function (a) { return 'DLHS' }
+        default: function (a) { return 'DLHS' },
+        when: !simpleVersion
       },
       {
         type: 'input',
         name: 'contributors',
         message: 'Created by: ',
-        default: function (a) { return 'KGRID Team' }
+        default: function (a) { return 'KGRID Team' },
+        when: !simpleVersion
       },
       {
         type: 'input',
         name: 'description',
         message: 'Brief Description: ',
-        default: function (a) { return 'A new knowledge object.' }
+        default: function (a) { return 'A new knowledge object.' },
+        when: !simpleVersion
       }
     ]).then(answers => {
-      if (answers.localtemp) {
-        template = answers.templatetype
-        localtemplatedir = answers.localtemplatedir
-      } else {
-        template = answers.template
-      }
       project = answers.project
       object = answers.object
-      version = answers.version
-      owners = answers.owners
-      title = answers.title
-      contributors = answers.contributors
-      description = answers.description
+      template = choices[2]
+      if (!simpleVersion) {
+        localtemp = answer.localtemp
+        if (localtemp) {
+          template = answers.templatetype
+          localtemplatedir = answers.localtemplatedir
+        } else {
+          template = answers.template
+        }
+        project = answers.project
+        object = answers.object
+        version = answers.version
+        owners = answers.owners
+        title = answers.title
+        contributors = answers.contributors
+        description = answers.description
+      }
       checkproject(project)
     })
   } else {
@@ -217,7 +231,7 @@ function copytemplate (local) {
   } else {
     src_path = src
   }
-  var source = src_path + '/ko'
+  var source = src_path + '/hello-world/v0.0.1'
   fs.ensureDir(project + '/' + dest + '/' + version, err => {
     if (err != null) {
       console.log(err)
@@ -229,11 +243,13 @@ function copytemplate (local) {
           var metadata = JSON.parse(fs.readFileSync(project + '/' + dest + '/' + version + '/metadata.json', 'utf8'))
           if (template == 'kotemplate') {
           // metadata.version = version
-            metadata.metadata.version = version
-            metadata.metadata.title = title
-            metadata.metadata.owners = owners
-            metadata.metadata.contributors = contributors
-            metadata.metadata.description = description
+            if(!simpleVersion){
+              metadata.metadata.version = version
+              metadata.metadata.title = title
+              metadata.metadata.owners = owners
+              metadata.metadata.contributors = contributors
+              metadata.metadata.description = description
+            }
             metadata.metadata.arkId.fedoraPath = dest
             metadata.metadata.createdOn = moment().valueOf()
             metadata.metadata.lastModified = moment().valueOf()

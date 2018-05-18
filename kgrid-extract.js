@@ -146,7 +146,7 @@ function extractlegacy (srcfile) {
   fs.ensureDir(dest).then(() => {
     console.log('Creating template ...')
     initproject(localtemplatedir != '', function () {
-      var metadata =  JSON.parse(fs.readFileSync( src+'/ko' + '/metadata.json', 'utf8'))
+      var metadata =  JSON.parse(fs.readFileSync( src+'/hello-world/v0.0.1' + '/metadata.json', 'utf8'))
       metadata.metadata = myobject.metadata
       // metadata['@graph'][0].version = myobject.metadata.version
       // metadata['@graph'][0].title = myobject.metadata.title
@@ -157,7 +157,7 @@ function extractlegacy (srcfile) {
       // metadata['@graph'][0].arkId = 'ark:/' + koid
       console.log('Extracting top-level metadata ...')
       fs.writeFileSync(dest + '/metadata.json', JSON.stringify(metadata, null,2))
-      var model_metadata =  JSON.parse(fs.readFileSync( src+'/ko' + '/models/metadata.json', 'utf8'))
+      var model_metadata =  JSON.parse(fs.readFileSync( src+'/hello-world/v0.0.1' + '/models/metadata.json', 'utf8'))
       // model_metadata['@graph'][0].functionName = myobject.payload.functionName
       // model_metadata['@graph'][0].adapterType = myobject.payload.engineType.toUpperCase()
       model_metadata.functionName = myobject.payload.functionName
@@ -197,7 +197,7 @@ function initproject (local, callback) {
 }
 
 function copytemplate (local, callback) {
-  var source = src + '/ko'
+  var source = src + '/hello-world/v0.0.1'
   if (local) source = localtemplatedir
   fs.ensureDir(dest, err => {
     if (err != null) {

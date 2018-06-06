@@ -162,7 +162,7 @@ function extractlegacy (srcfile) {
       // metadata['@graph'][0].arkId = 'ark:/' + koid
       console.log('Extracting top-level metadata ...')
       fs.writeFileSync(dest + '/metadata.json', JSON.stringify(metadata, null,2))
-      var model_metadata =  JSON.parse(fs.readFileSync( src+'/hello-world/v0.0.1' + '/models/metadata.json', 'utf8'))
+      var model_metadata =  JSON.parse(fs.readFileSync( src+'/hello-world/v0.0.1' + '/model/metadata.json', 'utf8'))
       // model_metadata['@graph'][0].functionName = myobject.payload.functionName
       // model_metadata['@graph'][0].adapterType = myobject.payload.engineType.toUpperCase()
       model_metadata.functionName = myobject.payload.functionName
@@ -171,18 +171,18 @@ function extractlegacy (srcfile) {
       }else {
         model_metadata.adapterType = myobject.payload.engineType.toUpperCase()
       }
-      fs.writeFileSync(dest + '/models/metadata.json', JSON.stringify(model_metadata, null,2))
+      fs.writeFileSync(dest + '/model/metadata.json', JSON.stringify(model_metadata, null,2))
       console.log('Extracting payload code ...')
-      // var resmeta = fs.readFileSync(dest + '/models/resource/metadata.json')
-      // fs.unlink(dest+'/models/resource/metadata.json',err=>{})
-      fs.unlink(dest + '/models/resource/welcome.js', err => {})
+      // var resmeta = fs.readFileSync(dest + '/model/resource/metadata.json')
+      // fs.unlink(dest+'/model/resource/metadata.json',err=>{})
+      fs.unlink(dest + '/model/resource/welcome.js', err => {})
       // resmeta.list = []
       // resmeta.list.push({filename: resfile})
-      // fs.writeFileSync(dest + '/models/resource/metadata.json', resmeta)
-      fs.writeFileSync(dest + '/models/resource/' + resfile, payload)
+      // fs.writeFileSync(dest + '/model/resource/metadata.json', resmeta)
+      fs.writeFileSync(dest + '/model/resource/' + resfile, payload)
       // console.log('Extracting I/O specifications ...')
-      // fs.writeFileSync(dest + '/models/service/iospec.json', iospec)
-      // fs.writeFileSync(dest+'/models/service/output.xml',output)
+      // fs.writeFileSync(dest + '/model/service/iospec.json', iospec)
+      // fs.writeFileSync(dest+'/model/service/output.xml',output)
       console.log('Extraction Complete!')
     })
   }).catch(err => {

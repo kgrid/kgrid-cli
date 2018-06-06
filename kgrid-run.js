@@ -12,7 +12,7 @@ var child = null
 
 program
   .name('kgrid run')
-  .description('This will start the K-Grid activator.\n\n  Use the option -p to specify a port.\n\n  Example: \n\n      kgrid run --shelfonly --dev -p 8083')
+  .description('This will start the K-Grid activator.\n\n  Use the option -p to specify a port.\n\n  Example: \n\n      kgrid run ')
   .usage('[options]')
   .option('--port', 'Specify a different port')
   // .option('--shelfonly', 'Start shelf gateway only')
@@ -22,7 +22,7 @@ program
 	.parse(process.argv)
 
 var port = process.env.KGRID_ACTIVATOR_PORT || 8083
-var activator_options = ' --shelf.location=activator/shelf'
+var activator_options = ' --kgrid.shelf.cdostore.filesystem.location=activator/shelf'
 var adapter_options = ' --activator.home=activator --activator.shelf.path=./'
 var shelf_options = ' --shelf.location=./shelf/'
 var options = ''

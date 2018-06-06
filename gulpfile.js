@@ -3,8 +3,13 @@ const gulp = require('gulp')
 const zip = require('gulp-zip')
 const fs = require('fs-extra')
 const path = require('path')
+const exists = require('fs').existsSync
 
-var prop = JSON.parse(fs.readFileSync('project.json', 'utf8'))
+var prop = {}
+if(!exists('project.json')){
+
+} else {
+   prop = JSON.parse(fs.readFileSync('project.json', 'utf8'))
 var packfile = prop.objects[0].id
 var srcpath = packfile + '/'
 
@@ -21,3 +26,5 @@ gulp.task('zip', () => {
           console.log('Zip file created in the target folder!')
         })
 })
+
+}

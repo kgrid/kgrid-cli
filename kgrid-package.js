@@ -27,27 +27,31 @@ const metadatafile = 'metadata.json'
 const basefile = 'base.json'
 const project = path.basename(process.cwd())
 
-var prop = JSON.parse(fs.readFileSync('project.json', 'utf8'))
-var packfile = prop.objects[0].id
-var srcpath = packfile + '/'
-switch (prop.template) {
-  case 'jslegacy':
-    payloadext = 'js'
-    break
-  case 'pythonlegacy':
-    payloadext = 'py'
-    break
-}
-var isLegacy = prop.template.includes('legacy')
-if (program.legacy) {
-  if (isLegacy) {
-    packaginglegacy()
-  } else {
-    console.log('This knowledge Object cannot be packaged using -l for legacy option. Please remove the option and try again.')
-  }
+var prop = {}
+if(!exists('project.json')){
+  console.log('No Project.json found in the directoy.')
 } else {
-  if (isLegacy) {
-    console.log('This knowledge Object is using a legacy model. Though it can be packged as instructed, it won\'t be runnable in the activator.')
+  prop = JSON.parse(fs.readFileSync('project.json', 'utf8'))
+  var packfile = prop.objects[0].id
+  var srcpath = packfile + '/'
+  switch (prop.template) {
+    case 'jslegacy':
+      payloadext = 'js'
+      break
+    case 'pythonlegacy':
+      payloadext = 'py'
+      break
+    }
+    var isLegacy = prop.template.includes('legacy')
+    if (program.legacy) {
+      if (isLegacy) {
+        packaginglegacy()
+      } else {
+        console.log('This knowledge Object cannot be packaged using -l for legacy option. Please remove the option and try again.')
+      }
+    } else {
+      if (isLegacy) {
+        console.log('This knowledge Object is using a legacy model. Though it can be packged as instructed, it won\'t be runnable in the activator.')
     inquirer.prompt([{
       type: 'confirm',
       name: 'continue',
@@ -64,7 +68,7 @@ if (program.legacy) {
     gulp.start('zip')
   }
 }
-
+}
 function packaginglegacy () {
   srcpath = srcpath + prop.objects[0].version + '/'
   var data = fs.readFileSync(srcpath + basefile, 'utf8')

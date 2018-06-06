@@ -82,7 +82,7 @@ Note: If the activator/shelf starts at a different port, you may need to start a
 
 ``` kgrid package ```
 
-For legacy models, use
+For legacy model, use
 
 ``` kgrid package -l```
 

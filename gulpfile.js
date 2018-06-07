@@ -4,7 +4,6 @@ const zip = require('gulp-zip')
 const fs = require('fs-extra')
 const path = require('path')
 const exists = require('fs').existsSync
-
 var prop = {}
 if(!exists('project.json')){
 

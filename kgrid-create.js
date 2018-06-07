@@ -184,7 +184,7 @@ function checkproject (proj) {
   dest = project.replace(/[\/:]/g, '-')
   src = path.join(tmp, template)
   if (exists(proj)) {
-    console.log('The project name is in use. Continuing will overwrite the existing project.')
+    console.log('The project name is in use. Continuing will add the new knowledge object to the existing project.')
     inquirer.prompt([{
       type: 'confirm',
       name: 'continue',
@@ -266,14 +266,20 @@ function copytemplate (local) {
             metadata['@graph'][0].arkId = 'ark:/' + dest.replace('-', '\/')
           }
           fs.writeFileSync(project + '/' + dest + '/' + version + '/metadata.json', JSON.stringify(metadata, null, 2))
-          prop = JSON.parse(fs.readFileSync(src_path + '/project.json'))
+          if(!exists(project + '/project.json')){
+            prop = JSON.parse(fs.readFileSync(src_path + '/project.json'))
+            prop.objects = []
+          } else {
+            console.log("reading existing project.json")
+            prop = JSON.parse(fs.readFileSync(project + '/project.json'))
+          }
           prop.template = template
           prop.project = project
-          prop.objects = []
+
           prop.objects.push({'id': dest, 'version': version})
           prop.kodependencies = []
           fs.writeFileSync(project + '/project.json', JSON.stringify(prop, null, 4))
-          console.log('Project ' + project + 'with Knowledge Object ' + object + ' has been successfully created.\n ')
+          console.log('Knowledge Object ' + object + ' has been successfully created in Project ' + project + '.\n ')
           console.log('Go to the project folder by `cd ' + project + '`')
           if (!local) fs.remove(tmp, err => { if (err) console.log(err) })
         }

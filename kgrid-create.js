@@ -270,7 +270,7 @@ function copytemplate (local) {
             prop = JSON.parse(fs.readFileSync(src_path + '/project.json'))
             prop.objects = []
           } else {
-            console.log("reading existing project.json")
+            console.log("Reading existing project.json ...")
             prop = JSON.parse(fs.readFileSync(project + '/project.json'))
           }
           prop.template = template

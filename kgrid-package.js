@@ -59,13 +59,13 @@ if(!exists('project.json')){
       default: false
     }]).then(answers => {
       if (answers.continue) {
-        gulp.start('zip')
+        gulp.start('pack')
       } else {
         console.log('Please add the option of -l or --legacy and try again.')
       }
     })
   } else {
-    gulp.start('zip')
+    gulp.start('pack')
   }
 }
 }

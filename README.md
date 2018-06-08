@@ -8,7 +8,7 @@ This CLI kit is still under development and not published yet. To try it, you ne
 
 ## Quick Start
 
-Node.js is required to use this CLI kit.
+Node.js is required to use this CLI kit and can be found at https://nodejs.org/en/.
 
 In your terminal:
 - Clone this repo
@@ -19,24 +19,30 @@ In your terminal:
 
     ```npm install -g```
 
-You should be able to run `kgrid` as a node command globally in your working directory.
+- Change to your working directory, which should not be this repo folder
+
+    You should be able to run `kgrid` as a node command globally.
+
+Note: If you have installed previous version of kgrid-cli, uninstall first by `npm uninstall kgrid -g` and reinstall by `npm install -g`.
+
 
 ## Usage
 
 The listed subcommands are prototypes and subject to change during development.
 
-
-### Create the knowledge object project
+### Create the knowledge object in a project folder
 
 `kgrid create `
 
 It will prompt for entering project information.
 
+If the project exists, the new knowledge object will be created and added to the project.
+
 Or using the auto mode. By supplying template-name and project name, the project will be created using the default value from the template. The project information can be modified later.
 
 `kgrid create -a <template-name> <project-name> [object-name]`
 
-After the initilization, go to the project folder,
+After the initilization is done, go to the project folder,
 
 `cd <project-name>`
 
@@ -46,7 +52,9 @@ After the initilization, go to the project folder,
 
 ``` kgrid setup ```
 
-By default, it is development mode, `--dev`, which will create `runtime` folder and generate `manifest.json` in the runtime folder
+By default, it is development mode, `--dev`, which will create `activator` folder and generate `manifest.json` in the activator folder.
+
+If the knowledge object is created and added to the existing project, you will need to run setup command again and overwrite the manifest.json.
 
 Production mode, enabled with option `--prod`, which will generate `manifest.json` in the working directory if there exists a `shelf` containing knowledge objects.
 
@@ -57,6 +65,8 @@ Production mode, enabled with option `--prod`, which will generate `manifest.jso
 ``` kgrid install ```
 
 By default, it is development mode, `--dev`, which will download and install needed files in the activator folder.
+
+If the knowledge object has been modified or new knowledge objects have been added, you will need to run install command to load the latest set of knowledge objects and adapters
 
 Production mode, enabled with option `--prod`, which will download and install needed files in the working directory.
 
@@ -70,21 +80,15 @@ To start the activator on a different port (Default port: 8083), use
 
 ``` kgrid run -p <port>```
 
-To start the shelf only, use option `--shelfonly`
-
-To start the adapter gateway only, use option `--adapteronly`
-
-Note: If the activator/shelf starts at a different port, you may need to start a new terminal to run other Kgrid CLI commands.
+Note: If the activator starts at a different port, you may need to start a new terminal to run other Kgrid CLI commands.
 
 
 
-### Package the knowledge object for activation
+### Package the knowledge objects
+
+Knowledge objects in the project will be packaged into zip files and stored in target folder.
 
 ``` kgrid package ```
-
-For legacy model, use
-
-``` kgrid package -l```
 
 
 
@@ -108,7 +112,6 @@ To list available templates, use option `-t`
 To list  the knowledge objects on the shelf, use option `-s`
 
 To View a knowledge object on the shelf, use option `--ko <arkid>`
-
 
 
 

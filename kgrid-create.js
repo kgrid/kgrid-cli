@@ -244,16 +244,16 @@ function copytemplate (local) {
           if (template == 'kotemplate') {
           // metadata.version = version
             if(!simpleVersion){
-              metadata.metadata.version = version
-              metadata.metadata.title = title
-              metadata.metadata.owners = owners
-              metadata.metadata.contributors = contributors
-              metadata.metadata.description = description
+              metadata.version = version
+              metadata.title = title
+              metadata.owners = owners
+              metadata.contributors = contributors
+              metadata.description = description
             }
-            metadata.metadata.arkId.fedoraPath = dest
-            metadata.metadata.createdOn = moment().valueOf()
-            metadata.metadata.lastModified = moment().valueOf()
-            metadata.metadata.arkId.arkId = 'ark:/' + dest.replace('-', '\/')
+            // metadata.arkId.fedoraPath = dest
+            metadata.createdOn = moment().valueOf()
+            metadata.lastModified = moment().valueOf()
+            metadata.arkId = 'ark:/' + dest.replace('-', '\/')
           } else {
             metadata['@graph'][0].version = version
             metadata['@graph'][0].title = title

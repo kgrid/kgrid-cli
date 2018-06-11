@@ -147,11 +147,11 @@ function extractlegacy (srcfile) {
     console.log('Creating template ...')
     initproject(localtemplatedir != '', function () {
       var metadata =  JSON.parse(fs.readFileSync( src+'/hello-world/v0.0.1' + '/metadata.json', 'utf8'))
-      metadata.metadata = myobject.metadata
+      metadata = myobject.metadata
       var o = {}
       o.arkId='ark:/' + koid
       o.fedoraPath=koid.replace('/','-')
-      metadata.metadata.arkId = o
+      metadata.arkId = o.arkId.replace('-','/')
 
       // metadata['@graph'][0].version = myobject.metadata.version
       // metadata['@graph'][0].title = myobject.metadata.title

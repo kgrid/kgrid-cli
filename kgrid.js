@@ -4,7 +4,7 @@ const _ = require('lodash')
 const chalk = require('chalk')
 
 program
-  .version('0.0.5')
+  .version('0.1.0')
   .name('kgrid')
   .command('create', 'create the knowledge object from the template')
   .command('setup', 'set up development runtime for the knowledge object project')

@@ -30,17 +30,14 @@ Note: If you have installed previous version of kgrid-cli, uninstall first by `n
 
 The listed subcommands are prototypes and subject to change during development.
 
+
 ### Create the knowledge object in a project folder
 
 `kgrid create `
 
-It will prompt for entering project information.
+It will prompt for entering project information and new knowledge object id, which should have the format of `*****-*****`.
 
 If the project exists, the new knowledge object will be created and added to the project.
-
-Or using the auto mode. By supplying template-name and project name, the project will be created using the default value from the template. The project information can be modified later.
-
-`kgrid create -a <template-name> <project-name> [object-name]`
 
 After the initilization is done, go to the project folder,
 
@@ -54,9 +51,7 @@ After the initilization is done, go to the project folder,
 
 By default, it is development mode, `--dev`, which will create `activator` folder and generate `manifest.json` in the activator folder.
 
-If the knowledge object is created and added to the existing project, you will need to run setup command again and overwrite the manifest.json.
-
-Production mode, enabled with option `--prod`, which will generate `manifest.json` in the working directory if there exists a `shelf` containing knowledge objects.
+If the knowledge object is created and added to the existing project, you will need to run setup command again and overwrite the existing manifest.json.
 
 
 
@@ -67,8 +62,6 @@ Production mode, enabled with option `--prod`, which will generate `manifest.jso
 By default, it is development mode, `--dev`, which will download and install needed files in the activator folder.
 
 If the knowledge object has been modified or new knowledge objects have been added, you will need to run install command to load the latest set of knowledge objects and adapters
-
-Production mode, enabled with option `--prod`, which will download and install needed files in the working directory.
 
 
 
@@ -86,7 +79,7 @@ Note: If the activator starts at a different port, you may need to start a new t
 
 ### Package the knowledge objects
 
-Knowledge objects in the project will be packaged into zip files and stored in target folder.
+Knowledge objects in the project will be individually packaged into zip files and stored in target folder.
 
 ``` kgrid package ```
 
@@ -95,8 +88,6 @@ Knowledge objects in the project will be packaged into zip files and stored in t
 ### Extract a legacy knowledge object
 
 ``` kgrid extract ```
-
-To extract using legacy model, use option `-l`
 
 If not using local template, the template will be downloaded from GitHub
 
@@ -114,10 +105,6 @@ To list  the knowledge objects on the shelf, use option `-s`
 To View a knowledge object on the shelf, use option `--ko <arkid>`
 
 
-
-### Upload a knowledge object zip file to the shelf
-
-``` kgrid putko <filename> ```
-
+---
 
 For details in using these command, run the commands with -h option.

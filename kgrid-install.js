@@ -33,9 +33,9 @@ if(!program.prod) {
 }else{
   runtime='./'
 }
-if(exists(runtime+'manifest.json')){
-  prop=JSON.parse(fs.readFileSync(runtime+'manifest.json', 'utf8'))
-  files=prop.files
+if(exists('package.json')){
+  prop=JSON.parse(fs.readFileSync('package.json', 'utf8'))
+  files=prop.runtimedependencies
   kopaths=prop.objects
   // if(!program.prod){
   //   kopaths.forEach(function(e){
@@ -46,18 +46,19 @@ if(exists(runtime+'manifest.json')){
   // }
   downloadandinstall(function(){
     if(!program.prod){
-      kopaths.forEach(function(e){
-        loadkotoshelf(e.id)
-      })
+      // kopaths.forEach(function(e){
+      //   loadkotoshelf(e.id)
+      // })
+      console.log("To start the activator, type in command `npm run start`.")
     }else {
       // console.log('The function to load remote knowledge objects will be implemented in the future release.')
     }
   })
 } else {
     if(!program.prod){
-      console.log('manifest.json not found. Please run `kgrid setup` and then try again.')
+      console.log('package.json not found. Please run `kgrid setup` and then try again.')
     }else {
-      console.log('manifest.json not found. Please run `kgrid setup --prod` and then try again.')
+      console.log('package.json not found. Please run `kgrid setup --prod` and then try again.')
     }
 }
 

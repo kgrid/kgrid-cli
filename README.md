@@ -49,9 +49,7 @@ After the initilization is done, go to the project folder,
 
 ``` kgrid setup ```
 
-By default, it is development mode, `--dev`, which will create `activator` folder and generate `manifest.json` in the activator folder.
-
-If the knowledge object is created and added to the existing project, you will need to run setup command again and overwrite the existing manifest.json.
+This command is deprecated. No need any more.
 
 
 
@@ -65,13 +63,21 @@ If the knowledge object has been modified or new knowledge objects have been add
 
 
 
+### Update the project after new knowledge objects are added and/or other dependencies change
+
+``` kgrid update ```
+
+Still under development, it is designed to modify the package.json. You may need to run `kgrid install` again to load the latest set of dependencies.
+
+
+
 ### Start the activator and activate the knowledge object
 
-``` kgrid run ```
+``` npm run start ```
 
 To start the activator on a different port (Default port: 8083), use
 
-``` kgrid run -p <port>```
+``` npm run start -- -p <port>```
 
 Note: If the activator starts at a different port, you may need to start a new terminal to run other Kgrid CLI commands.
 
@@ -83,26 +89,6 @@ Knowledge objects in the project will be individually packaged into zip files an
 
 ``` kgrid package ```
 
-
-
-### Extract a legacy knowledge object
-
-``` kgrid extract ```
-
-If not using local template, the template will be downloaded from GitHub
-
-
-
-
-### List Knowledge Grid components and files
-
-``` kgrid list ```
-
-To list available templates, use option `-t`
-
-To list  the knowledge objects on the shelf, use option `-s`
-
-To View a knowledge object on the shelf, use option `--ko <arkid>`
 
 
 ---

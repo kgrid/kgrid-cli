@@ -14,6 +14,7 @@ program
   .description('This will initialize the knowledge object based on the specified template. \n\n  If object-name is omitted, the object will have the same name as project-name.\n\n  Use kgrid list -t to find the available templates. \n\n  Example:\n\n        kgrid create\n\n           or\n\n        kgrid create -a jslegacy myproject 99999-trial\n\n')
   .usage('<template-name> <project-name> [object-name]')
   .option('-a, --auto', 'An optional mode to enter the set-up information using the template defaults.')
+  .option('-f, --fullversion', 'An optional mode to enter the set-up information using prompt.')
   .option('-i, --input', 'An optional mode to enter the set-up information interactively.')
   // .option('-o, --objonly','An option to create the knowledge object ')
  	.parse(process.argv)
@@ -54,7 +55,9 @@ if (program.args.length < 2 && program.auto) {
   if (program.args[2] != null) {
     object = program.args[2]
   }
-
+  if(program.fullversion){
+    simpleVersion =false
+  }
   var inx = choices.indexOf(template)
   if (program.auto) {
     if (template != '') {
@@ -158,7 +161,7 @@ if (program.args.length < 2 && program.auto) {
       object = answers.object
       template = choices[2]
       if (!simpleVersion) {
-        localtemp = answer.localtemp
+        localtemp = answers.localtemp
         if (localtemp) {
           template = answers.templatetype
           localtemplatedir = answers.localtemplatedir
@@ -231,6 +234,7 @@ function copytemplate (local) {
   } else {
     src_path = src
   }
+  var adapterentrylist = []
   var source = src_path + '/hello-world/v0.0.1'
   fs.ensureDir(project + '/' + dest + '/' + version, err => {
     if (err != null) {
@@ -266,19 +270,27 @@ function copytemplate (local) {
             metadata['@graph'][0].arkId = 'ark:/' + dest.replace('-', '\/')
           }
           fs.writeFileSync(project + '/' + dest + '/' + version + '/metadata.json', JSON.stringify(metadata, null, 2))
-          if(!exists(project + '/project.json')){
-            prop = JSON.parse(fs.readFileSync(src_path + '/project.json'))
+          if(!exists(project + '/package.json')){
+            prop = JSON.parse(fs.readFileSync(src_path + '/package.json'))
             prop.objects = []
           } else {
-            console.log("Reading existing project.json ...")
-            prop = JSON.parse(fs.readFileSync(project + '/project.json'))
+            console.log("Reading existing package.json ...")
+            prop = JSON.parse(fs.readFileSync(project + '/package.json'))
           }
+          // console.log(JSON.stringify(prop))
           prop.template = template
           prop.project = project
-
           prop.objects.push({'id': dest, 'version': version})
-          prop.kodependencies = []
-          fs.writeFileSync(project + '/project.json', JSON.stringify(prop, null, 4))
+          var content = JSON.parse(fs.readFileSync(project + '/' + dest + '/' + version + '/'+metadata.model+'/metadata.json', 'utf8'))
+          content.adapters.forEach(function(e){
+            var entry = e.name + '-' + e.version + '-' + e.filename
+            if (prop.runtimedependencies.map(function(el){
+              return el.name + '-' + el.version + '-' + el.filename
+            }).indexOf(entry) == -1) {
+              prop.runtimedependencies.push(e)
+            }
+          })
+          fs.writeFileSync(project + '/package.json', JSON.stringify(prop, null, 4))
           console.log('Knowledge Object ' + object + ' has been successfully created in Project ' + project + '.\n ')
           console.log('Go to the project folder by `cd ' + project + '`')
           if (!local) fs.remove(tmp, err => { if (err) console.log(err) })

@@ -43,10 +43,10 @@ if (program.env) {
     })
   } else
   if (program.filetree) {
-    if (!exists('project.json')) {
+    if (!exists('package.json')) {
       console.log('Project file not found. Navigate to a valid KGrid project folder and try again.')
     } else {
-      var prop = JSON.parse(fs.readFileSync('project.json', 'utf8'))
+      var prop = JSON.parse(fs.readFileSync('package.json', 'utf8'))
       var srcpath = prop.object + '/'
       rawpaths = klawSync(srcpath)
       rawpaths.forEach(function (e) {

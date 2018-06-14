@@ -7,7 +7,7 @@
     "kgrid",
     "cli"
   ],
-  "author": "George Meng",
+  "author": "Kgrid team",
   "license": "MIT",
   "bin": {
     "kgrid": "./kgrid.js"

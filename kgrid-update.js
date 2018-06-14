@@ -9,6 +9,7 @@ const jsonpath = require('jsonpath')
 const klawSync = require('klaw-sync')
 const BASE_URL = process.env.KGRID_BASE_URL ||'http://localhost'
 var files = []
+var runtimedependencies=[]
 var activator = {'name': '', 'version': '', 'filename': '', 'download_url': '','target':''}
 var shelf = {'name': '', 'version': '', 'filename': '', 'download_url': '','target':''}
 var manifestjson = {}
@@ -32,12 +33,12 @@ if (!program.prod) {
   runtime = './'
 }
 manifestjson.objects = []
-if(exists('activator/manifest.json')){
+if(exists('activator/package.json')){
   inquirer.prompt([
   {
     type: 'confirm',
     name: 'overwrite',
-    message: 'Manifest.json exists, Would you like to continue to overwrite? ',
+    message: 'package.json exists, Would you like to continue to overwrite? ',
     default: false
   }
   ]).then(answers => {
@@ -45,7 +46,7 @@ if(exists('activator/manifest.json')){
     if(overwrite){
       generateManifest()
     }else {
-      console.log("`kgrid install` install Kgrid components using existing manifest.json.")
+      console.log("`kgrid install` install Kgrid components using existing package.json.")
     }
   })
 }else {
@@ -58,7 +59,7 @@ if (exists('package.json')) {
   prop = JSON.parse(fs.readFileSync('package.json', 'utf8'))
   kolist = prop.objects
   kodeplist = prop.kodependencies
-  activator = prop.activator
+  runtimedependencies = prop.runtimedependencies
   files.push(activator)
   if (kolist.length > 0) {
     kolist.forEach(function (e) {
@@ -134,7 +135,7 @@ if (ready) {
     adapterlist.forEach(function (e) {
       e.forEach(function (el) {
         var entry = el.name + '-' + el.version + '-' + el.filename
-        adapterentrylist = files.map(function (e) { return e.name + '-' + e.version + '-' + e.filename })
+        adapterentrylist = files.map(function (ee) { return ee.name + '-' + ee.version + '-' + ee.filename })
         if (adapterentrylist.indexOf(entry) == -1) {
           files.push(el)
         }
@@ -146,12 +147,12 @@ if (ready) {
   })
 
   manifestjson.files = files
-  console.log('Generating manifest.json ...')
+  console.log('Generating package.json ...')
   fs.ensureDir(runtime, err => {
     if (err != null) {
       console.log(err)
     } else {
-      fs.writeFileSync(runtime + 'manifest.json', JSON.stringify(manifestjson, null, 2))
+      fs.writeFileSync(runtime + 'package.json', JSON.stringify(manifestjson, null, 2))
     }
   })
 }

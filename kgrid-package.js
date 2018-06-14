@@ -28,10 +28,10 @@ const basefile = 'base.json'
 const project = path.basename(process.cwd())
 
 var prop = {}
-if(!exists('project.json')){
-  console.log('No Project.json found in the directoy.')
+if(!exists('package.json')){
+  console.log('No package.json found in the directoy.')
 } else {
-  prop = JSON.parse(fs.readFileSync('project.json', 'utf8'))
+  prop = JSON.parse(fs.readFileSync('package.json', 'utf8'))
   var packfile = prop.objects[0].id
   var srcpath = packfile + '/'
   switch (prop.template) {

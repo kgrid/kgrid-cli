@@ -9,10 +9,10 @@ var runSequence = require('run-sequence')
 var prop = {}
 var srcglob = []
 var tasks = []
-if(!exists('project.json')){
+if(!exists('package.json')){
 
 } else {
-   prop = JSON.parse(fs.readFileSync('project.json', 'utf8'))
+   prop = JSON.parse(fs.readFileSync('package.json', 'utf8'))
    prop.objects.forEach(function(e, index){
      var packfile = e.id
      var srcpath = packfile + '/'

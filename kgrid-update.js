@@ -32,6 +32,9 @@ if (!program.prod) {
 } else {
   runtime = './'
 }
+var argv = process.argv.slice(2)
+console.log(argv)
+
 manifestjson.objects = []
 if(exists('activator/package.json')){
   inquirer.prompt([

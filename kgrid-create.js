@@ -12,14 +12,14 @@ const moment = require('moment')
 program
   .name('kgrid create')
   .description('This will initialize the knowledge object based on the specified template. \n\n  If object-name is omitted, the object will have the same name as project-name.\n\n  Use kgrid list -t to find the available templates. \n\n  Example:\n\n        kgrid create\n\n           or\n\n        kgrid create -a jslegacy myproject 99999-trial\n\n')
-  .usage('<template-name> <project-name> [object-name]')
+  .usage('<project-name>')
   .option('-a, --auto', 'An optional mode to enter the set-up information using the template defaults.')
   .option('-f, --fullversion', 'An optional mode to enter the set-up information using prompt.')
   .option('-i, --input', 'An optional mode to enter the set-up information interactively.')
   // .option('-o, --objonly','An option to create the knowledge object ')
  	.parse(process.argv)
 
-var template = ''
+var template = 'kotemplate'
 var simpleVersion = true
 var localtemplatedir = ''
 var localtemp = false
@@ -43,17 +43,13 @@ var gittemplate = 'kgrid/ko-templates'
 var src = path.join(tmp, template)
 var prop = {}
 
-var argv = minimist(process.argv.slice(2))
-// console.log(argv)
-if (program.args.length < 2 && program.auto) {
+var argv = process.argv.slice(2)
+console.log(argv)
+if (program.args.length < 1 && program.auto) {
   program.help()
 } else {
-  template = program.args[0]
-  if (program.args[1] != null) {
-    project = program.args[1]
-  }
-  if (program.args[2] != null) {
-    object = program.args[2]
+  if (program.args[0] != null) {
+    project = program.args[0]
   }
   if(program.fullversion){
     simpleVersion =false

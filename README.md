@@ -82,7 +82,7 @@ To start the activator on a different port (Default port: 8080), include ` --ser
 
 Knowledge objects in the project will be individually packaged into zip files and stored in target folder.
 
-  ` npm run build:zipko <onjectname> `
+  ` npm run build:zipko <objectname> `
 
 ---
 

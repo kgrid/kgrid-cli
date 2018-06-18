@@ -44,14 +44,13 @@ After the initilization is done, go to the project folder,
 
 `cd <project-name>`
 
-Node dev dependencies will need to be installed in order to run the following scripts. To install,
-
-`npm install`
 
 
-### Install needed K-Grid components, including activator and adapters
+### Install needed Node modules and K-Grid components, including activator and adapters
 
-` npm run install `
+` kgrid install `
+
+It will install needed node modules defined in devDependencies, as well as the KGrid runtime dependencies.
 
 If the knowledge object has been modified or new knowledge objects have been added, you might need to run install command to load the latest set of knowledge objects and adapters
 

@@ -8,6 +8,7 @@ const ora = require('ora')
 const ncp=require('ncp').ncp
 const exists = require('fs').existsSync
 const klawSync = require('klaw-sync')
+var execsync = require('child_process').execSync
 const figures = require('figures');
 var Multispinner = require('multispinner')
 
@@ -25,63 +26,27 @@ program
 var prop= {}
 var paths =[]
 var srcpath = process.cwd()
-var kopath = ''
-var kopaths=[]
 var runtime=''
 if(!program.prod) {
   runtime='activator/'
 }else{
   runtime='./'
 }
+console.log('Installing Node modules...')
+execsync('npm install')
+console.log('Installing KGrid runtime dependencies ...')
 if(exists('package.json')){
   prop=JSON.parse(fs.readFileSync('package.json', 'utf8'))
   files=prop.runtimedependencies
-  kopaths=prop.objects
-  // if(!program.prod){
-  //   kopaths.forEach(function(e){
-  //     loadkotoshelf(e.id)
-  //   })
-  // }else {
-  //   // console.log('The function to load remote knowledge objects will be implemented in the future release.')
-  // }
   downloadandinstall(function(){
     if(!program.prod){
-      // kopaths.forEach(function(e){
-      //   loadkotoshelf(e.id)
-      // })
-      console.log("To start the activator, type in command `npm run start`.")
+      console.log("To start the activator, type in command `npm run start:dev`.")
     }else {
       // console.log('The function to load remote knowledge objects will be implemented in the future release.')
     }
   })
 } else {
-    if(!program.prod){
-      console.log('package.json not found. Please run `kgrid setup` and then try again.')
-    }else {
-      console.log('package.json not found. Please run `kgrid setup --prod` and then try again.')
-    }
-}
-
-
-function loadkotoshelf(kopath) {
-  var shelfdir=runtime+'/shelf/'+kopath
-  fs.ensureDir(shelfdir, err=>{
-    if(err!=null) {
-      console.log(err)
-    } else {
-      if(exists(kopath)){
-      ncp(kopath, shelfdir, function(err){
-        if(err!=null){
-          console.log(err)
-        }else {
-          console.log('Successfully loaded Knowledge Object '+kopath+' to activator shelf.')
-        }
-      })
-    }else {
-      console.log('Knowledge Object '+kopath+' not found.')
-    }
-    }
-  })
+      console.log('package.json not found. ')
 }
 
 function downloadandinstall(cb) {

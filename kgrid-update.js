@@ -36,7 +36,7 @@ var argv = process.argv.slice(2)
 console.log(argv)
 
 manifestjson.objects = []
-if(exists('activator/package.json')){
+if(exists('package.json')){
   inquirer.prompt([
   {
     type: 'confirm',
@@ -47,15 +47,82 @@ if(exists('activator/package.json')){
   ]).then(answers => {
     overwrite = answers.overwrite
     if(overwrite){
-      generateManifest()
+      generatePackagejson()
     }else {
       console.log("`kgrid install` install Kgrid components using existing package.json.")
     }
   })
 }else {
-  generateManifest()
+  generatePackagejson()
 }
 
+function generatePackagejson(){
+if (exists('package.json')) {
+  prop = JSON.parse(fs.readFileSync('package.json', 'utf8'))
+  var klawshelf = klawSync(srcpath, {nofile:true})
+  var koonshelf = klawshelf.map(function (e) { return e.path }).filter(function (e) {
+    var b = false
+    var p = e.replace(srcpath, '').split(path.sep)
+    if ((p.length == 4) && (p[1].includes('-'))) {
+      b = true
+    }
+      return b
+    })
+    prop.objects = []
+    kopaths = []
+    koonshelf.forEach(function (e) {
+      var p = e.replace(srcpath, '').split(path.sep)
+      var obj = {}
+      obj.id = p[1]
+      obj.version = p[2]
+      prop.objects.push(obj)
+      kolist.push(obj)
+      kopaths.push(e)
+    })
+    if (kolist.length > 0) {
+      ready = true
+    }
+}
+
+if (ready) {
+  var klawedpaths = klawSync(srcpath)
+  var rawpaths = klawedpaths.filter(function (e) {
+    var b = false
+    kopaths.forEach(function (koe) {
+      b = b | (e.path.includes(koe))
+    })
+    return b
+  })
+  rawpaths.forEach(function (e) {
+    if ((e.path.toLowerCase().includes('metadata'))) {
+      metadatapaths.push(e)
+    }
+  })
+
+  var adapterentrylist = []
+  metadatapaths.forEach(function (e) {
+    var content = JSON.parse(fs.readFileSync(e.path, 'utf8'))
+    var adapterlist = jsonpath.query(content, '$..adapters')
+    adapterlist.forEach(function (e) {
+      e.forEach(function (el) {
+        var entry = el.name + '-' + el.version + '-' + el.filename
+        adapterentrylist = prop.runtimedependencies.map(function (ee) { return ee.name + '-' + ee.version + '-' + ee.filename })
+        if (adapterentrylist.indexOf(entry) == -1) {
+          prop.runtimedependencies.push(el)
+        }
+      })
+    })
+  })
+  console.log('Generating package.json ...')
+  fs.ensureDir(runtime, err => {
+    if (err != null) {
+      console.log(err)
+    } else {
+      fs.writeFileSync('package.json', JSON.stringify(prop, null, 2))
+    }
+  })
+}
+}
 
 function generateManifest(){
 if (exists('package.json')) {

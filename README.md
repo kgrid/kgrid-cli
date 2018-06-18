@@ -13,17 +13,18 @@ Node.js is required to use this CLI kit and can be found at https://nodejs.org/e
 In your terminal:
 - Clone this repo
 
-    ```git clone https://github.com/kgrid/kgrid-cli.git```
+  ` git clone https://github.com/kgrid/kgrid-cli.git `
 
 - Go to the repo folder and manually installation
 
-    ```npm install -g```
+    `npm install -g`
 
 - Change to your working directory, which should not be this repo folder
 
     You should be able to run `kgrid` as a node command globally.
 
 Note: If you have installed previous version of kgrid-cli, uninstall first by `npm uninstall kgrid -g` and reinstall by `npm install -g`.
+
 
 
 ## Usage
@@ -43,43 +44,38 @@ After the initilization is done, go to the project folder,
 
 `cd <project-name>`
 
+Node dev dependencies will need to be installed in order to run the following scripts. To install,
 
-
-### Setup runtime environment
-
-``` kgrid setup ```
-
-This command is deprecated. No need any more.
-
+`npm install`
 
 
 ### Install needed K-Grid components, including activator and adapters
 
-``` kgrid install ```
+` npm run install `
 
-By default, it is development mode, `--dev`, which will download and install needed files in the activator folder.
-
-If the knowledge object has been modified or new knowledge objects have been added, you will need to run install command to load the latest set of knowledge objects and adapters
-
-
-
-### Update the project after new knowledge objects are added and/or other dependencies change
-
-``` kgrid update ```
-
-Still under development, it is designed to modify the package.json. You may need to run `kgrid install` again to load the latest set of dependencies.
+If the knowledge object has been modified or new knowledge objects have been added, you might need to run install command to load the latest set of knowledge objects and adapters
 
 
 
 ### Start the activator and activate the knowledge object
 
-``` npm run start ```
+You start the activator in two modes:
 
-To start the activator on a different port (Default port: 8083), use
+ - In DEV mode,
 
-``` npm run start -- -p <port>```
+    ` npm run start:dev `
 
-Note: If the activator starts at a different port, you may need to start a new terminal to run other Kgrid CLI commands.
+    The activator will use the project directory as the shelf serving all knowledge objects within the directory.
+
+- In PROD mode,
+
+    `npm run start:prod -- <options>`
+
+    You can use command line arguments to specify the options for the activator.
+
+    For example, `npm run start:prod -- --kgrid.shelf.cdostore.filesystem.location=activator/shelf`
+
+To start the activator on a different port (Default port: 8080), include ` --server.port=8090 ` as part of the options on the command line.
 
 
 
@@ -87,9 +83,7 @@ Note: If the activator starts at a different port, you may need to start a new t
 
 Knowledge objects in the project will be individually packaged into zip files and stored in target folder.
 
-``` kgrid package ```
-
-
+  ` npm run build:zipko <onjectname> `
 
 ---
 

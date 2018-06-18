@@ -44,7 +44,7 @@ var src = path.join(tmp, template)
 var prop = {}
 
 var argv = process.argv.slice(2)
-console.log(argv)
+// console.log(argv)
 if (program.args.length < 1 && program.auto) {
   program.help()
 } else {
@@ -111,50 +111,8 @@ if (program.args.length < 1 && program.auto) {
         message: 'Project Name: ',
         default: project
       },
-      {
-        type: 'input',
-        name: 'object',
-        message: 'Object Name: ',
-        default: object
-      },
-      {
-        type: 'input',
-        name: 'version',
-        message: 'Version: ',
-        default: function (a) { return 'v0.0.1' },
-        when: !simpleVersion
-      },
-      {
-        type: 'input',
-        name: 'title',
-        message: 'Title: ',
-        default: function (a) { return 'Knowledge Object Title' },
-        when: !simpleVersion
-      },
-      {
-        type: 'input',
-        name: 'owners',
-        message: 'Organization: ',
-        default: function (a) { return 'DLHS' },
-        when: !simpleVersion
-      },
-      {
-        type: 'input',
-        name: 'contributors',
-        message: 'Created by: ',
-        default: function (a) { return 'KGRID Team' },
-        when: !simpleVersion
-      },
-      {
-        type: 'input',
-        name: 'description',
-        message: 'Brief Description: ',
-        default: function (a) { return 'A new knowledge object.' },
-        when: !simpleVersion
-      }
     ]).then(answers => {
       project = answers.project
-      object = answers.object
       template = choices[2]
       if (!simpleVersion) {
         localtemp = answers.localtemp
@@ -165,12 +123,6 @@ if (program.args.length < 1 && program.auto) {
           template = answers.template
         }
         project = answers.project
-        object = answers.object
-        version = answers.version
-        owners = answers.owners
-        title = answers.title
-        contributors = answers.contributors
-        description = answers.description
       }
       checkproject(project)
     })
@@ -191,8 +143,7 @@ function checkproject (proj) {
       default: false
     }]).then(answers => {
       if (answers.continue) {
-        var local = (localtemplatedir != '')
-        initproject(local)
+        initproject((localtemplatedir != ''))
       } else {
         console.log('Please change the project name and try again.')
       }
@@ -200,23 +151,18 @@ function checkproject (proj) {
       console.log(err)
     })
   } else {
-    var local = (localtemplatedir != '')
-    initproject(local)
+    initproject((localtemplatedir != ''))
   }
 }
 
 function initproject (local) {
-  if (object != null) {
-    console.log('Creating Knowledge Object ' + object + ' ...')
-    dest = object.replace(/[\/:]/g, '-')
-  }
   if (!local) {
     downloadgit(gittemplate, tmp, err => {
 		  if (err != null) {
 		    console.log(err)
 		  } else {
-    copytemplate(false)
-  }
+        copytemplate(false)
+      }
     })
   } else {
     copytemplate(true)
@@ -230,8 +176,103 @@ function copytemplate (local) {
   } else {
     src_path = src
   }
+  var source = src_path
+  fs.ensureDir(project, err => {
+    if (err != null) {
+      console.log(err)
+    } else {
+      if(!exists(project+'/package.json')){
+        ncp(source, project, function (err) {
+          if (err != null) {
+            console.error(err)
+          } else {
+            prop = JSON.parse(fs.readFileSync(src_path + '/package.json'))
+            prop.objects = []
+            prop.template = template
+            prop.project = project
+            fs.writeFileSync(project + '/package.json', JSON.stringify(prop, null, 4))
+            if(exists(project+'/hello-world')) { fs.remove(project+'/hello-world', err => { if (err) console.log(err) }) }
+            createobject(local)
+          }
+        })
+      } else {
+        prop = JSON.parse(fs.readFileSync(project + '/package.json'))
+        createobject(local)
+      }
+    }
+  })
+}
+
+function createobject(local){
+  var src_path = ''
+  if (local) {
+    src_path = localtemplatedir
+  } else {
+    src_path = src
+  }
   var adapterentrylist = []
   var source = src_path + '/hello-world/v0.0.1'
+
+  inquirer.prompt([
+    {
+      type: 'input',
+      name: 'object',
+      message: 'Object Name: ',
+      default: object,
+    },
+    {
+      type: 'input',
+      name: 'version',
+      message: 'Version: ',
+      default: function (a) { return 'v0.0.1' },
+      when: !simpleVersion
+    },
+    {
+      type: 'input',
+      name: 'title',
+      message: 'Title: ',
+      default: function (a) { return 'Knowledge Object Title' },
+      when: !simpleVersion
+    },
+    {
+      type: 'input',
+      name: 'owners',
+      message: 'Organization: ',
+      default: function (a) { return 'DLHS' },
+      when: !simpleVersion
+    },
+    {
+      type: 'input',
+      name: 'contributors',
+      message: 'Created by: ',
+      default: function (a) { return 'KGRID Team' },
+      when: !simpleVersion
+    },
+    {
+      type: 'input',
+      name: 'description',
+      message: 'Brief Description: ',
+      default: function (a) { return 'A new knowledge object.' },
+      when: !simpleVersion
+    }
+  ]).then(answers => {
+    object = answers.object
+    if (!simpleVersion) {
+      localtemp = answers.localtemp
+      if (localtemp) {
+        template = answers.templatetype
+        localtemplatedir = answers.localtemplatedir
+      } else {
+        template = answers.template
+      }
+      object = answers.object
+      version = answers.version
+      owners = answers.owners
+      title = answers.title
+      contributors = answers.contributors
+      description = answers.description
+    }
+  dest = object.replace(/[\/:]/g, '-')
   fs.ensureDir(project + '/' + dest + '/' + version, err => {
     if (err != null) {
       console.log(err)
@@ -270,7 +311,7 @@ function copytemplate (local) {
             prop = JSON.parse(fs.readFileSync(src_path + '/package.json'))
             prop.objects = []
           } else {
-            console.log("Reading existing package.json ...")
+            // console.log("Reading existing package.json ...")
             prop = JSON.parse(fs.readFileSync(project + '/package.json'))
           }
           // console.log(JSON.stringify(prop))
@@ -289,9 +330,11 @@ function copytemplate (local) {
           fs.writeFileSync(project + '/package.json', JSON.stringify(prop, null, 4))
           console.log('Knowledge Object ' + object + ' has been successfully created in Project ' + project + '.\n ')
           console.log('Go to the project folder by `cd ' + project + '`')
+          console.log('Install dev dependencies by `npm install`')
           if (!local) fs.remove(tmp, err => { if (err) console.log(err) })
         }
       })
     }
   })
+})
 }

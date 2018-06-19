@@ -13,9 +13,9 @@ program
   .name('kgrid create')
   .description('This will initialize the knowledge object based on the specified template. \n\n  If object-name is omitted, the object will have the same name as project-name.\n\n  Use kgrid list -t to find the available templates. \n\n  Example:\n\n        kgrid create\n\n           or\n\n        kgrid create -a jslegacy myproject 99999-trial\n\n')
   .usage('<project-name>')
-  .option('-a, --auto', 'An optional mode to enter the set-up information using the template defaults.')
-  .option('-f, --fullversion', 'An optional mode to enter the set-up information using prompt.')
-  .option('-i, --input', 'An optional mode to enter the set-up information interactively.')
+  // .option('-a, --auto', 'An optional mode to enter the set-up information using the template defaults.')
+  // .option('-f, --fullversion', 'An optional mode to enter the set-up information using prompt.')
+  // .option('-i, --input', 'An optional mode to enter the set-up information interactively.')
   // .option('-o, --objonly','An option to create the knowledge object ')
  	.parse(process.argv)
 
@@ -192,16 +192,37 @@ function copytemplate (local) {
             prop.project = project
             fs.writeFileSync(project + '/package.json', JSON.stringify(prop, null, 4))
             if(exists(project+'/hello-world')) { fs.remove(project+'/hello-world', err => { if (err) console.log(err) }) }
-            createobject(local)
+            checkobject(local)
           }
         })
       } else {
         prop = JSON.parse(fs.readFileSync(project + '/package.json'))
-        createobject(local)
+        checkobject(local)
       }
     }
   })
 }
+
+
+function checkobject(local){
+  inquirer.prompt([
+    {
+      type: 'input',
+      name: 'object',
+      message: 'Object Name: ',
+      default: object,
+    }
+  ]).then(answers => {
+    object = answers.object
+    if (exists(project+'/'+object)) {
+      console.log('The object name is in use. Please change the object name and try again.')
+    } else {
+      createobject((localtemplatedir != ''))
+    }
+})
+}
+
+
 
 function createobject(local){
   var src_path = ''
@@ -212,66 +233,6 @@ function createobject(local){
   }
   var adapterentrylist = []
   var source = src_path + '/hello-world/v0.0.1'
-
-  inquirer.prompt([
-    {
-      type: 'input',
-      name: 'object',
-      message: 'Object Name: ',
-      default: object,
-    },
-    {
-      type: 'input',
-      name: 'version',
-      message: 'Version: ',
-      default: function (a) { return 'v0.0.1' },
-      when: !simpleVersion
-    },
-    {
-      type: 'input',
-      name: 'title',
-      message: 'Title: ',
-      default: function (a) { return 'Knowledge Object Title' },
-      when: !simpleVersion
-    },
-    {
-      type: 'input',
-      name: 'owners',
-      message: 'Organization: ',
-      default: function (a) { return 'DLHS' },
-      when: !simpleVersion
-    },
-    {
-      type: 'input',
-      name: 'contributors',
-      message: 'Created by: ',
-      default: function (a) { return 'KGRID Team' },
-      when: !simpleVersion
-    },
-    {
-      type: 'input',
-      name: 'description',
-      message: 'Brief Description: ',
-      default: function (a) { return 'A new knowledge object.' },
-      when: !simpleVersion
-    }
-  ]).then(answers => {
-    object = answers.object
-    if (!simpleVersion) {
-      localtemp = answers.localtemp
-      if (localtemp) {
-        template = answers.templatetype
-        localtemplatedir = answers.localtemplatedir
-      } else {
-        template = answers.template
-      }
-      object = answers.object
-      version = answers.version
-      owners = answers.owners
-      title = answers.title
-      contributors = answers.contributors
-      description = answers.description
-    }
   dest = object.replace(/[\/:]/g, '-')
   fs.ensureDir(project + '/' + dest + '/' + version, err => {
     if (err != null) {
@@ -330,11 +291,10 @@ function createobject(local){
           fs.writeFileSync(project + '/package.json', JSON.stringify(prop, null, 4))
           console.log('Knowledge Object ' + object + ' has been successfully created in Project ' + project + '.\n ')
           console.log('Go to the project folder by `cd ' + project + '`')
-          console.log('Install dev dependencies by `npm install`')
+          console.log('Install dev dependencies by `kgrid install`')
           if (!local) fs.remove(tmp, err => { if (err) console.log(err) })
         }
       })
     }
   })
-})
 }

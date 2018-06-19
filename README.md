@@ -62,17 +62,17 @@ You start the activator in two modes:
 
  - In DEV mode,
 
-    ` npm run start:dev `
+    ` npm run dev `
 
     The activator will use the project directory as the shelf serving all knowledge objects within the directory.
 
 - In PROD mode,
 
-    `npm run start:prod -- <options>`
+    `npm run prod -- <options>`
 
     You can use command line arguments to specify the options for the activator.
 
-    For example, `npm run start:prod -- --kgrid.shelf.cdostore.filesystem.location=activator/shelf`
+    `npm run prod` will use the default shelf location, which is equivalent to `npm run prod -- --kgrid.shelf.cdostore.filesystem.location=activator/shelf`
 
 To start the activator on a different port (Default port: 8080), include ` --server.port=8090 ` as part of the options on the command line.
 
@@ -82,7 +82,7 @@ To start the activator on a different port (Default port: 8080), include ` --ser
 
 Knowledge objects in the project will be individually packaged into zip files and stored in target folder.
 
-  ` npm run build:zipko <objectname> `
+  ` npm run package <objectname> `
 
 ---
 

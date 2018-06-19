@@ -32,15 +32,15 @@ if(!program.prod) {
 }else{
   runtime='./'
 }
-console.log('Installing Node modules...')
+console.log('Installing Dev dependencies...')
 execsync('npm install')
-console.log('Installing KGrid runtime dependencies ...')
+console.log('Installing KGrid Runtime dependencies ...')
 if(exists('package.json')){
   prop=JSON.parse(fs.readFileSync('package.json', 'utf8'))
   files=prop.runtimedependencies
   downloadandinstall(function(){
     if(!program.prod){
-      console.log("To start the activator, type in command `npm run start:dev`.")
+      console.log("To start the activator, type in command `npm run dev`.")
     }else {
       // console.log('The function to load remote knowledge objects will be implemented in the future release.')
     }

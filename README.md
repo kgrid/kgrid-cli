@@ -20,7 +20,7 @@ In your terminal:
     `npm install -g`
 
     You should be able to run `kgrid` as a node command globally. Change to another directory and run
-    
+
     `kgrid -help`
 
 Note: If you have installed previous version of kgrid-cli, uninstall first by `npm uninstall kgrid -g` and reinstall by `npm install -g`.
@@ -93,6 +93,15 @@ To start the activator on a different port (Default port: 8080), include ` --ser
 Knowledge objects in the project will be individually packaged into zip files and stored in target folder.
 
   ` npm run package <objectname> `
+
+
+### Update the knowledge object Project
+
+After you create a new knowledge object from template, or simply copy/move a knowledge object from another project/directory, or add a new version of existing knowledge object, the file of package.json needs to be updated by
+
+`kgrid update` .
+
+If new dependencies are added, you will need to run `kgrid install` to get the new components ready for use.
 
 ---
 

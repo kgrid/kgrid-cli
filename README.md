@@ -1,4 +1,4 @@
-# kgrid-cli
+# `kgrid-cli` Quick Start
 
 A command-line tool kit for knowledge object development.
 
@@ -6,7 +6,7 @@ A command-line tool kit for knowledge object development.
 
 This CLI kit is still under development and not published yet. To try it, you need to clone this repo and perform a manual installation.
 
-## Quick Start
+## Installing the Kgrid command line tool
 
 Node.js is required to use this CLI kit and can be found at https://nodejs.org/en/.
 
@@ -19,15 +19,25 @@ In your terminal:
 
     `npm install -g`
 
-- Change to your working directory, which should not be this repo folder
-
-    You should be able to run `kgrid` as a node command globally.
+    You should be able to run `kgrid` as a node command globally. Change to another directory and run
+    
+    `kgrid -help`
 
 Note: If you have installed previous version of kgrid-cli, uninstall first by `npm uninstall kgrid -g` and reinstall by `npm install -g`.
 
+Once the kgrid command line tool is installed, you don't need the repo you checked out, but you can update and reinstall using:
 
+```bash
+npm uninstall kgrid -g
+git pull
+npm install kgrid -g
+```
 
 ## Usage
+
+Change to your working directory (which should not be the kgrid-cli repo you checked out during installation). Type:
+
+`kgrid -help`
 
 The listed subcommands are prototypes and subject to change during development.
 

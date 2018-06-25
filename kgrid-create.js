@@ -279,7 +279,7 @@ function createobject(local){
           prop.template = template
           prop.project = project
           prop.objects.push({'id': dest, 'version': version})
-          var content = JSON.parse(fs.readFileSync(project + '/' + dest + '/' + version + '/'+metadata.modelpath+'/metadata.json', 'utf8'))
+          var content = JSON.parse(fs.readFileSync(project + '/' + dest + '/' + version + '/'+metadata.model+'/metadata.json', 'utf8'))
           content.adapters.forEach(function(e){
             var entry = e.name + '-' + e.version + '-' + e.filename
             if (prop.runtimedependencies.map(function(el){

@@ -1,38 +1,59 @@
 {
   "name": "kgrid-cli",
+  "description": "Command-line tool for Knowledge Object developers",
   "version": "0.2.0",
-  "description": "A command-line tool for Kgrid workbench",
-  "main": "index.js",
-  "keywords": [
-    "kgrid",
-    "cli"
-  ],
-  "author": "Kgrid team",
-  "license": "MIT",
+  "author": "kgrid",
   "bin": {
-    "kgrid": "./kgrid.js"
+    "kgrid": "./bin/run"
   },
+  "bugs": "https://github.com/kgrid/kgrid-cli/issues",
   "dependencies": {
-    "chalk": "^2.4.1",
-    "commander": "^2.14.1",
-    "download": "^6.2.5",
-    "download-git-repo": "^1.0.2",
-    "figures": "^2.0.0",
-    "fs-extra": "^5.0.0",
-    "gulp": "3.9.1",
-    "gulp-zip": "^4.1.0",
-    "gulp4-run-sequence": "0.0.3",
-    "inquirer": "^5.1.0",
-    "jsonpath": "^1.0.0",
-    "klaw-sync": "^3.0.2",
-    "lodash": "^4.17.10",
-    "minimist": "^1.2.0",
-    "moment": "^2.21.0",
-    "multispinner": "^0.2.1",
-    "ncp": "^2.0.0",
-    "ora": "^2.1.0",
-    "prettyjson": "^1.2.1",
-    "run-sequence": "^2.2.1",
-    "superagent": "^3.8.2"
+    "@oclif/command": "^1.5.13",
+    "@oclif/config": "^1.12.12",
+    "@oclif/plugin-help": "^2.1.6",
+    "fs-extra": "^7.0.1",
+    "inquirer": "^6.3.1",
+    "js-yaml": "^3.13.1"
+  },
+  "devDependencies": {
+    "@oclif/dev-cli": "^1.22.0",
+    "@oclif/test": "^1.2.4",
+    "chai": "^4.2.0",
+    "eslint": "^5.16.0",
+    "eslint-config-oclif": "^3.1.0",
+    "globby": "^8.0.2",
+    "mocha": "^5.2.0",
+    "nyc": "^13.3.0",
+    "rimraf": "^2.6.3"
+  },
+  "engines": {
+    "node": ">=8.0.0"
+  },
+  "files": [
+    "/bin",
+    "/npm-shrinkwrap.json",
+    "/oclif.manifest.json",
+    "/src"
+  ],
+  "homepage": "https://github.com/kgrid/kgrid-cli",
+  "keywords": [
+    "oclif"
+  ],
+  "license": "MIT",
+  "main": "src/index.js",
+  "oclif": {
+    "commands": "./src/commands",
+    "bin": "kgrid",
+    "plugins": [
+      "@oclif/plugin-help"
+    ]
+  },
+  "repository": "kgrid/kgrid-cli",
+  "scripts": {
+    "postpack": "rimraf oclif.manifest.json",
+    "posttest": "eslint .",
+    "prepack": "oclif-dev manifest && oclif-dev readme",
+    "test": "nyc mocha --forbid-only \"test/**/*.test.js\"",
+    "version": "oclif-dev readme && git add README.md"
   }
 }

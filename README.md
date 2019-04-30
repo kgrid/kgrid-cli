@@ -1,108 +1,88 @@
-# `kgrid-cli` Quick Start
+kgrid-cli
+=========
 
-A command-line tool kit for knowledge object development.
+Command-line tool for Knowledge Object developers
 
-### Under development
+[![oclif](https://img.shields.io/badge/cli-oclif-brightgreen.svg)](https://oclif.io)
+[![Version](https://img.shields.io/npm/v/kgrid-cli.svg)](https://npmjs.org/package/kgrid-cli)
+[![CircleCI](https://circleci.com/gh/kgrid/kgrid-cli/tree/master.svg?style=shield)](https://circleci.com/gh/kgrid/kgrid-cli/tree/master)
+[![Downloads/week](https://img.shields.io/npm/dw/kgrid-cli.svg)](https://npmjs.org/package/kgrid-cli)
+[![License](https://img.shields.io/npm/l/kgrid-cli.svg)](https://github.com/kgrid/kgrid-cli/blob/master/package.json)
 
-This CLI kit is still under development and not published yet. To try it, you need to clone this repo and perform a manual installation.
+<!-- toc -->
+* [Usage](#usage)
+* [Commands](#commands)
+<!-- tocstop -->
+# Usage
+<!-- usage -->
+```sh-session
+$ npm install -g kgrid-cli
+$ kgrid COMMAND
+running command...
+$ kgrid (-v|--version|version)
+kgrid-cli/0.1.0 win32-x64 node-v8.12.0
+$ kgrid --help [COMMAND]
+USAGE
+  $ kgrid COMMAND
+...
+```
+<!-- usagestop -->
+# Commands
+<!-- commands -->
+* [`kgrid init`](#kgrid-init)
+* [`kgrid hello`](#kgrid-hello)
+* [`kgrid help [COMMAND]`](#kgrid-help-command)
 
-## Installing the Kgrid command line tool
+## `kgrid init`
 
-Node.js is required to use this CLI kit and can be found at https://nodejs.org/en/.
+Create the knowledge object implementation
 
-In your terminal:
-- Clone this repo
+```
+USAGE
+  $ kgrid init
 
-  ` git clone https://github.com/kgrid/kgrid-cli.git `
+OPTIONS
+  -v, --version=version  version for the implementation
 
-- Go to the repo folder and manually installation
-
-    `npm install -g`
-
-    You should be able to run `kgrid` as a node command globally. Change to another directory and run
-
-    `kgrid -help`
-
-Note: If you have installed previous version of kgrid-cli, uninstall first by `npm uninstall kgrid -g` and reinstall by `npm install -g`.
-
-Once the kgrid command line tool is installed, you don't need the repo you checked out, but you can update and reinstall using:
-
-```bash
-npm uninstall kgrid -g
-git pull
-npm install kgrid -g
+DESCRIPTION
+  ...
+  Extra documentation goes here
 ```
 
-## Usage
+_See code: [src\commands\init.js](https://github.com/kgrid/kgrid-cli/blob/v0.1.0/src\commands\init.js)_
 
-Change to your working directory (which should not be the kgrid-cli repo you checked out during installation). Type:
+## `kgrid hello`
 
-`kgrid -help`
+Describe the command here
 
-The listed subcommands are prototypes and subject to change during development.
+```
+USAGE
+  $ kgrid hello
 
+OPTIONS
+  -n, --name=name  name to print
 
-### Create the knowledge object in a project folder
+DESCRIPTION
+  ...
+  Extra documentation goes here
+```
 
-`kgrid create `
+_See code: [src\commands\hello.js](https://github.com/kgrid/kgrid-cli/blob/v0.1.0/src\commands\hello.js)_
 
-It will prompt for entering project information and new knowledge object id, which should have the format of `*****-*****`.
+## `kgrid help [COMMAND]`
 
-If the project exists, the new knowledge object will be created and added to the project.
+display help for kgrid
 
-After the initilization is done, go to the project folder,
+```
+USAGE
+  $ kgrid help [COMMAND]
 
-`cd <project-name>`
+ARGUMENTS
+  COMMAND  command to show help for
 
+OPTIONS
+  --all  see all commands in CLI
+```
 
-
-### Install needed Node modules and K-Grid components, including activator and adapters
-
-` kgrid install `
-
-It will install needed node modules defined in devDependencies, as well as the KGrid runtime dependencies.
-
-If the knowledge object has been modified or new knowledge objects have been added, you might need to run install command to load the latest set of knowledge objects and adapters
-
-
-
-### Start the activator and activate the knowledge object
-
-You start the activator in two modes:
-
- - In DEV mode,
-
-    ` npm run dev `
-
-    The activator will use the project directory as the shelf serving all knowledge objects within the directory.
-
-- In PROD mode,
-
-    `npm run prod -- <options>`
-
-    You can use command line arguments to specify the options for the activator.
-
-    `npm run prod` will use the default shelf location, which is equivalent to `npm run prod -- --kgrid.shelf.cdostore.filesystem.location=activator/shelf`
-
-To start the activator on a different port (Default port: 8080), include ` --server.port=8090 ` as part of the options on the command line.
-
-
-
-### Package the knowledge objects
-
-Knowledge objects in the project will be individually packaged into zip files and stored in target folder.
-
-  ` npm run package <objectname> `
-
-
-### Update the knowledge object Project
-
-After you create a new knowledge object from template, or simply copy/move a knowledge object from another project/directory, or add a new version of existing knowledge object, the file of package.json needs to be updated by
-
-`kgrid update` .
-
-If new dependencies are added, you will need to run `kgrid install` to get the new components ready for use.
-
----
-
-For details in using these command, run the commands with -h option.
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.1.6/src\commands\help.ts)_
+<!-- commandsstop -->

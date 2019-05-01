@@ -50,7 +50,7 @@
           }
         },
         "x-kgrid-activation": {
-          "artifact": "src/welcome.js",
+          "artifact": "src/index.js",
           "adapter": "JAVASCRIPT",
           "entry": "welcome"
         }

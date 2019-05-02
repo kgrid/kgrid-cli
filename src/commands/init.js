@@ -3,6 +3,7 @@ const inquirer = require('inquirer')
 const fs = require('fs-extra')
 const yaml = require('js-yaml')
 const serviceObj = require('../template/service.json')
+// const deploymentObj = require('../template/deployment.json')
 const kometaObj = require('../template/kometadata.json')
 const implementationMetaObj = require('../template/impmetadata.json')
 const packageObj = require('../template/package.json')
@@ -14,11 +15,12 @@ var pkgJson = JSON.parse(JSON.stringify(packageObj))
 
 class InitCommand extends Command {
   async run() {
-    const {flags} = this.parse(InitCommand)
-    let version = flags.version
+    // const {flags} = this.parse(InitCommand)
+    // let version = flags.version
+    let version = ''
     let ready = false
     // Prompt for version
-    if (version) {
+    if (version!='') {
       if (fs.pathExistsSync(version)) {
         this.log('Path existing. Please start over with a different name for the implementation.')
       } else {
@@ -70,7 +72,7 @@ class InitCommand extends Command {
       impleMeta.identifier = 'ark:/' + idNaan + '/' + idName + '/' + version
       impleMeta.hasServiceSpecification = version + '/service.yaml'
       impleMeta.hasPayload = version + '/src/index.js'
-      fs.writeJsonSync(version + '/metadata.json', impleMeta,{spaces: 4})
+      fs.writeJsonSync(version + '/metadata.json', impleMeta, {spaces: 4})
 
       // Update Implementation Service Specification
       impleService.info.version = version
@@ -83,11 +85,18 @@ class InitCommand extends Command {
           sortKeys: false,        // sort object keys
         })
       )
+      // fs.writeFileSync(version + '/deployment.yaml',
+      //   yaml.safeDump(deploymentObj, {
+      //     styles: {
+      //       '!!null': 'canonical', // dump null as ~
+      //     },
+      //     sortKeys: false,        // sort object keys
+      //   })
+      // )
 
       // Update package.JSON
       // pkgJson.version = version.replace('v','')
       fs.writeJsonSync(version + '/package.json', pkgJson, {spaces: 4})
-
 
       // Create src folder for js files
       fs.ensureDirSync(version + '/src')
@@ -96,15 +105,15 @@ class InitCommand extends Command {
       // Create src folder for js files
       fs.ensureDirSync(version + '/test')
       fs.writeFileSync(version + '/test/welcome.test.js', 'const rewire = require("rewire") \n const javascript = rewire("../src/index") \n  var welcome = javascript.__get__("welcome") \n test("hello barney (src)", () => { expect( welcome({"name": "Barney Rubble"})).toBe("Welcome to Knowledge Grid, Barney Rubble")})')
-
+      this.log('The implementation of ' + version + ' has been added.')
     }
   }
 }
 
-InitCommand.description = 'Create the knowledge object implementation'
-
-InitCommand.flags = {
-  version: flags.string({char: 'v'}),
-}
+InitCommand.description = 'Add an implementation to the knowledge object.'
+//
+// InitCommand.flags = {
+//   version: flags.string({char: 'v'}),
+// }
 
 module.exports = InitCommand

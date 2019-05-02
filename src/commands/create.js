@@ -2,12 +2,16 @@ const InitCommand = require('./init')
 const {Command, flags} = require('@oclif/command')
 const inquirer = require('inquirer')
 const fs = require('fs-extra')
+const kometaObj = require('../template/kometadata.json')
+var topMeta = JSON.parse(JSON.stringify(kometaObj))
 
 class CreateCommand extends Command {
   async run() {
     const {flags} = this.parse(CreateCommand)
     let ko = flags.ko
     let ready = false
+    topMeta.hasImplementation = []
+    let title = topMeta.title
     if (ko) {
       if (fs.pathExistsSync(ko)) {
         this.log('Path existing. Please start over with a different name for the knowledge object.')
@@ -32,14 +36,26 @@ class CreateCommand extends Command {
             }, 500)
           },
         },
+        {
+          type: 'input',
+          name: 'title',
+          message: 'Knowledge Object Title: ',
+          default: title,
+        },
       ])
       ko = responses.ko
+      title = responses.title
       ready = true
     }
     if(ready){
       fs.ensureDirSync(ko)
+
+      // Generate Top Level Metadata
+      topMeta.title = title
+      fs.writeJsonSync(ko+'/metadata.json', topMeta, {spaces: 4})
+
       process.chdir(ko)
-      this.log(process.cwd())
+      this.log('==== Initialize the first implementation ==== ')
       await InitCommand.run()
       this.log('The knowledge object has been created.')
     }

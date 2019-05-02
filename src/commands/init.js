@@ -17,8 +17,14 @@ class InitCommand extends Command {
   async run() {
     // const {flags} = this.parse(InitCommand)
     // let version = flags.version
+    if (fs.pathExistsSync('metadata.json')) {
+      topMeta = fs.readJsonSync('metadata.json')
+    } else {
+      topMeta.hasImplementation = []
+    }
     let version = ''
     let ready = false
+    let title = topMeta.title
     // Prompt for version
     if (version!='') {
       if (fs.pathExistsSync(version)) {
@@ -44,16 +50,19 @@ class InitCommand extends Command {
             }, 500)
           },
         },
+        {
+          type: 'input',
+          name: 'title',
+          message: 'Implementation Title: ',
+          default: title,
+        },
       ])
       version = responses.version
+      title = responses.title
       ready = true
     }
     if (ready) {
-      if (fs.pathExistsSync('metadata.json')) {
-        topMeta = fs.readJsonSync('metadata.json')
-      } else {
-        topMeta.hasImplementation = []
-      }
+
       let idArr = topMeta.identifier.split('/')
       let idNaan = idArr[1]
       let idName = idArr[2]
@@ -69,6 +78,7 @@ class InitCommand extends Command {
 
       // Update Implementation Metadata
       impleMeta['@id'] = version
+      impleMeta.title=title
       impleMeta.identifier = 'ark:/' + idNaan + '/' + idName + '/' + version
       impleMeta.hasServiceSpecification = version + '/service.yaml'
       impleMeta.hasPayload = version + '/src/index.js'

@@ -2,7 +2,7 @@
   "@id": "koio.v1",
   "@type": "koio:Implementation",
   "identifier": "ark:/hello/world/koio.v1",
-  "title": "Implementation of Hello World",
+  "title": "Implementation Title",
   "hasServiceSpecification": "koio.v1/service.yaml",
   "hasPayload": "koio.v1/welcome.js",
   "@context": [

@@ -51,7 +51,7 @@ class SetupCommand extends Command {
   }
 }
 
-SetupCommand.description = 'Start KGrid Component'
+SetupCommand.description = 'Setup KGrid Component'
 
 SetupCommand.flags = {
   home: flags.string({}),

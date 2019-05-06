@@ -78,9 +78,9 @@ from the implementation directory.
 
 ### Initializing an knowledge object implementation in a KO folder
 
-If a KO directory exists or you like to use a existing folder as KO folder, you initializing an implementation by
+If a KO directory exists or you like to use a existing folder as KO folder, you can add an implementation by
 
-`kgrid init`
+`kgrid add`
 
 
 ### Setup Knowledge Kgrid

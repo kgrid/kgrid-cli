@@ -24,7 +24,7 @@ async function addImplementation (version) {
 
   if (version!='') {
     if (fs.pathExistsSync(version)) {
-      this.log('Path existing. Please start over with a different name for the implementation.')
+      console.log('Path existing. Please start over with a different name for the implementation.')
     } else {
       ready = true
     }
@@ -111,6 +111,8 @@ async function addImplementation (version) {
     // Create src folder for js files
     fs.ensureDirSync(version + '/test')
     fs.writeFileSync(version + '/test/welcome.test.js', 'const rewire = require("rewire") \n const javascript = rewire("../src/index") \n  var welcome = javascript.__get__("welcome") \n test("hello barney (src)", () => { expect( welcome({"name": "Barney Rubble"})).toBe("Welcome to Knowledge Grid, Barney Rubble")})')
+    console.log('The implementation of ' + version + ' has been added.')
+
   }
 }
 module.exports=addImplementation

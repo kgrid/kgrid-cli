@@ -19,7 +19,7 @@ $ npm install -g @kgrid/kgrid-cli
 $ kgrid COMMAND
 running command...
 $ kgrid (-v|--version|version)
-@kgrid/kgrid-cli/0.0.2 linux-x64 node-v10.15.3
+@kgrid/kgrid-cli/0.0.3 linux-x64 node-v10.15.3
 $ kgrid --help [COMMAND]
 USAGE
   $ kgrid COMMAND
@@ -48,7 +48,7 @@ OPTIONS
   -v, --version=version
 ```
 
-_See code: [src/commands/add.js](https://github.com/kgrid/kgrid-cli/blob/v0.0.2/src/commands/add.js)_
+_See code: [src/commands/add.js](https://github.com/kgrid/kgrid-cli/blob/v0.0.3/src/commands/add.js)_
 
 ## `kgrid create [KO]`
 
@@ -62,7 +62,7 @@ OPTIONS
   -v, --version=version
 ```
 
-_See code: [src/commands/create.js](https://github.com/kgrid/kgrid-cli/blob/v0.0.2/src/commands/create.js)_
+_See code: [src/commands/create.js](https://github.com/kgrid/kgrid-cli/blob/v0.0.3/src/commands/create.js)_
 
 ## `kgrid help [COMMAND]`
 
@@ -93,7 +93,7 @@ OPTIONS
   --home=home
 ```
 
-_See code: [src/commands/setup.js](https://github.com/kgrid/kgrid-cli/blob/v0.0.2/src/commands/setup.js)_
+_See code: [src/commands/setup.js](https://github.com/kgrid/kgrid-cli/blob/v0.0.3/src/commands/setup.js)_
 
 ## `kgrid start`
 
@@ -107,7 +107,7 @@ OPTIONS
   -s, --shelf=shelf
 ```
 
-_See code: [src/commands/start/index.js](https://github.com/kgrid/kgrid-cli/blob/v0.0.2/src/commands/start/index.js)_
+_See code: [src/commands/start/index.js](https://github.com/kgrid/kgrid-cli/blob/v0.0.3/src/commands/start/index.js)_
 
 ## `kgrid start:activator`
 
@@ -123,7 +123,7 @@ OPTIONS
   -s, --shelf=shelf
 ```
 
-_See code: [src/commands/start/activator.js](https://github.com/kgrid/kgrid-cli/blob/v0.0.2/src/commands/start/activator.js)_
+_See code: [src/commands/start/activator.js](https://github.com/kgrid/kgrid-cli/blob/v0.0.3/src/commands/start/activator.js)_
 
 ## `kgrid start:library`
 
@@ -139,5 +139,5 @@ OPTIONS
   -s, --shelf=shelf
 ```
 
-_See code: [src/commands/start/library.js](https://github.com/kgrid/kgrid-cli/blob/v0.0.2/src/commands/start/library.js)_
+_See code: [src/commands/start/library.js](https://github.com/kgrid/kgrid-cli/blob/v0.0.3/src/commands/start/library.js)_
 <!-- commandsstop -->

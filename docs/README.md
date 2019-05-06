@@ -41,8 +41,7 @@ Change to your working directory (which should not be the kgrid-cli repo you che
 
 The listed subcommands are prototypes and subject to change during development.
 
-
-### Create the knowledge object in a project folder
+Before a knowledge object can be created, a folder needs to be designated or created as your project.
 
 - Create a project folder.
 
@@ -52,13 +51,56 @@ The listed subcommands are prototypes and subject to change during development.
 
   `cd <my-project>`
 
-- Start the initilization
+### Create the knowledge object in the project folder
 
-  `kgrid init `
+- Create the Knowledge Object (KO)
+
+  `kgrid create `
 
 It will prompt for entering the implementation information.
 
-If the implementation exists, you will be prompted to choose a different version for the implementation.
+You can also use the command flag to create the KO.
+
+  `kgrid create --ko=<myko>`
+
+If the KO exists, you will be prompted to choose a different name for the KO.
+
+Once the KO is created, you will be prompted to name the first implementation for this KO. And the first implementation will be initialized using the build-in template.
+
+Now you are ready browse your first KO implementation.
+
+If you have KGrid set up and started, the sample test can be tried by running
+
+`npm run test`
+
+from the implementation directory.
+
+
+### Initializing an knowledge object implementation in a KO folder
+
+If a KO directory exists or you like to use a existing folder as KO folder, you initializing an implementation by
+
+`kgrid init`
+
+
+### Setup Knowledge Kgrid
+
+The command SETUP will check if you have KGRID components installed and set up.
+
+`kgrid setup`
+
+
+### Start Knowledge Kgrid
+
+`kgrid start`
+
+`kgrid start:acvtivator`
+
+`kgrid start:library`
+
+
+
+
 
 <!--
 

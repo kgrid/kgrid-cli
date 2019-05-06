@@ -1,5 +1,4 @@
 const {Command, flags} = require('@oclif/command')
-// const inquirer = require('inquirer')
 const fs = require('fs-extra')
 const path = require('path')
 const shelljs = require('shelljs')
@@ -24,7 +23,7 @@ function runKgrid(cmd) {
           if(process.platform == 'win32'){
             cmdstring = cmdstring + kgridcomponent + ' --server.port='+port+' --kgrid.shelf.cdostore.url=filesystem:file:///' + shelf.split(path.sep).join('/')
             console.log(cmdstring)
-            shelljs.exec(cmdstring)
+            shelljs.exec(cmdstring, {async:true})
           }
         } else {
           console.log('Could not find the directory set as KGRID_HOME. Please run "kgrid setup" again.')

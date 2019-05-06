@@ -12,7 +12,7 @@ class StartCommand extends Command {
   }
 }
 
-StartCommand.description = 'Start KGrid Component'
+StartCommand.description = 'Start KGrid'
 
 StartCommand.flags = {
   shelf: flags.string({char: 's'}),

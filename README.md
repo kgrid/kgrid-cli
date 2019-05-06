@@ -16,11 +16,11 @@ Command-line tool for Knowledge Object developers
 # Usage
 <!-- usage -->
 ```sh-session
-$ npm install -g kgrid-cli
+$ npm install -g @kgrid/kgrid-cli
 $ kgrid COMMAND
 running command...
 $ kgrid (-v|--version|version)
-kgrid-cli/0.1.0 win32-x64 node-v8.12.0
+@kgrid/kgrid-cli/0.0.1 linux-x64 node-v10.15.3
 $ kgrid --help [COMMAND]
 USAGE
   $ kgrid COMMAND
@@ -29,45 +29,41 @@ USAGE
 <!-- usagestop -->
 # Commands
 <!-- commands -->
-* [`kgrid init`](#kgrid-init)
-* [`kgrid hello`](#kgrid-hello)
+* [`kgrid add`](#kgrid-add)
+* [`kgrid create [KO]`](#kgrid-create-ko)
 * [`kgrid help [COMMAND]`](#kgrid-help-command)
+* [`kgrid setup`](#kgrid-setup)
+* [`kgrid start`](#kgrid-start)
+* [`kgrid start:activator`](#kgrid-startactivator)
+* [`kgrid start:library`](#kgrid-startlibrary)
 
-## `kgrid init`
+## `kgrid add`
 
-Create the knowledge object implementation
-
-```
-USAGE
-  $ kgrid init
-
-OPTIONS
-  -v, --version=version  version for the implementation
-
-DESCRIPTION
-  ...
-  Extra documentation goes here
-```
-
-_See code: [src\commands\init.js](https://github.com/kgrid/kgrid-cli/blob/v0.1.0/src\commands\init.js)_
-
-## `kgrid hello`
-
-Describe the command here
+Add an implementation to the knowledge object.
 
 ```
 USAGE
-  $ kgrid hello
+  $ kgrid add
 
 OPTIONS
-  -n, --name=name  name to print
-
-DESCRIPTION
-  ...
-  Extra documentation goes here
+  -v, --version=version
 ```
 
-_See code: [src\commands\hello.js](https://github.com/kgrid/kgrid-cli/blob/v0.1.0/src\commands\hello.js)_
+_See code: [src/commands/add.js](https://github.com/kgrid/kgrid-cli/blob/v0.0.1/src/commands/add.js)_
+
+## `kgrid create [KO]`
+
+Create the knowledge object
+
+```
+USAGE
+  $ kgrid create [KO]
+
+OPTIONS
+  -v, --version=version
+```
+
+_See code: [src/commands/create.js](https://github.com/kgrid/kgrid-cli/blob/v0.0.1/src/commands/create.js)_
 
 ## `kgrid help [COMMAND]`
 
@@ -84,5 +80,65 @@ OPTIONS
   --all  see all commands in CLI
 ```
 
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.1.6/src\commands\help.ts)_
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.1.6/src/commands/help.ts)_
+
+## `kgrid setup`
+
+Setup KGrid Component
+
+```
+USAGE
+  $ kgrid setup
+
+OPTIONS
+  --home=home
+```
+
+_See code: [src/commands/setup.js](https://github.com/kgrid/kgrid-cli/blob/v0.0.1/src/commands/setup.js)_
+
+## `kgrid start`
+
+Start KGrid
+
+```
+USAGE
+  $ kgrid start
+
+OPTIONS
+  -s, --shelf=shelf
+```
+
+_See code: [src/commands/start/index.js](https://github.com/kgrid/kgrid-cli/blob/v0.0.1/src/commands/start/index.js)_
+
+## `kgrid start:activator`
+
+Start KGrid Activator
+
+```
+USAGE
+  $ kgrid start:activator
+
+OPTIONS
+  -j, --jarfile=jarfile
+  -p, --port=port
+  -s, --shelf=shelf
+```
+
+_See code: [src/commands/start/activator.js](https://github.com/kgrid/kgrid-cli/blob/v0.0.1/src/commands/start/activator.js)_
+
+## `kgrid start:library`
+
+Start KGrid Library
+
+```
+USAGE
+  $ kgrid start:library
+
+OPTIONS
+  -j, --jarfile=jarfile
+  -p, --port=port
+  -s, --shelf=shelf
+```
+
+_See code: [src/commands/start/library.js](https://github.com/kgrid/kgrid-cli/blob/v0.0.1/src/commands/start/library.js)_
 <!-- commandsstop -->

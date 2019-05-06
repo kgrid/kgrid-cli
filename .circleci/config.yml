@@ -1,0 +1,54 @@
+
+version: 2
+jobs:
+  build:
+    docker:
+    # specify the version you desire here
+    - image: circleci/openjdk:8-jdk-node
+
+    working_directory: ~/repo
+
+    steps:
+    - checkout
+
+    # Download and cache dependencies
+    - restore_cache:
+        keys:
+        - v1-dependencies-{{ checksum "package.json" }}
+        # fallback to using the latest cache if no exact match is found
+        - v1-dependencies-
+
+    - run:
+        name: Install KGrid CLI
+        command: |
+          npm install
+
+    - save_cache:
+        paths:
+        - node_modules
+        key: v1-dependencies-{{ checksum "package.json" }}
+
+    - run:
+        name: Create Release
+        command: |
+
+          if [ $RELEASE ]; then
+              git config --global user.email "$GIT_USER_EMAIL"
+              git config --global user.name "$GIT_USER_NAME"
+              echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/repo/.npmrc
+              echo "Update package version to $RELEASE"
+              npm version $RELEASE
+              git push
+              npm publish --access public
+
+              echo "Create release tag $RELEASE"
+              git tag $RELEASE
+              git push origin $RELEASE
+
+              echo "Create release $RELEASE"
+              RELEASE_ID=$(curl -X POST "https://api.github.com/repos/kgrid/kgrid-cli/releases?access_token=$GITHUB_TOKEN" \
+                        -H 'Content-Type:application/json' -d "{\"tag_name\":\"$RELEASE\",  \"name\":\"KGrid CLI $RELEASE\", \"prerelease\":$PRERELEASE}" | jq -r ".id")
+
+
+          fi
+

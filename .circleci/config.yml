@@ -21,6 +21,7 @@ jobs:
     - run:
         name: Install KGrid CLI
         command: |
+          npm config set package-lock false
           npm install
 
     - save_cache:

@@ -14,7 +14,11 @@
     "fs-extra": "^7.0.1",
     "inquirer": "^6.3.1",
     "js-yaml": "^3.13.1",
-    "shelljs": "^0.8.3"
+    "shelljs": "^0.8.3",
+    "jsonpath": "^1.0.1",
+    "download": "^7.1.0",
+    "request": "^2.88.0",
+    "cli-ux": "^5.2.1"
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1.22.0",

@@ -7,7 +7,7 @@ const shelljs = require('shelljs')
 const jp = require('jsonpath');
 const request = require('request');
 const download = require('download');
-var manifest = require('../template/manifest.json');
+const manifest = require('../template/manifest.json');
 
 // const {spawnSync} = require("child_process")
 
@@ -39,8 +39,8 @@ class SetupCommand extends Command {
 
     // Download and Install KGRID Components
     let requests = [];
-    for(var key in manifest.kitAssets) {
-      var asset = JSON.parse(JSON.stringify(manifest.kitAssets[key]));
+    for(let key in manifest.kitAssets) {
+      let asset = JSON.parse(JSON.stringify(manifest.kitAssets[key]));
       if(asset.length != undefined){
         asset.forEach(function(e, index){
           var el = JSON.parse(JSON.stringify(e));
@@ -70,8 +70,16 @@ SetupCommand.flags = {
 }
 
 function downloadAssets (asset) {
-  var options = {
-    url: asset.url + "/releases/tags/" + asset.tag_name,
+  let url;
+  // If no tag is specified get the latest
+  if(asset.tag_name) {
+    url = asset.url + "/releases/tags/" + asset.tag_name;
+  } else {
+    url = asset.url + "/releases/latest"
+  }
+
+  let options = {
+    url: url,
     headers: {
       "user-agent": "request"
     }
@@ -89,7 +97,7 @@ function downloadAssets (asset) {
         });
         let download_url = filteredasset[0][filter];
         let tag_name = jp.value(JSON.parse(body), '$.tag_name');
-        var artifact = {};
+        let artifact = {};
         let filename = download_url.substring(download_url.lastIndexOf('/') + 1);
         artifact.name = asset.name;
         artifact.filename = filename;

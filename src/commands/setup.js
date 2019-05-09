@@ -1,10 +1,10 @@
 const {Command, flags} = require('@oclif/command')
-const {cli} = require('cli-ux');
 const fs = require('fs-extra')
 const path = require('path')
 const jp = require('jsonpath');
 const request = require('request');
 const download = require('download');
+const Listr = require('listr')
 var manifest = require('../template/manifest.json');
 var khome = process.env.KGRID_HOME;
 const filter = 'browser_download_url';
@@ -43,9 +43,8 @@ class SetupCommand extends Command {
     } else {
       fs.writeJsonSync(manifestFile, manifest, {spaces: 4})
     }
-    // process.chdir(khome)
     // Download and Install KGRID Components
-    let requests = [];
+    let taskArray =[]
     for(let key in manifest.kitAssets) {
       let asset = JSON.parse(JSON.stringify(manifest.kitAssets[key]));
       if(asset.length != undefined){
@@ -53,21 +52,31 @@ class SetupCommand extends Command {
           var el = JSON.parse(JSON.stringify(e));
           el.name = key + '-' + index;
           el.destination = 'temp';
-          requests.push(downloadAssets(asset))
+          // requests.push(downloadAssets(asset))
         })
       } else {
         asset.name=key;
-        requests.push(downloadAssets(asset));
+        let obj = {
+      		title: key,
+      		task: ()=> downloadAssets(asset)
+      	}
+        taskArray.push(obj)
       }
     }
-    Promise.all(requests).then(function(artifacts){
-      artifacts.forEach(function(e){
-        manifest.kitAssets[e.name].installed = e.tag_name
-        manifest.kitAssets[e.name].filename = e.filename
-      })
-      // console.log(artifacts)
-      fs.writeJsonSync(manifestFile, manifest, {spaces: 4})
+    let tasks = new Listr(taskArray)
+
+    tasks.run()
+    .catch(err => {
+    	console.error(err);
     });
+    // Promise.all(requests).then(function(artifacts){
+    //   artifacts.forEach(function(e){
+    //     manifest.kitAssets[e.name].installed = e.tag_name
+    //     manifest.kitAssets[e.name].filename = e.filename
+    //   })
+    //   // console.log(artifacts)
+    //   fs.writeJsonSync(manifestFile, manifest, {spaces: 4})
+    // });
 
   }
 }
@@ -113,15 +122,10 @@ function downloadAssets (asset) {
         artifact.tag_name = tag_name;
         fs.pathExists(path.join(khome, filename)).then(exists =>{
           if(exists) {
-            console.log("Already have " + filename);
             resolve(artifact);
           } else {
-            cli.action.start('downloading ' + asset.name);
             download(download_url, path.join(khome,asset.destination), "{'extract':true}").then(() => {
-              // console.log(filename + " downloaded to "+ asset.destination);
               resolve(artifact);
-            }).then(() => {
-              cli.action.stop('done');
             });
           }
         })

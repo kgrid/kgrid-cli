@@ -1,21 +1,16 @@
 const {Command, flags} = require('@oclif/command')
 const {cli} = require('cli-ux');
-// const inquirer = require('inquirer')
 const fs = require('fs-extra')
 const path = require('path')
-const shelljs = require('shelljs')
 const jp = require('jsonpath');
 const request = require('request');
 const download = require('download');
-const manifest = require('../template/manifest.json');
-
-// const {spawnSync} = require("child_process")
-
+var manifest = require('../template/manifest.json');
+var khome = process.env.KGRID_HOME;
 const filter = 'browser_download_url';
 
 class SetupCommand extends Command {
   async run() {
-    // this.log(process.platform)
     const {flags} = this.parse(SetupCommand)
     let userHome = '';
     if (process.platform == 'win32'){
@@ -23,20 +18,32 @@ class SetupCommand extends Command {
     } else {
       userHome = process.env.HOME || process.env.HOMEPATH
     }
-    let home = flags.home || userHome;
-    let kgridHome = path.join(home, '.kgrid');
+    let home = flags.home
+    let kgridHome = path.join(userHome, '.kgrid');
 
-    // Set Environment Variable KGRID_HOME if not existing
-    let khome = process.env.KGRID_HOME;
-    if (!khome) {
-      shelljs.env['KGRID_HOME']=kgridHome
-      khome = process.env.KGRID_HOME;
+    if(home){
+      // if specifying home with flag
+      kgridHome = home
+      khome = home
+      this.log('KGrid will be set up at: '+home)
+    } else {
+      // if home not specified
+      if (!khome) {
+        this.log('KGRID_HOME not found. Default location will be used at: '+kgridHome)
+        khome = kgridHome;
+      }else {
+        this.log('Found KGRID_HOME. KGRID will be set up at: '+khome)
+      }
     }
-    this.log("looking for kgrid home at " + khome);
-    fs.ensureDirSync(khome)
-    process.chdir(khome)
-    this.log('Found KGRID_HOME at: ' + process.cwd());
 
+    fs.ensureDirSync(khome)
+    let manifestFile = path.join(khome,'manifest.json')
+    if(fs.pathExistsSync(manifestFile)){
+      manifest = fs.readJsonSync(manifestFile)
+    } else {
+      fs.writeJsonSync(manifestFile, manifest, {spaces: 4})
+    }
+    // process.chdir(khome)
     // Download and Install KGRID Components
     let requests = [];
     for(let key in manifest.kitAssets) {
@@ -53,13 +60,15 @@ class SetupCommand extends Command {
         requests.push(downloadAssets(asset));
       }
     }
-    Promise.all(requests);
-    fs.ensureDirSync( path.join(kgridHome, 'shelf') )
+    Promise.all(requests).then(function(artifacts){
+      artifacts.forEach(function(e){
+        manifest.kitAssets[e.name].installed = e.tag_name
+        manifest.kitAssets[e.name].filename = e.filename
+      })
+      // console.log(artifacts)
+      fs.writeJsonSync(manifestFile, manifest, {spaces: 4})
+    });
 
-
-    if (process.platform == 'win32'){
-      this.log('Please open a new terminal window for your next step to use the setting.')
-    }
   }
 }
 
@@ -72,7 +81,7 @@ SetupCommand.flags = {
 function downloadAssets (asset) {
   let url;
   // If no tag is specified get the latest
-  if(asset.tag_name) {
+  if(asset.tag_name && asset.tag_name!='') {
     url = asset.url + "/releases/tags/" + asset.tag_name;
   } else {
     url = asset.url + "/releases/latest"
@@ -102,14 +111,14 @@ function downloadAssets (asset) {
         artifact.name = asset.name;
         artifact.filename = filename;
         artifact.tag_name = tag_name;
-        fs.pathExists(path.join(asset.destination, filename)).then(exists =>{
+        fs.pathExists(path.join(khome, filename)).then(exists =>{
           if(exists) {
             console.log("Already have " + filename);
             resolve(artifact);
           } else {
             cli.action.start('downloading ' + asset.name);
-            download(download_url, asset.destination, "{'extract':true}").then(() => {
-              console.log(filename + " downloaded to "+ asset.destination);
+            download(download_url, path.join(khome,asset.destination), "{'extract':true}").then(() => {
+              // console.log(filename + " downloaded to "+ asset.destination);
               resolve(artifact);
             }).then(() => {
               cli.action.stop('done');
@@ -121,6 +130,7 @@ function downloadAssets (asset) {
 
     })
   });
+
 }
 
 module.exports = SetupCommand

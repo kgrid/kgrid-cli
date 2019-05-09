@@ -6,9 +6,9 @@ class LibraryCommand extends Command {
     const {flags} = this.parse(LibraryCommand)
     let shelf = flags.shelf || ''
     let port = flags.port || 8081
-    let jar = flags.jarfile || 'kgrid-library.jar'
-    let cmdObj = {component: jar, shelf: shelf, port: port}
-    await runKgrid(cmdObj)
+    let jar = flags.jarfile || ''
+    let cmdObj = {name:'library',component: jar, shelf: shelf, port: port}
+    runKgrid(cmdObj)
   }
 }
 

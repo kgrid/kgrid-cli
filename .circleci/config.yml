@@ -24,6 +24,10 @@ jobs:
           npm config set package-lock false
           npm install
 
+    - run:
+            name: KGrid CLI Tests
+            command: npm test
+
     - save_cache:
         paths:
         - node_modules

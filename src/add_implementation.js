@@ -2,7 +2,6 @@ const inquirer = require('inquirer')
 const fs = require('fs-extra')
 const yaml = require('js-yaml')
 const serviceObj = require('../src/template/service.json')
-// const deploymentObj = require('../template/deployment.json')
 const kometaObj = require('../src/template/kometadata.json')
 const implementationMetaObj = require('../src/template/impmetadata.json')
 const packageObj = require('../src/template/package.json')
@@ -19,7 +18,6 @@ async function addImplementation (version) {
     topMeta.hasImplementation = []
   }
   let ready = false
-  // let kotitle = topMeta.title
   let imptitle = impleMeta.title
 
   if (version!='') {
@@ -46,15 +44,8 @@ async function addImplementation (version) {
           }, 500)
         },
       },
-      // {
-      //   type: 'input',
-      //   name: 'title',
-      //   message: 'Implementation Title: ',
-      //   default: imptitle,
-      // },
     ])
     version = responses.version
-    // imptitle = responses.title
     ready = true
   }
   if (ready) {
@@ -91,17 +82,7 @@ async function addImplementation (version) {
         sortKeys: false,        // sort object keys
       })
     )
-    // fs.writeFileSync(version + '/deployment.yaml',
-    //   yaml.safeDump(deploymentObj, {
-    //     styles: {
-    //       '!!null': 'canonical', // dump null as ~
-    //     },
-    //     sortKeys: false,        // sort object keys
-    //   })
-    // )
-
     // Update package.JSON
-    // pkgJson.version = version.replace('v','')
     fs.writeJsonSync(version + '/package.json', pkgJson, {spaces: 4})
 
     // Create src folder for js files
@@ -112,7 +93,6 @@ async function addImplementation (version) {
     fs.ensureDirSync(version + '/test')
     fs.writeFileSync(version + '/test/welcome.test.js', 'const rewire = require("rewire") \n const javascript = rewire("../src/index") \n  var welcome = javascript.__get__("welcome") \n test("hello barney (src)", () => { expect( welcome({"name": "Barney Rubble"})).toBe("Welcome to Knowledge Grid, Barney Rubble")})')
     console.log('The implementation of ' + version + ' has been added.')
-
   }
 }
 module.exports=addImplementation

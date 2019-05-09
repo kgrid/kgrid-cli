@@ -35,7 +35,6 @@ class SetupCommand extends Command {
         this.log('Found KGRID_HOME. KGRID will be set up at: '+khome)
       }
     }
-
     fs.ensureDirSync(khome)
     let manifestFile = path.join(khome,'manifest.json')
     if(fs.pathExistsSync(manifestFile)){
@@ -47,37 +46,22 @@ class SetupCommand extends Command {
     let taskArray =[]
     for(let key in manifest.kitAssets) {
       let asset = JSON.parse(JSON.stringify(manifest.kitAssets[key]));
-      if(asset.length != undefined){
-        asset.forEach(function(e, index){
-          var el = JSON.parse(JSON.stringify(e));
-          el.name = key + '-' + index;
-          el.destination = 'temp';
-          // requests.push(downloadAssets(asset))
-        })
-      } else {
-        asset.name=key;
-        let obj = {
-      		title: key,
-      		task: ()=> downloadAssets(asset)
-      	}
-        taskArray.push(obj)
-      }
+      asset.name=key;
+      let obj = {
+    		title: key,
+    		task: () => { downloadAssets(asset).then(res=>{
+           manifest.kitAssets[key].installed = res.tag_name
+           manifest.kitAssets[key].filename = res.filename
+           fs.writeJsonSync(manifestFile, manifest, {spaces: 4})
+        }) }
+    	}
+      taskArray.push(obj)
     }
     let tasks = new Listr(taskArray)
-
     tasks.run()
     .catch(err => {
     	console.error(err);
     });
-    // Promise.all(requests).then(function(artifacts){
-    //   artifacts.forEach(function(e){
-    //     manifest.kitAssets[e.name].installed = e.tag_name
-    //     manifest.kitAssets[e.name].filename = e.filename
-    //   })
-    //   // console.log(artifacts)
-    //   fs.writeJsonSync(manifestFile, manifest, {spaces: 4})
-    // });
-
   }
 }
 
@@ -95,7 +79,6 @@ function downloadAssets (asset) {
   } else {
     url = asset.url + "/releases/latest"
   }
-
   let options = {
     url: url,
     headers: {
@@ -129,12 +112,9 @@ function downloadAssets (asset) {
             });
           }
         })
-
       }
-
     })
   });
-
 }
 
 module.exports = SetupCommand

@@ -4,11 +4,11 @@ const fs = require('fs-extra');
 const shell = require('shelljs');
 const tmp = require('tmp');
 
-const testDirectory = shell.tempdir();
+const testDirectory = tmp.dirSync();
 
 //Get back to temp test directory before each test
 beforeEach(function () {
-  shell.cd(testDirectory);
+  shell.cd(testDirectory.name);
 });
 
 describe('test happy day create ', () => {
@@ -21,31 +21,32 @@ describe('test happy day create ', () => {
     expect(output.stdout).to.include('Done');
 
     expect(fs.existsSync(path.join(
-      testDirectory, "test-ko", "metadata.json"))).to.be.true;
+      testDirectory.name, "test-ko", "metadata.json"))).to.be.true;
 
     expect(fs.existsSync(path.join(
-      testDirectory, "test-ko", "koversion", "metadata.json")),
+      testDirectory.name, "test-ko", "koversion", "metadata.json")),
       "find metadata.json file").to.be.true;
 
     expect(fs.existsSync(path.join(
-      testDirectory, "test-ko", "koversion", "package.json")),
+      testDirectory.name, "test-ko", "koversion", "package.json")),
       "find package.json file").to.be.true;
 
     expect(fs.existsSync(path.join(
-      testDirectory, "test-ko", "koversion", "service.yaml")),
+      testDirectory.name, "test-ko", "koversion", "service.yaml")),
       "find service.yaml file").to.be.true;
 
     expect(fs.existsSync(path.join(
-      testDirectory, "test-ko", "koversion", "src", "index.js")),
+      testDirectory.name, "test-ko", "koversion", "src", "index.js")),
       "find index.js file").to.be.true;
 
     expect(fs.existsSync(path.join(
-      testDirectory, "test-ko", "koversion", "test", "welcome.test.js")),
+      testDirectory.name, "test-ko", "koversion", "test", "welcome.test.js")),
       "find welcome.test.js file").to.be.true;
 
   });
 
 });
+
 describe('test not happy day create ', () => {
 
   test
@@ -79,6 +80,6 @@ describe('test not happy day create ', () => {
 });
 
 after(function () {
-  fs.remove(testDirectory);
+ testDirectory.removeCallback();
 });
 

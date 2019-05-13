@@ -1,41 +1,62 @@
 const {expect, test} = require('@oclif/test');
-const fs = require('fs-extra');
+const path = require('path');
 const shell = require('shelljs');
+const tmp = require('tmp');
 
-const tempDirectory = shell.tempdir();
+const testDirectory = tmp.dirSync();
+console.log(testDirectory.name)
 
-describe('test setup command', () => {
+describe('test setup command local', () => {
 
-  before(function () {
-    process.env.KGRID_HOME=tempDirectory.toString();
+  beforeEach(function () {
+    shell.cd(testDirectory.name);
   });
 
   test
   .stdout()
   .command('setup')
-  .timeout( 10000 )
-  .it('run setup with KGRID_HOME', ctx => {
-    expect(shell.ls(tempDirectory).grep('^kgrid-activator')).to.exist;
-    expect(shell.ls(tempDirectory).grep('^kgrid-library')).to.exist;
-    expect(shell.ls(tempDirectory).grep('shelf')).to.exist;
-    expect(shell.ls(tempDirectory).grep('manifest')).to.exist;
+  .timeout( 20000 )
+  .it('run setup local', ctx => {
+    expect(shell.ls(path.join(testDirectory.name,'.kgrid')).grep('^kgrid-activator').length,'should find activator').to.be.greaterThan(1);
+    expect(shell.ls(path.join(testDirectory.name,'.kgrid')).grep('^kgrid-library').length,'should find library').to.be.greaterThan(1);
+    expect(shell.ls(path.join(testDirectory.name,'.kgrid')).grep('manifest').length,'should find manifest').to.be.greaterThan(1);
   });
+  afterEach(function () {
+   testDirectory.removeCallback();
+  });
+
+});
+
+
+describe('test setup command global', () => {
 
   test
   .stdout()
-  .timeout( 1000 )
-  .command(['setup', '--home', tempDirectory.toString()])
-  .it('run setup with flag', ctx => {
-    expect(shell.ls(tempDirectory).grep('^kgrid-activator')).to.exist;
-    expect(shell.ls(tempDirectory).grep('^kgrid-library')).to.exist;
-    expect(shell.ls(tempDirectory).grep('shelf')).to.exist;
-    expect(shell.ls(tempDirectory).grep('manifest')).to.exist;
+  .command(['setup','-g'])
+  .timeout( 10000 )
+  .it('run setup global without KGRID_HOME', ctx => {
+    expect(shell.ls(path.join(process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE,'.kgrid')).grep('^kgrid-activator').length,'should find activator').to.be.greaterThan(1);
+    expect(shell.ls(path.join(process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE,'.kgrid')).grep('^kgrid-library').length,'should find library').to.be.greaterThan(1);
+    expect(shell.ls(path.join(process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE,'.kgrid')).grep('manifest').length,'should find manifest').to.be.greaterThan(1);
+  });
+
+  process.env.KGRID_HOME=testDirectory.name;
+
+  test
+  .stdout()
+  .command(['setup','-g'])
+  .timeout( 10000 )
+  .it('run setup global with KGRID_HOME', ctx => {
+    expect(shell.ls(path.join(testDirectory.name)).grep('^kgrid-activator').length,'should find activator').to.be.greaterThan(1);
+    expect(shell.ls(path.join(testDirectory.name)).grep('^kgrid-library').length,'should find library').to.be.greaterThan(1);
+    expect(shell.ls(path.join(testDirectory.name)).grep('manifest').length,'should find manifest').to.be.greaterThan(1);
   });
 
   after(function () {
-    fs.remove(tempDirectory.toString());
+    testDirectory.removeCallback();
   });
 });
+
 
 
 

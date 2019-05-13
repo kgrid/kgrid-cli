@@ -12,7 +12,10 @@ class SetupCommand extends Command {
   async run() {
     const {flags} = this.parse(SetupCommand)
     let userHome =  process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE;
-    let kgridHome = flags.home || process.env.KGRID_HOME || path.join(userHome, '.kgrid');
+    let kgridHome = path.join(process.cwd(), '.kgrid')
+    if(flags.global){
+      kgridHome =  process.env.KGRID_HOME || path.join(userHome, '.kgrid');
+    }
 
     this.log("setting up kgrid at", kgridHome);
 
@@ -31,31 +34,27 @@ class SetupCommand extends Command {
       requests.push(downloadAssets(asset,kgridHome));
 
     }
-    cli.action.start('downloading kgrid components');
-    fs.ensureDirSync(path.join(kgridHome, 'shelf'))
+    cli.action.start('Downloading kgrid components');
     await Promise.all(requests).then(function (artifacts) {
-
       artifacts.forEach(function (e) {
         manifest.kitAssets[e.name].installed = e.tag_name;
         manifest.kitAssets[e.name].filename = e.filename;
       })
-      // console.log(artifacts)
       fs.writeJsonSync(manifestFile, manifest, {spaces: 4});
-      cli.action.stop('done');
     }).then(values => {
+      cli.action.stop('done');
       this.log('kgrid setup complete');
     })
     .catch(error => {
       this.log(error.message);
     });
-
   }
 }
 
 SetupCommand.description = 'Setup KGrid Component'
 
 SetupCommand.flags = {
-  home: flags.string({}),
+  global: flags.boolean({char:'g'})
 }
 
 function downloadAssets (asset, basePath) {

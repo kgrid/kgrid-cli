@@ -9,33 +9,33 @@ function runKgrid(cmd) {
   let port = cmd.port
   let cmdstring ='java -jar '
 
-  let userHome = '';
-  if (process.platform == 'win32'){
-    userHome = process.env.USERPROFILE
-  } else {
-    userHome = process.env.HOME || process.env.HOMEPATH
-  }
+  let userHome = process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE
   let khome = process.env.KGRID_HOME;
   let kgridHome = path.join(userHome, '.kgrid');
+  let currentHome = path.join(process.cwd(), '.kgrid');
 
   if (!khome) {
-    khome = kgridHome;
+    khome = currentHome
+    if(!fs.pathExistsSync(khome)){
+      console.log("Could not find the required KGRID Component in current directory. \nWill look for the component in the default kgrid directory ...")
+      khome = kgridHome;
+    }
   }
+
   if(fs.pathExistsSync(khome)){
+    console.log("Starting KGrid "+cmd.name+"...")
     let manifest = fs.readJsonSync(path.join(khome, 'manifest.json'))
     let key = cmd.name
     if (kgridcomponent == '') {
       kgridcomponent = manifest.kitAssets[key].filename
     }
     if(shelf == ''){
-      // Use Current Directory as shelf
       shelf = process.cwd()
     }
     cmdstring = cmdstring + path.join(khome, kgridcomponent) + ' --server.port='+port+' --kgrid.shelf.cdostore.url=filesystem:file:///' + shelf.split(path.sep).join('/')
-    console.log(cmdstring)
     shelljs.exec(cmdstring, {async:true})
   } else {
-    console.log('Could not find the directory set as KGRID_HOME. Please run "kgrid setup".')
+    console.log('Could not find the directory with the required KGRID component. Please run "kgrid setup".')
   }
 }
 

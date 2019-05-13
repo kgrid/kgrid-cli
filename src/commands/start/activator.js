@@ -3,7 +3,7 @@ const runKgrid = require('../../run_kgrid')
 
 class ActivatorCommand extends Command {
   async run() {
-    const {flags} = this.parse(ActivatorCommand)
+    const {args, flags} = this.parse(ActivatorCommand)
     let shelf = flags.shelf || ''
     let port = flags.port || 8082
     let jar = flags.jarfile || ''

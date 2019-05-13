@@ -7,7 +7,7 @@ function runKgrid(cmd) {
   let shelf = cmd.shelf
   let kgridcomponent = cmd.component
   let port = cmd.port
-  let cmdstring ='start java -jar '
+  let cmdstring ='java -jar '
 
   let userHome = '';
   if (process.platform == 'win32'){

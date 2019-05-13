@@ -27,6 +27,8 @@ jobs:
     - run:
             name: KGrid CLI Tests
             command: npm test
+            environment:
+              HOME:  ~/repo
 
     - save_cache:
         paths:

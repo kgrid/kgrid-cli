@@ -28,7 +28,7 @@ jobs:
             name: KGrid CLI Tests
             command: npm test
             environment:
-              HOME:  ~/repo
+              HOME:  /home/circleci/repo
 
     - save_cache:
         paths:

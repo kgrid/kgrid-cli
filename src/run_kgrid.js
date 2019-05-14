@@ -2,6 +2,8 @@ const {Command, flags} = require('@oclif/command')
 const fs = require('fs-extra')
 const path = require('path')
 const shelljs = require('shelljs')
+const download = require('download');
+const kgridmanifest = 'https://demo.kgrid.org/kgrid/manifest.json'
 
 function runKgrid(cmd) {
   let shelf = cmd.shelf
@@ -13,7 +15,7 @@ function runKgrid(cmd) {
   let khome = process.env.KGRID_HOME;
   let kgridHome = path.join(userHome, '.kgrid');
   let currentHome = path.join(process.cwd(), '.kgrid');
-
+  let kgridAssets = {}
   if (!khome) {
     khome = currentHome
     if(!fs.pathExistsSync(khome)){
@@ -23,7 +25,6 @@ function runKgrid(cmd) {
   }
 
   if(fs.pathExistsSync(khome)){
-    console.log("Starting KGrid "+cmd.name+"...")
     let manifest = fs.readJsonSync(path.join(khome, 'manifest.json'))
     let key = cmd.name
     if (kgridcomponent == '') {
@@ -33,7 +34,18 @@ function runKgrid(cmd) {
       shelf = process.cwd()
     }
     cmdstring = cmdstring + path.join(khome, kgridcomponent) + ' --server.port='+port+' --kgrid.shelf.cdostore.url=filesystem:file:///' + shelf.split(path.sep).join('/')
-    shelljs.exec(cmdstring, {async:true})
+    download(kgridmanifest).then(data => {
+      kgridAssets = JSON.parse(data).kitAssets[key]
+      if(manifest.kitAssets[key].installed==kgridAssets.tag_name){
+        console.log(key+": You have the latest version.")
+      } else {
+        console.log(key+": A new version is available. Please run `kgrid setup -u` to update.")
+      }
+      console.log("Starting KGrid "+cmd.name+"...")
+      shelljs.exec(cmdstring, {async:true})
+    })
+
+
   } else {
     console.log('Could not find the directory with the required KGRID component. Please run "kgrid setup".')
   }

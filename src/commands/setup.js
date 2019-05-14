@@ -2,7 +2,6 @@ const {Command, flags} = require('@oclif/command');
 const {cli} = require('cli-ux');
 const fs = require('fs-extra')
 const path = require('path')
-const request = require('request');
 const download = require('download');
 const kgridmanifest = 'https://demo.kgrid.org/kgrid/manifest.json'
 var manifest = {}
@@ -16,15 +15,13 @@ class SetupCommand extends Command {
     if(flags.global){
       kgridHome =  process.env.KGRID_HOME || path.join(userHome, '.kgrid');
     }
-    this.log("setting up kgrid at", kgridHome);
+    this.log("Setting up kgrid at", kgridHome);
     fs.ensureDirSync(kgridHome)
     let manifestFile = path.join(kgridHome, 'manifest.json');
     if(fs.pathExistsSync(manifestFile) && !flags.update){
-      console.log("Using existing manifest")
       downloadAssets(manifestFile)
     }else {
       download(kgridmanifest, kgridHome, "{'extract':true}").then(() => {
-        console.log("Using downloaded manifest")
         downloadAssets(manifestFile)
       })
     }

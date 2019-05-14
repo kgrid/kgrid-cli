@@ -55,23 +55,21 @@ Before a knowledge object can be created, a folder needs to be designated or cre
 
 - Create the Knowledge Object (KO)
 
-  `kgrid create `
+  `kgrid create <ko>`
 
-It will prompt for entering the implementation information.
-
-You can also use the command flag to create the KO.
-
-  `kgrid create --ko=<myko>`
 
 If the KO exists, you will be prompted to choose a different name for the KO.
 
 Once the KO is created, you will be prompted to name the first implementation for this KO. And the first implementation will be initialized using the build-in template.
 
-Now you are ready browse your first KO implementation.
+Now you are ready to browse your first KO implementation.
 
-If you have KGrid set up and started, the sample test can be tried by running
+The sample test can be tried by running
 
-`npm run test`
+```
+npm install
+npm run test
+```
 
 from the implementation directory.
 
@@ -82,12 +80,20 @@ If a KO directory exists or you like to use a existing folder as KO folder, you 
 
 `kgrid add`
 
+An implementation will be initialized using the build-in template. The top level metadata for the KO will be updated.
+
 
 ### Setup Knowledge Kgrid
 
 The command SETUP will check if you have KGRID components installed and set up.
 
-`kgrid setup`
+`kgrid setup` will use the current directory to install KGRID components. Library and Activator jar files will be downloaded and installed under `.kgrid`;
+
+`kgrid setup -g` will install KGRID components in the location specified by the environmental variable KGRID_HOME. if KGRID_HOME is not set, the default location will be `.kgrid` under the user home.
+
+`-u` will enable the setup process to install the latest releases of the KGRID components
+
+
 
 
 ### Start Knowledge Kgrid

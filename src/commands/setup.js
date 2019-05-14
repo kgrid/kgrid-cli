@@ -2,11 +2,10 @@ const {Command, flags} = require('@oclif/command');
 const {cli} = require('cli-ux');
 const fs = require('fs-extra')
 const path = require('path')
-const jp = require('jsonpath');
 const request = require('request');
 const download = require('download');
-let manifest = require('../template/manifest.json');
-const filter = 'browser_download_url';
+const kgridmanifest = 'https://demo.kgrid.org/kgrid/manifest.json'
+var manifest = {}
 
 class SetupCommand extends Command {
   async run() {
@@ -16,38 +15,32 @@ class SetupCommand extends Command {
     if(flags.global){
       kgridHome =  process.env.KGRID_HOME || path.join(userHome, '.kgrid');
     }
-
     this.log("setting up kgrid at", kgridHome);
-
     fs.ensureDirSync(kgridHome)
     let manifestFile = path.join(kgridHome, 'manifest.json');
-    if (fs.pathExistsSync(manifestFile)) {
+    download(kgridmanifest, kgridHome, "{'extract':true}").then(() => {
       manifest = fs.readJsonSync(manifestFile)
-    } else {
-      fs.writeJsonSync(manifestFile, manifest, {spaces: 4})
-    }
-
-    let requests = [];
-    for (let key in manifest.kitAssets) {
-      let asset = JSON.parse(JSON.stringify(manifest.kitAssets[key]));
-      asset.name = key;
-      requests.push(downloadAssets(asset,kgridHome));
-
-    }
-    cli.action.start('Downloading kgrid components');
-    await Promise.all(requests).then(function (artifacts) {
-      artifacts.forEach(function (e) {
-        manifest.kitAssets[e.name].installed = e.tag_name;
-        manifest.kitAssets[e.name].filename = e.filename;
+      let requests = [];
+      for (let key in manifest.kitAssets) {
+        let asset = JSON.parse(JSON.stringify(manifest.kitAssets[key]));
+        asset.name = key;
+        requests.push(downloadAssets(asset,kgridHome));
+      }
+      cli.action.start('Downloading kgrid components');
+      Promise.all(requests).then(function (artifacts) {
+        artifacts.forEach(function (e) {
+          manifest.kitAssets[e.name].installed = e.tag_name;
+          manifest.kitAssets[e.name].filename = e.filename;
+        })
+        fs.writeJsonSync(manifestFile, manifest, {spaces: 4});
+      }).then(values => {
+        cli.action.stop('done');
+        this.log('kgrid setup complete');
       })
-      fs.writeJsonSync(manifestFile, manifest, {spaces: 4});
-    }).then(values => {
-      cli.action.stop('done');
-      this.log('kgrid setup complete');
+      .catch(error => {
+        this.log(error.message);
+      });
     })
-    .catch(error => {
-      this.log(error.message);
-    });
   }
 }
 
@@ -58,49 +51,18 @@ SetupCommand.flags = {
 }
 
 function downloadAssets (asset, basePath) {
-  let url;
-  // If no tag is specified get the latest
-  if(asset.tag_name && asset.tag_name!='') {
-    url = asset.url + "/releases/tags/" + asset.tag_name;
-  } else {
-    url = asset.url + "/releases/latest";
-  }
-  let options = {
-    url: url,
-    headers: {
-      "user-agent": "request"
-    }
-  };
-
   return new Promise((resolve, reject) => {
-    request(options, function (error, response, body) {
-      if (error) {
-        reject(error);
+    let download_url = asset.url
+    fs.pathExists(path.join(basePath, asset.filename)).then(exists =>{
+      if(exists) {
+        resolve(asset);
       } else {
-        let resp = JSON.parse(body);
-        let assets = resp.assets;
-        let filteredasset = assets.filter(function (e) {
-          return (e.name == asset.filename) || (asset.filename == '');
+        download(download_url, path.join(basePath), "{'extract':true}").then(() => {
+          resolve(asset);
         });
-        let download_url = filteredasset[0][filter];
-        let tag_name = jp.value(JSON.parse(body), '$.tag_name');
-        let artifact = {};
-        let filename = download_url.substring(download_url.lastIndexOf('/') + 1);
-        artifact.name = asset.name;
-        artifact.filename = filename;
-        artifact.tag_name = tag_name;
-        fs.pathExists(path.join(basePath, filename)).then(exists =>{
-          if(exists) {
-            resolve(artifact);
-          } else {
-            download(download_url, path.join(basePath,asset.destination), "{'extract':true}").then(() => {
-              resolve(artifact);
-            });
-          }
-        })
       }
     })
-  });
+  })
 }
 
 module.exports = SetupCommand;

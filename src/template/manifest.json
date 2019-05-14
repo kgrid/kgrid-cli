@@ -6,14 +6,12 @@
     "library": {
       "url": "https://api.github.com/repos/kgrid/kgrid-library",
       "filename": "",
-      "destination": "./",
       "tag_name": ""
     },
     "activator": {
       "url": "https://api.github.com/repos/kgrid/kgrid-activator",
       "filename": "",
-      "tag_name": "",
-      "destination": "./"
+      "tag_name": ""
     }
   }
 }

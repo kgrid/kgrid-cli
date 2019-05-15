@@ -2,10 +2,12 @@ const inquirer = require('inquirer')
 const fs = require('fs-extra')
 const yaml = require('js-yaml')
 const path =require('path')
-const serviceObj = require('../src/template/simple/service.json')
+const serviceObj = require('../src/template/bundled/service.json')
 const kometaObj = require('../src/template/kometadata.json')
-const implementationMetaObj = require('../src/template/simple/impmetadata.json')
-const packageObj = require('../src/template/simple/package.json')
+const implementationMetaObj = require('../src/template/bundled/impmetadata.json')
+const packageObj = require('../src/template/bundled/package.json')
+const source = require.resolve('../src/template/bundled/src/index.js')
+const sourcePath = path.dirname(path.dirname(source))
 
 var topMeta = JSON.parse(JSON.stringify(kometaObj))
 var impleMeta = JSON.parse(JSON.stringify(implementationMetaObj))
@@ -81,17 +83,15 @@ async function addImplementation (ko, version) {
 
     // Create src folder for js files
     fs.ensureDirSync(path.join(implementationPath, 'src'))
-    fs.writeFileSync(path.join(implementationPath, 'src/index.js'), 'function welcome(inputs){\n name = inputs.name; \n  return "Welcome to Knowledge Grid, " + name;\n }')
-
+    console.log(sourcePath)
+    // fs.writeFileSync(path.join(implementationPath, 'src/index.js'), 'function welcome(inputs){\n name = inputs.name; \n  return "Welcome to Knowledge Grid, " + name;\n }')
+    fs.copySync(path.join(sourcePath,'src'), path.join(implementationPath, 'src'))
     // Create src folder for js files
     fs.ensureDirSync(path.join(implementationPath, 'test'))
-    fs.writeFileSync(path.join(implementationPath, 'test/welcome.test.js'), 'const rewire = require("rewire") \n const javascript = rewire("../src/index") \n  var welcome = javascript.__get__("welcome") \n test("hello barney (src)", () => { expect( welcome({"name": "Barney Rubble"})).toBe("Welcome to Knowledge Grid, Barney Rubble")})')
+    // fs.writeFileSync(path.join(implementationPath, 'test/welcome.test.js'), 'const rewire = require("rewire") \n const javascript = rewire("../src/index") \n  var welcome = javascript.__get__("welcome") \n test("hello barney (src)", () => { expect( welcome({"name": "Barney Rubble"})).toBe("Welcome to Knowledge Grid, Barney Rubble")})')
+    fs.copySync(path.join(sourcePath,'test'), path.join(implementationPath, 'test'))
 
-    if(ko==''){
-      console.log('The implementation of ' + version + ' has been added.')
-    }else {
-      console.log('The implementation of ' + version + ' has been initialized.')
-    }
+    console.log('The implementation of ' + version + ' has been added.')
   }
 }
 module.exports=addImplementation

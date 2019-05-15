@@ -1,8 +1,8 @@
 const {Command, flags} = require('@oclif/command')
 const inquirer = require('inquirer')
 const fs = require('fs-extra')
-const kometaObj = require('../template/kometadata.json')
-const addImplementation = require('../add_implementation')
+const kometaObj = require('../../template/kometadata.json')
+const addImplementation = require('../../add_implementation')
 
 var topMeta = JSON.parse(JSON.stringify(kometaObj))
 
@@ -31,7 +31,7 @@ class CreateCommand extends Command {
         // process.chdir(ko)
         this.log('==== Initialize the first implementation ==== ')
         await addImplementation(ko, version).then(()=>{
-          console.log('The knowledge object is ready.')
+          console.log('Ready.')
         }).catch(e=>console.err(e.message))
       }
     } else {
@@ -47,7 +47,9 @@ CreateCommand.flags = {
 }
 
 CreateCommand.args = [
-  {name:'ko'}
+  {name:'ko'},
 ]
+
+CreateCommand.aliases = ['create:simple']
 
 module.exports = CreateCommand

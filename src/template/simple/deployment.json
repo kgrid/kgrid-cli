@@ -1,0 +1,9 @@
+{
+  "endpoints": {
+    "/welcome": {
+      "adapterType": "JAVASCRIPT",
+      "artifact": "src/index.js",
+      "entry": "welcome"
+    }
+  }
+}

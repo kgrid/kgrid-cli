@@ -1,14 +1,14 @@
 const {Command, flags} = require('@oclif/command')
 const inquirer = require('inquirer')
 const fs = require('fs-extra')
-const kometaObj = require('../template/kometadata.json')
-const addImplementation = require('../add_implementation')
+const kometaObj = require('../../template/kometadata.json')
+const addImplementation = require('../../add_bundled_implementation')
 
 var topMeta = JSON.parse(JSON.stringify(kometaObj))
 
-class CreateCommand extends Command {
+class BundledCommand extends Command {
   async run() {
-    const {args, flags} = this.parse(CreateCommand)
+    const {args, flags} = this.parse(BundledCommand)
     let ko = args.ko
     let version = flags.version || ''
     let ready = false
@@ -31,8 +31,8 @@ class CreateCommand extends Command {
         // process.chdir(ko)
         this.log('==== Initialize the first implementation ==== ')
         await addImplementation(ko, version).then(()=>{
-          console.log('The knowledge object is ready.')
-        }).catch(e=>console.err(e.message))
+          console.log('Ready.')
+        }).catch(e=>console.log(e.message))
       }
     } else {
       this.log('Please provide a name for your knowledge object. \nUsage: \n    kgrid create <ko>')
@@ -40,14 +40,14 @@ class CreateCommand extends Command {
   }
 }
 
-CreateCommand.description = 'Create the knowledge object'
+BundledCommand.description = 'Create the knowledge object'
 
-CreateCommand.flags = {
+BundledCommand.flags = {
   version: flags.string({char: 'v'}),
 }
 
-CreateCommand.args = [
-  {name:'ko'}
+BundledCommand.args = [
+  {name:'ko'},
 ]
 
-module.exports = CreateCommand
+module.exports = BundledCommand

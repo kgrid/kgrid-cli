@@ -1,0 +1,11 @@
+{
+  "@id": "bundled",
+  "@type": "koio:Implementation",
+  "identifier": "ark:/hello/world/bundled",
+  "title": "Implementation Title",
+  "hasServiceSpecification": "bundled/service.yaml",
+  "hasPayload": "bundled/welcome.js",
+  "@context": [
+    "http://kgrid.org/koio/contexts/implementation.jsonld"
+  ]
+}

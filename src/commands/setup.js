@@ -36,7 +36,7 @@ SetupCommand.flags = {
 }
 
 function downloadAssets (manifestFile) {
-  console.log(kgridHome)
+  // console.log(kgridHome)
   manifest = fs.readJsonSync(manifestFile)
   let requests = [];
   for (let key in manifest.kitAssets) {

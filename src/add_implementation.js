@@ -6,6 +6,8 @@ const serviceObj = require('../src/template/simple/service.json')
 const kometaObj = require('../src/template/kometadata.json')
 const implementationMetaObj = require('../src/template/simple/impmetadata.json')
 const packageObj = require('../src/template/simple/package.json')
+const source = require.resolve('../src/template/simple/src/index.js')
+const sourcePath = path.dirname(path.dirname(source))
 
 var topMeta = JSON.parse(JSON.stringify(kometaObj))
 var impleMeta = JSON.parse(JSON.stringify(implementationMetaObj))
@@ -76,16 +78,16 @@ async function addImplementation (ko, version) {
         sortKeys: false,        // sort object keys
       })
     )
+
     // Update package.JSON
     fs.writeJsonSync(path.join(implementationPath,'package.json'), pkgJson, {spaces: 4})
 
     // Create src folder for js files
     fs.ensureDirSync(path.join(implementationPath, 'src'))
-    fs.writeFileSync(path.join(implementationPath, 'src/index.js'), 'function welcome(inputs){\n name = inputs.name; \n  return "Welcome to Knowledge Grid, " + name;\n }')
-
-    // Create src folder for js files
+    fs.copySync(path.join(sourcePath,'src'), path.join(implementationPath, 'src'))
+    // Create test folder for js files
     fs.ensureDirSync(path.join(implementationPath, 'test'))
-    fs.writeFileSync(path.join(implementationPath, 'test/welcome.test.js'), 'const rewire = require("rewire") \n const javascript = rewire("../src/index") \n  var welcome = javascript.__get__("welcome") \n test("hello barney (src)", () => { expect( welcome({"name": "Barney Rubble"})).toBe("Welcome to Knowledge Grid, Barney Rubble")})')
+    fs.copySync(path.join(sourcePath,'test'), path.join(implementationPath, 'test'))
 
     if(ko==''){
       console.log('The implementation of ' + version + ' has been added.')

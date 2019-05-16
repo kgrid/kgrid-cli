@@ -1,5 +1,5 @@
 const {Command, flags} = require('@oclif/command')
-const addImplementation = require('../../add_bundled_implementation')
+const addImplementation = require('../../add_implementation')
 
 class AddCommand extends Command {
   async run() {

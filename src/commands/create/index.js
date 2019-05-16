@@ -13,7 +13,6 @@ class CreateCommand extends Command {
     let version = flags.version || ''
     let ready = false
     topMeta.hasImplementation = []
-    let title = topMeta.title
     if (ko) {
       if (fs.pathExistsSync(ko)) {
         this.log('Path existing. Please start over with a different name for the knowledge object.')
@@ -25,14 +24,13 @@ class CreateCommand extends Command {
         fs.ensureDirSync(ko)
 
         // Generate Top Level Metadata
-        topMeta.title = title
         fs.writeJsonSync(ko+'/metadata.json', topMeta, {spaces: 4})
 
         // process.chdir(ko)
         this.log('==== Initialize the first implementation ==== ')
-        await addImplementation(ko, version).then(()=>{
+        await addImplementation(ko, version, 'simple').then(()=>{
           console.log('Ready.')
-        }).catch(e=>console.err(e.message))
+        }).catch(e=>console.log(e.message))
       }
     } else {
       this.log('Please provide a name for your knowledge object. \nUsage: \n    kgrid create <ko>')

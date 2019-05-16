@@ -2,7 +2,7 @@ const {Command, flags} = require('@oclif/command')
 const inquirer = require('inquirer')
 const fs = require('fs-extra')
 const kometaObj = require('../../template/kometadata.json')
-const addImplementation = require('../../add_bundled_implementation')
+const addImplementation = require('../../add_implementation')
 
 var topMeta = JSON.parse(JSON.stringify(kometaObj))
 
@@ -30,7 +30,7 @@ class BundledCommand extends Command {
 
         // process.chdir(ko)
         this.log('==== Initialize the first implementation ==== ')
-        await addImplementation(ko, version).then(()=>{
+        await addImplementation(ko, version,'bundled').then(()=>{
           console.log('Ready.')
         }).catch(e=>console.log(e.message))
       }

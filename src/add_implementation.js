@@ -2,27 +2,11 @@ const inquirer = require('inquirer')
 const fs = require('fs-extra')
 const yaml = require('js-yaml')
 const path =require('path')
-const serviceObj = require('../src/template/simple/service.json')
-const kometaObj = require('../src/template/kometadata.json')
-const implementationMetaObj = require('../src/template/simple/impmetadata.json')
-const packageObj = require('../src/template/simple/package.json')
-const source = require.resolve('../src/template/simple/src/index.js')
-const sourcePath = path.dirname(path.dirname(source))
+const source = require.resolve('../src/template/kometadata.json')
+const topSourcePath = path.dirname(source)
 
-var topMeta = JSON.parse(JSON.stringify(kometaObj))
-var impleMeta = JSON.parse(JSON.stringify(implementationMetaObj))
-var impleService = JSON.parse(JSON.stringify(serviceObj))
-var pkgJson = JSON.parse(JSON.stringify(packageObj))
-
-async function addImplementation (ko, version) {
-  if (fs.pathExistsSync(path.join(ko,'metadata.json'))) {
-    topMeta = fs.readJsonSync(path.join(ko,'metadata.json'))
-  } else {
-    topMeta.hasImplementation = []
-  }
+async function addImplementation (ko, version, template) {
   let ready = false
-  let imptitle = impleMeta.title
-
   if (version!='') {
     if (fs.pathExistsSync(path.join(ko,version))) {
       console.log('Path existing. Please start over with a different name for the implementation.')
@@ -45,6 +29,21 @@ async function addImplementation (ko, version) {
     ready = true
   }
   if (ready) {
+    var sourcePath = path.join(topSourcePath, template)
+    var topMeta
+    if (fs.pathExistsSync(path.join(ko,'metadata.json'))) {
+      topMeta = fs.readJsonSync(path.join(ko,'metadata.json'))
+    } else {
+      topMeta = fs.readJsonSync(path.join(topSourcePath,'metadata.json'))
+    }
+
+    const serviceObj = fs.readJsonSync(path.join(sourcePath,'service.json'))
+    const implementationMetaObj = fs.readJsonSync(path.join(sourcePath,'impmetadata.json'))
+    const packageObj = fs.readJsonSync(path.join(sourcePath,'package.json'))
+
+    var impleMeta = JSON.parse(JSON.stringify(implementationMetaObj))
+    var impleService = JSON.parse(JSON.stringify(serviceObj))
+    var pkgJson = JSON.parse(JSON.stringify(packageObj))
 
     let idArr = topMeta.identifier.split('/')
     let idNaan = idArr[1]
@@ -61,7 +60,6 @@ async function addImplementation (ko, version) {
 
     // Update Implementation Metadata
     impleMeta['@id'] = version
-    impleMeta.title=imptitle
     impleMeta.identifier = 'ark:/' + idNaan + '/' + idName + '/' + version
     impleMeta.hasServiceSpecification = version + '/service.yaml'
     impleMeta.hasPayload = version + '/src/index.js'
@@ -85,9 +83,15 @@ async function addImplementation (ko, version) {
     // Create src folder for js files
     fs.ensureDirSync(path.join(implementationPath, 'src'))
     fs.copySync(path.join(sourcePath,'src'), path.join(implementationPath, 'src'))
+
     // Create test folder for js files
     fs.ensureDirSync(path.join(implementationPath, 'test'))
     fs.copySync(path.join(sourcePath,'test'), path.join(implementationPath, 'test'))
+
+    if(template=='bundled') {
+      // Add webpack.config.js for bundled implementation
+      fs.copySync(path.join(sourcePath,'webpack.config.js'), path.join(implementationPath,'webpack.config.js'))
+    }
 
     if(ko==''){
       console.log('The implementation of ' + version + ' has been added.')

@@ -5,7 +5,7 @@ class AddCommand extends Command {
   async run() {
     const {flags} = this.parse(AddCommand)
     let version = flags.version || ''
-    addImplementation('',version)
+    addImplementation('',version,'simple')
   }
 }
 

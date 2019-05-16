@@ -1,11 +1,11 @@
 const {Command, flags} = require('@oclif/command')
-const addImplementation = require('../../add_bundled_implementation')
+const addImplementation = require('../../add_implementation')
 
 class BundledCommand extends Command {
   async run() {
     const {flags} = this.parse(BundledCommand)
     let version = flags.version || ''
-    addImplementation('',version)
+    addImplementation('',version,'bundled')
   }
 }
 

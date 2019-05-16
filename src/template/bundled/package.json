@@ -11,8 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "lodash.find": "^4.6.0",
-    "webpack-bundle-analyzer": "^3.3.2"
+    "lodash.find": "^4.6.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.2.3",

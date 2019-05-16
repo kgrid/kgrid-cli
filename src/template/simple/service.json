@@ -43,7 +43,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/error"
+                  "$ref": "https://demo.kgrid.org/schemas/basicerror.yaml"
                 }
               }
             }

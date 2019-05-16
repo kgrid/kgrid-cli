@@ -83,15 +83,23 @@ async function addImplementation (ko, version) {
 
     // Create src folder for js files
     fs.ensureDirSync(path.join(implementationPath, 'src'))
-    console.log(sourcePath)
     // fs.writeFileSync(path.join(implementationPath, 'src/index.js'), 'function welcome(inputs){\n name = inputs.name; \n  return "Welcome to Knowledge Grid, " + name;\n }')
     fs.copySync(path.join(sourcePath,'src'), path.join(implementationPath, 'src'))
-    // Create src folder for js files
+    // Create test folder for js files
     fs.ensureDirSync(path.join(implementationPath, 'test'))
     // fs.writeFileSync(path.join(implementationPath, 'test/welcome.test.js'), 'const rewire = require("rewire") \n const javascript = rewire("../src/index") \n  var welcome = javascript.__get__("welcome") \n test("hello barney (src)", () => { expect( welcome({"name": "Barney Rubble"})).toBe("Welcome to Knowledge Grid, Barney Rubble")})')
     fs.copySync(path.join(sourcePath,'test'), path.join(implementationPath, 'test'))
 
-    console.log('The implementation of ' + version + ' has been added.')
+    // Add webpack.config.js
+    fs.copySync(path.join(sourcePath,'webpack.config.js'), path.join(implementationPath,'webpack.config.js'))
+
+
+
+    if(ko==''){
+      console.log('The implementation of ' + version + ' has been added.')
+    }else {
+      console.log('The implementation of ' + version + ' has been initialized.')
+    }
   }
 }
 module.exports=addImplementation

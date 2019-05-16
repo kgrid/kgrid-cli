@@ -1,21 +1,21 @@
 {
-  "openapi": "3.0.2",
+  "openapi": "3.0.0",
   "info": {
-    "version": "0.1",
-    "title": "Hello, World",
-    "description": "hello world"
+    "version": "1.0.0",
+    "title": "SCORE risk calculation",
+    "description": "SCORE risk calculation"
   },
   "servers": [
     {
-      "url": "/hello/world/bundled/",
-      "description": "Hello world"
+      "url": "/score/calc/v0.3.0",
+      "description": "SCORE risk calculation."
     }
   ],
   "paths": {
-    "/welcome": {
+    "/score": {
       "post": {
-        "description": "Welcome.",
-        "operationId": "welcome",
+        "description": "SCORE risk calculation.",
+        "operationId": "cvdriskscore",
         "requestBody": {
           "description": "inputs",
           "required": true,
@@ -43,16 +43,16 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/error"
+                  "$ref": "https://demo.kgrid.org/schemas/basicerror.yaml"
                 }
               }
             }
           }
         },
         "x-kgrid-activation": {
-          "artifact": "src/index.js",
+          "artifact": "dist/main.js",
           "adapter": "JAVASCRIPT",
-          "entry": "welcome"
+          "entry": "score"
         }
       }
     }
@@ -61,14 +61,57 @@
     "schemas": {
       "input": {
         "required": [
-          "name"
+          "age",
+          "gender",
+          "risk",
+          "sbp",
+          "cholesterol",
+          "smoker"
         ],
         "properties": {
-          "name": {
+          "age": {
+            "type": "number",
+            "x-kgrid-label": "Patient Age",
+            "x-kgrid-unit": "yr",
+            "example": 48
+          },
+          "gender": {
             "type": "string",
-            "x-kgrid-label": "Please enter your name",
+            "x-kgrid-label": "Gender of the patient",
             "x-kgrid-unit": "",
-            "example": "Bob"
+            "enum": [
+              "Male",
+              "Female"
+            ],
+            "example": "Female"
+          },
+          "risk": {
+            "type": "string",
+            "x-kgrid-label": "Choose the population risk level",
+            "x-kgrid-unit": "",
+            "enum": [
+              "high",
+              "low"
+            ],
+            "example": "low"
+          },
+          "sbp": {
+            "type": "number",
+            "x-kgrid-label": "Systolic Blood Pressure",
+            "x-kgrid-unit": "mmHg",
+            "example": 120
+          },
+          "cholesterol": {
+            "type": "number",
+            "x-kgrid-label": "Total Cholesterol",
+            "x-kgrid-unit": "mmol/L",
+            "example": 8
+          },
+          "smoker": {
+            "type": "boolean",
+            "x-kgrid-label": "Is the patient a current smoker?",
+            "x-kgrid-unit": "",
+            "example": false
           }
         }
       },
@@ -79,21 +122,6 @@
         "properties": {
           "result": {
             "type": "object"
-          }
-        }
-      },
-      "error": {
-        "required": [
-          "code",
-          "message"
-        ],
-        "properties": {
-          "code": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "message": {
-            "type": "string"
           }
         }
       }

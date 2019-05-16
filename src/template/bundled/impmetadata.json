@@ -1,10 +1,10 @@
 {
   "@id": "bundled",
   "@type": "koio:Implementation",
-  "identifier": "ark:/hello/world/bundled",
+  "identifier": "ark:/score/calc/bundled",
   "title": "Implementation Title",
   "hasServiceSpecification": "bundled/service.yaml",
-  "hasPayload": "bundled/welcome.js",
+  "hasPayload": "bundled/dist/main.js",
   "@context": [
     "http://kgrid.org/koio/contexts/implementation.jsonld"
   ]

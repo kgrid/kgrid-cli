@@ -79,6 +79,9 @@ USAGE
 
 OPTIONS
   -v, --version=version
+
+ALIASES
+  $ kgrid create:simple
 ```
 
 _See code: [src\commands\create\index.js](https://github.com/kgrid/kgrid-cli/blob/v0.0.5/src\commands\create\index.js)_

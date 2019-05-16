@@ -18,7 +18,7 @@ describe('test happy day create ', () => {
   .command(['create', 'test-ko', '-v', 'koversion'])
   .it('runs create with test-ko name and koversion implementation', output => {
 
-    expect(output.stdout).to.include('Done');
+    expect(output.stdout).to.include('Ready');
 
     expect(fs.existsSync(path.join(
       testDirectory.name, "test-ko", "metadata.json"))).to.be.true;
@@ -82,4 +82,3 @@ describe('test not happy day create ', () => {
 after(function () {
  testDirectory.removeCallback();
 });
-

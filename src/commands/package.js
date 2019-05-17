@@ -74,7 +74,7 @@ class CreateCommand extends Command {
             Object.keys(endpoints).forEach(endpoint => {
               let payloadPaths = jp.query(endpoints[endpoint], "$.*['x-kgrid-activation'].artifact");
               payloadPaths.forEach(methodPath => {
-                let payloadPath =path.join(version, methodPath)
+                let payloadPath = path.join(version, methodPath);
                 if (fs.pathExistsSync(payloadPath)) {
                   console.log("Copying " + payloadPath);
                   archive.append(fs.createReadStream(payloadPath),
@@ -109,8 +109,8 @@ CreateCommand.description = 'Package the knowledge object';
 
 CreateCommand.flags = {
   version: flags.string({char: 'v'}),
-  includeSource: flags.string({char: 's'}),
-  includeTests: flags.string({char: 't'})
+  includeSource: flags.string({char: 's'}), // Future option
+  includeTests: flags.string({char: 't'}) // Future option
 };
 
 CreateCommand.args = [

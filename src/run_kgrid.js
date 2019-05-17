@@ -30,10 +30,17 @@ function runKgrid(cmd) {
     if (kgridcomponent == '') {
       kgridcomponent = manifest.kitAssets[key].filename
     }
+    cmdstring = cmdstring + path.join(khome, kgridcomponent)
     if(shelf == ''){
       shelf = process.cwd()
     }
-    cmdstring = cmdstring + path.join(khome, kgridcomponent) + ' --server.port='+port+' --kgrid.shelf.cdostore.url=filesystem:file:///' + shelf.split(path.sep).join('/')
+    if(shelf!=''){
+      cmdstring = cmdstring + ' --kgrid.shelf.cdostore.url=filesystem:file:///' + shelf.split(path.sep).join('/')
+    }
+    if(port!=''){
+      cmdstring = cmdstring + ' --server.port='+port
+    }
+    console.log(cmdstring)
     download(kgridmanifest).then(data => {
       kgridAssets = JSON.parse(data).kitAssets[key]
       if(manifest.kitAssets[key].installed==kgridAssets.tag_name){

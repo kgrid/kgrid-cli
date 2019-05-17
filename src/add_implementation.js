@@ -4,6 +4,7 @@ const yaml = require('js-yaml')
 const path =require('path')
 const source = require.resolve('../src/template/kometadata.json')
 const topSourcePath = path.dirname(source)
+const os = require('os')
 
 async function addImplementation (ko, version, template) {
   let ready = false
@@ -46,9 +47,12 @@ async function addImplementation (ko, version, template) {
     var pkgJson = JSON.parse(JSON.stringify(packageObj))
 
     let idArr = topMeta.identifier.split('/')
-    let idNaan = idArr[1]
-    let idName = idArr[2]
+    let idNaan = os.userInfo().username
+    let idName = ko
 
+    if(idName==''){
+      idName = path.basename(process.cwd())
+    }
     // Update Top Level Metadata
     topMeta.hasImplementation.push(idNaan + '-' + idName + '/' + version)
     topMeta.identifier = 'ark:/' + idNaan + '/' + idName

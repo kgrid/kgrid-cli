@@ -19,7 +19,7 @@ $ npm install -g @kgrid/cli
 $ kgrid COMMAND
 running command...
 $ kgrid (-v|--version|version)
-@kgrid/cli/0.0.6 linux-x64 node-v10.15.3
+@kgrid/cli/0.0.6 win32-x64 node-v10.15.3
 $ kgrid --help [COMMAND]
 USAGE
   $ kgrid COMMAND
@@ -33,6 +33,7 @@ USAGE
 * [`kgrid create [KO]`](#kgrid-create-ko)
 * [`kgrid create:bundled [KO]`](#kgrid-createbundled-ko)
 * [`kgrid help [COMMAND]`](#kgrid-help-command)
+* [`kgrid package [KO] [DEST]`](#kgrid-package-ko-dest)
 * [`kgrid setup`](#kgrid-setup)
 * [`kgrid start`](#kgrid-start)
 * [`kgrid start:activator`](#kgrid-startactivator)
@@ -53,7 +54,7 @@ ALIASES
   $ kgrid add:simple
 ```
 
-_See code: [src/commands/add/index.js](https://github.com/kgrid/kgrid-cli/blob/v0.0.6/src/commands/add/index.js)_
+_See code: [src\commands\add\index.js](https://github.com/kgrid/kgrid-cli/blob/v0.0.6/src\commands\add\index.js)_
 
 ## `kgrid add:bundled`
 
@@ -67,7 +68,7 @@ OPTIONS
   -v, --version=version
 ```
 
-_See code: [src/commands/add/bundled.js](https://github.com/kgrid/kgrid-cli/blob/v0.0.6/src/commands/add/bundled.js)_
+_See code: [src\commands\add\bundled.js](https://github.com/kgrid/kgrid-cli/blob/v0.0.6/src\commands\add\bundled.js)_
 
 ## `kgrid create [KO]`
 
@@ -84,7 +85,7 @@ ALIASES
   $ kgrid create:simple
 ```
 
-_See code: [src/commands/create/index.js](https://github.com/kgrid/kgrid-cli/blob/v0.0.6/src/commands/create/index.js)_
+_See code: [src\commands\create\index.js](https://github.com/kgrid/kgrid-cli/blob/v0.0.6/src\commands\create\index.js)_
 
 ## `kgrid create:bundled [KO]`
 
@@ -98,7 +99,7 @@ OPTIONS
   -v, --version=version
 ```
 
-_See code: [src/commands/create/bundled.js](https://github.com/kgrid/kgrid-cli/blob/v0.0.6/src/commands/create/bundled.js)_
+_See code: [src\commands\create\bundled.js](https://github.com/kgrid/kgrid-cli/blob/v0.0.6/src\commands\create\bundled.js)_
 
 ## `kgrid help [COMMAND]`
 
@@ -115,7 +116,23 @@ OPTIONS
   --all  see all commands in CLI
 ```
 
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.1.6/src/commands/help.ts)_
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.1.6/src\commands\help.ts)_
+
+## `kgrid package [KO] [DEST]`
+
+Package the knowledge object
+
+```
+USAGE
+  $ kgrid package [KO] [DEST]
+
+OPTIONS
+  -s, --includeSource=includeSource
+  -t, --includeTests=includeTests
+  -v, --version=version
+```
+
+_See code: [src\commands\package.js](https://github.com/kgrid/kgrid-cli/blob/v0.0.6/src\commands\package.js)_
 
 ## `kgrid setup`
 
@@ -130,7 +147,7 @@ OPTIONS
   -u, --update
 ```
 
-_See code: [src/commands/setup.js](https://github.com/kgrid/kgrid-cli/blob/v0.0.6/src/commands/setup.js)_
+_See code: [src\commands\setup.js](https://github.com/kgrid/kgrid-cli/blob/v0.0.6/src\commands\setup.js)_
 
 ## `kgrid start`
 
@@ -144,7 +161,7 @@ OPTIONS
   -s, --shelf=shelf
 ```
 
-_See code: [src/commands/start/index.js](https://github.com/kgrid/kgrid-cli/blob/v0.0.6/src/commands/start/index.js)_
+_See code: [src\commands\start\index.js](https://github.com/kgrid/kgrid-cli/blob/v0.0.6/src\commands\start\index.js)_
 
 ## `kgrid start:activator`
 
@@ -160,7 +177,7 @@ OPTIONS
   -s, --shelf=shelf
 ```
 
-_See code: [src/commands/start/activator.js](https://github.com/kgrid/kgrid-cli/blob/v0.0.6/src/commands/start/activator.js)_
+_See code: [src\commands\start\activator.js](https://github.com/kgrid/kgrid-cli/blob/v0.0.6/src\commands\start\activator.js)_
 
 ## `kgrid start:library`
 
@@ -176,5 +193,5 @@ OPTIONS
   -s, --shelf=shelf
 ```
 
-_See code: [src/commands/start/library.js](https://github.com/kgrid/kgrid-cli/blob/v0.0.6/src/commands/start/library.js)_
+_See code: [src\commands\start\library.js](https://github.com/kgrid/kgrid-cli/blob/v0.0.6/src\commands\start\library.js)_
 <!-- commandsstop -->

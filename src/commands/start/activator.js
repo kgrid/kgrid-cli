@@ -5,7 +5,7 @@ class ActivatorCommand extends Command {
   async run() {
     const {args, flags} = this.parse(ActivatorCommand)
     let shelf = flags.shelf || ''
-    let port = flags.port || 8082
+    let port = flags.port || ''
     let jar = flags.jarfile || ''
     let cmdObj = {name:'activator',component: jar, shelf: shelf, port: port}
     runKgrid(cmdObj)

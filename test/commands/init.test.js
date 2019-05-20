@@ -11,12 +11,12 @@ beforeEach(function () {
   shell.cd(testDirectory.name);
 });
 
-describe('test happy day create ', () => {
+describe('test happy day init ', () => {
 
   test
   .stdout()
-  .command(['create', 'test-ko', '-v', 'koversion'])
-  .it('runs create with test-ko name and koversion implementation', output => {
+  .command(['init', 'test-ko', '-i', 'koversion'])
+  .it('runs init with test-ko name and koversion implementation', output => {
 
     expect(output.stdout).to.include('Ready');
 
@@ -47,33 +47,33 @@ describe('test happy day create ', () => {
 
 });
 
-describe('test not happy day create ', () => {
+describe('test not happy day init ', () => {
 
   test
   .stdout()
-  .command(['create'])
-  .it('runs create with no ko name', output => {
+  .command(['init'])
+  .it('runs init with no ko name', output => {
     expect(output.stdout).to.include(
       'Please provide a name for your knowledge object')
   });
 
   test
   .stdout()
-  .command(['create', 'test-ko', '-v', 'koversion'])
-  .it('runs create with existing ko name and implementation', output => {
+  .command(['init', 'test-ko', '-i', 'koversion'])
+  .it('runs init with existing ko name and implementation', output => {
 
     expect(output.stdout).to.include(
-      'Path existing. Please start over with a different name for the knowledge object.');
+      'Path existing');
 
   });
 
   test
   .stdout()
-  .command(['create', 'test-ko', '-v', 'anotherversion'])
-  .it('runs create with existing ko name and new implementation', output => {
+  .command(['init', 'test-ko', '-i', 'anotherversion'])
+  .it('runs init with existing ko name and new implementation', output => {
 
     expect(output.stdout).to.include(
-      'Path existing. Please start over with a different name for the knowledge object.');
+      'Path existing');
 
   });
 

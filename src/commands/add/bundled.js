@@ -3,16 +3,17 @@ const addImplementation = require('../../add_implementation')
 
 class BundledCommand extends Command {
   async run() {
+    this.log('KGrid CLI v'+this.config.version+'\n')
     const {flags} = this.parse(BundledCommand)
-    let version = flags.version || ''
-    addImplementation('',version,'bundled')
+    let implementation = flags.implementation || ''
+    addImplementation('',implementation,'bundled')
   }
 }
 
 BundledCommand.description = 'Add an implementation to the knowledge object.'
 
 BundledCommand.flags = {
-  version: flags.string({char: 'v'}),
+  implementation: flags.string({char: 'i'}),
 }
 
 module.exports = BundledCommand

@@ -3,16 +3,17 @@ const addImplementation = require('../../add_implementation')
 
 class AddCommand extends Command {
   async run() {
+    this.log('KGrid CLI v'+this.config.version+'\n')
     const {flags} = this.parse(AddCommand)
-    let version = flags.version || ''
-    addImplementation('',version,'simple')
+    let implementation = flags.implementation || ''
+    addImplementation('',implementation,'simple')
   }
 }
 
 AddCommand.description = 'Add an implementation to the knowledge object.'
 
 AddCommand.flags = {
-  version: flags.string({char: 'v'}),
+  implementation: flags.string({char: 'i'}),
 }
 
 AddCommand.aliases = ['add:simple']

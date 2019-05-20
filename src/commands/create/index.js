@@ -1,37 +1,34 @@
 const {Command, flags} = require('@oclif/command')
 const inquirer = require('inquirer')
+const path= require('path')
 const fs = require('fs-extra')
 const kometaObj = require('../../template/kometadata.json')
-const addImplementation = require('../../add_implementation')
+const createImplementation = require('../../create_implementation')
 
 var topMeta = JSON.parse(JSON.stringify(kometaObj))
 
 class CreateCommand extends Command {
   async run() {
+    this.log('KGrid CLI v'+this.config.version+'\n')
     const {args, flags} = this.parse(CreateCommand)
     let ko = args.ko
-    let version = flags.version || ''
-    let ready = false
+    let implementation = flags.implementation || ''
+    let template = flags.bundled ? 'bundled' : 'simple'
     topMeta.hasImplementation = []
     if (ko) {
-      if (fs.pathExistsSync(ko)) {
-        this.log('Path existing. Please start over with a different name for the knowledge object.')
+      if (fs.pathExistsSync(path.join(ko,'metadata.json'))) {
+        this.log('The Knowledge Object of '+ko+' exists. \n\nAn new implementation will be added to '+ko+'\n')
+        this.log('==== Add an implementation ==== ')
       } else {
-        ready = true
-      }
-      if(ready){
         this.log('==== Create the Knowledge Object ==== ')
         fs.ensureDirSync(ko)
-
         // Generate Top Level Metadata
         fs.writeJsonSync(ko+'/metadata.json', topMeta, {spaces: 4})
-
-        // process.chdir(ko)
-        this.log('==== Initialize the first implementation ==== ')
-        await addImplementation(ko, version, 'simple').then(()=>{
-          console.log('Ready.')
-        }).catch(e=>console.log(e.message))
+        this.log('==== Initialize the implementation ==== ')
       }
+      await createImplementation(ko, implementation, template).then(()=>{
+        console.log('Ready.')
+      }).catch(e=>console.log(e.message))
     } else {
       this.log('Please provide a name for your knowledge object. \nUsage: \n    kgrid create <ko>')
     }
@@ -41,7 +38,8 @@ class CreateCommand extends Command {
 CreateCommand.description = 'Create the knowledge object'
 
 CreateCommand.flags = {
-  version: flags.string({char: 'v'}),
+  implementation: flags.string({char: 'i'}),
+  bundled: flags.boolean()
 }
 
 CreateCommand.args = [

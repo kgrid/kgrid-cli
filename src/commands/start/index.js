@@ -4,6 +4,7 @@ const runKgrid = require('../../run_kgrid')
 class StartCommand extends Command {
   async run() {
     const {flags} = this.parse(StartCommand)
+    this.log('KGrid CLI v'+this.config.version+'\n')
     let shelf = flags.shelf || ''
     let libraryObj = {name:'library', component:'', shelf: shelf, port: 8081}
     let activatorObj = {name:'activator', component:'', shelf: shelf, port: 8082}

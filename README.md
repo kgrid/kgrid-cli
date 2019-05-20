@@ -33,6 +33,8 @@ USAGE
 * [`kgrid create [KO]`](#kgrid-create-ko)
 * [`kgrid create:bundled [KO]`](#kgrid-createbundled-ko)
 * [`kgrid help [COMMAND]`](#kgrid-help-command)
+* [`kgrid init [KO]`](#kgrid-init-ko)
+* [`kgrid init:bundled [KO]`](#kgrid-initbundled-ko)
 * [`kgrid package [KO] [DEST]`](#kgrid-package-ko-dest)
 * [`kgrid setup`](#kgrid-setup)
 * [`kgrid start`](#kgrid-start)
@@ -48,7 +50,7 @@ USAGE
   $ kgrid add
 
 OPTIONS
-  -v, --version=version
+  -i, --implementation=implementation
 
 ALIASES
   $ kgrid add:simple
@@ -65,7 +67,7 @@ USAGE
   $ kgrid add:bundled
 
 OPTIONS
-  -v, --version=version
+  -i, --implementation=implementation
 ```
 
 _See code: [src\commands\add\bundled.js](https://github.com/kgrid/kgrid-cli/blob/v0.0.6/src\commands\add\bundled.js)_
@@ -79,7 +81,8 @@ USAGE
   $ kgrid create [KO]
 
 OPTIONS
-  -v, --version=version
+  -i, --implementation=implementation
+  --bundled
 
 ALIASES
   $ kgrid create:simple
@@ -96,7 +99,7 @@ USAGE
   $ kgrid create:bundled [KO]
 
 OPTIONS
-  -v, --version=version
+  -i, --implementation=implementation
 ```
 
 _See code: [src\commands\create\bundled.js](https://github.com/kgrid/kgrid-cli/blob/v0.0.6/src\commands\create\bundled.js)_
@@ -118,6 +121,37 @@ OPTIONS
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.1.6/src\commands\help.ts)_
 
+## `kgrid init [KO]`
+
+Create the knowledge object
+
+```
+USAGE
+  $ kgrid init [KO]
+
+OPTIONS
+  -i, --implementation=implementation
+
+ALIASES
+  $ kgrid create:simple
+```
+
+_See code: [src\commands\init\index.js](https://github.com/kgrid/kgrid-cli/blob/v0.0.6/src\commands\init\index.js)_
+
+## `kgrid init:bundled [KO]`
+
+Create the knowledge object
+
+```
+USAGE
+  $ kgrid init:bundled [KO]
+
+OPTIONS
+  -i, --implementation=implementation
+```
+
+_See code: [src\commands\init\bundled.js](https://github.com/kgrid/kgrid-cli/blob/v0.0.6/src\commands\init\bundled.js)_
+
 ## `kgrid package [KO] [DEST]`
 
 Package the knowledge object
@@ -127,9 +161,9 @@ USAGE
   $ kgrid package [KO] [DEST]
 
 OPTIONS
+  -i, --implementation=implementation
   -s, --includeSource=includeSource
   -t, --includeTests=includeTests
-  -v, --version=version
 ```
 
 _See code: [src\commands\package.js](https://github.com/kgrid/kgrid-cli/blob/v0.0.6/src\commands\package.js)_

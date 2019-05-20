@@ -7,6 +7,8 @@ const path = require('path');
 
 class CreateCommand extends Command {
   async run() {
+    this.log('KGrid CLI v'+this.config.version+'\n')
+
     const {args, flags} = this.parse(CreateCommand);
     let ko = args.ko;
     let dest = args.dest;
@@ -54,14 +56,14 @@ class CreateCommand extends Command {
         throw err;
       });
 
-      let versions = topMeta.hasImplementation;
-      if (versions) {
-        console.log("Found versions " + JSON.stringify(versions));
-        versions.forEach(version => {
-          let versionMetadataPath = path.join(version, 'metadata.json');
+      let implementations = topMeta.hasImplementation;
+      if (implementations) {
+        console.log("Found implementations " + JSON.stringify(implementations));
+        implementations.forEach(implementation => {
+          let implementationMetadataPath = path.join(implementation, 'metadata.json');
           if (fs.pathExistsSync) {
-            let versionMetadata = fs.readJsonSync(versionMetadataPath);
-            let specPath = path.join(ko, versionMetadata.hasServiceSpecification);
+            let implementationMetadata = fs.readJsonSync(implementationMetadataPath);
+            let specPath = path.join(ko, implementationMetadata.hasServiceSpecification);
 
             if (fs.pathExistsSync(specPath)) {
               console.log("Copying " + specPath);
@@ -74,7 +76,7 @@ class CreateCommand extends Command {
             Object.keys(endpoints).forEach(endpoint => {
               let payloadPaths = jp.query(endpoints[endpoint], "$.*['x-kgrid-activation'].artifact");
               payloadPaths.forEach(methodPath => {
-                let payloadPath = path.join(version, methodPath);
+                let payloadPath = path.join(implementation, methodPath);
                 if (fs.pathExistsSync(payloadPath)) {
                   console.log("Copying " + payloadPath);
                   archive.append(fs.createReadStream(payloadPath),
@@ -84,13 +86,13 @@ class CreateCommand extends Command {
                 }
               });
             });
-            if (fs.pathExistsSync(versionMetadataPath)) {
-              console.log("Copying " + versionMetadataPath);
-              archive.append(fs.createReadStream(versionMetadataPath),
-                {name: versionMetadataPath});
+            if (fs.pathExistsSync(implementationMetadataPath)) {
+              console.log("Copying " + implementationMetadataPath);
+              archive.append(fs.createReadStream(implementationMetadataPath),
+                {name: implementationMetadataPath});
             } else {
               console.log(
-                "Cannot find version metadata at " + versionMetadataPath);
+                "Cannot find implementation metadata at " + implementationMetadataPath);
             }
           }
         });
@@ -98,7 +100,7 @@ class CreateCommand extends Command {
         archive.append(fs.createReadStream(koMetadataPath), { name: koMetadataPath });
         archive.finalize();
       } else {
-        // No versions
+        // No implementations
 
       }
     }
@@ -108,7 +110,7 @@ class CreateCommand extends Command {
 CreateCommand.description = 'Package the knowledge object';
 
 CreateCommand.flags = {
-  version: flags.string({char: 'v'}),
+  implementation: flags.string({char: 'i'}),
   includeSource: flags.string({char: 's'}), // Future option
   includeTests: flags.string({char: 't'}) // Future option
 };

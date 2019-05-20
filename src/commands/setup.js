@@ -9,8 +9,12 @@ var kgridHome = ''
 
 class SetupCommand extends Command {
   async run() {
+    this.log('KGrid CLI v'+this.config.version+'\n')
+
     const {flags} = this.parse(SetupCommand)
     let userHome =  process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE;
+    // let userHome =  this.config.home;
+
     kgridHome = path.join(process.cwd(), '.kgrid')
     if(flags.global){
       kgridHome =  process.env.KGRID_HOME || path.join(userHome, '.kgrid');

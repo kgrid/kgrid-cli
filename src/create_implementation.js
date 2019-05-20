@@ -6,10 +6,11 @@ const source = require.resolve('../src/template/kometadata.json')
 const topSourcePath = path.dirname(source)
 const os = require('os')
 
-async function addImplementation (ko, implementation, template) {
+async function createImplementation (ko, implementation, template) {
   let ready = false
+  let implementationPath = ko+'_'+implementation
   if (implementation!='') {
-    if (fs.pathExistsSync(path.join(ko,implementation))) {
+    if (fs.pathExistsSync(implementationPath)) {
       console.log('Path existing. Please start over with a different name for the implementation.')
     } else {
       ready = true
@@ -22,7 +23,7 @@ async function addImplementation (ko, implementation, template) {
         message: 'Implementation: ',
         default: 'implementation',
         validate: function (input) {
-          return !fs.pathExistsSync(path.join(ko,input)) || 'Path existing. Please provide a different name for the implementation.'
+          return !fs.pathExistsSync(ko+'_'+input) || 'Path existing. Please provide a different name for the implementation.'
         },
       },
     ])
@@ -58,7 +59,7 @@ async function addImplementation (ko, implementation, template) {
     topMeta.identifier = 'ark:/' + idNaan + '/' + idName
     topMeta['@id'] = idNaan + '-' + idName
     fs.writeJsonSync(path.join(ko,'metadata.json'), topMeta, {spaces: 4})
-    let implementationPath = path.join(ko, implementation)
+    implementationPath = ko+'_'+implementation
     // Create the folder for implementation
     fs.ensureDirSync(implementationPath)
 
@@ -108,4 +109,4 @@ async function addImplementation (ko, implementation, template) {
     }
   }
 }
-module.exports=addImplementation
+module.exports=createImplementation

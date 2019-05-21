@@ -13,6 +13,7 @@
     "@oclif/plugin-help": "^2.1.6",
     "archiver": "^3.0.0",
     "cli-ux": "^5.2.1",
+    "colors": "^1.3.3",
     "download": "^7.1.0",
     "fs-extra": "^7.0.1",
     "inquirer": "^6.3.1",

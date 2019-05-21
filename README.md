@@ -28,49 +28,14 @@ USAGE
 <!-- usagestop -->
 # Commands
 <!-- commands -->
-* [`kgrid add`](#kgrid-add)
-* [`kgrid add:bundled`](#kgrid-addbundled)
 * [`kgrid create [KO]`](#kgrid-create-ko)
 * [`kgrid create:bundled [KO]`](#kgrid-createbundled-ko)
 * [`kgrid help [COMMAND]`](#kgrid-help-command)
-* [`kgrid init [KO]`](#kgrid-init-ko)
-* [`kgrid init:bundled [KO]`](#kgrid-initbundled-ko)
 * [`kgrid package [KO] [DEST]`](#kgrid-package-ko-dest)
 * [`kgrid setup`](#kgrid-setup)
 * [`kgrid start`](#kgrid-start)
 * [`kgrid start:activator`](#kgrid-startactivator)
 * [`kgrid start:library`](#kgrid-startlibrary)
-
-## `kgrid add`
-
-Add an implementation to the knowledge object.
-
-```
-USAGE
-  $ kgrid add
-
-OPTIONS
-  -i, --implementation=implementation
-
-ALIASES
-  $ kgrid add:simple
-```
-
-_See code: [src\commands\add\index.js](https://github.com/kgrid/kgrid-cli/blob/v0.0.6/src\commands\add\index.js)_
-
-## `kgrid add:bundled`
-
-Add an implementation to the knowledge object.
-
-```
-USAGE
-  $ kgrid add:bundled
-
-OPTIONS
-  -i, --implementation=implementation
-```
-
-_See code: [src\commands\add\bundled.js](https://github.com/kgrid/kgrid-cli/blob/v0.0.6/src\commands\add\bundled.js)_
 
 ## `kgrid create [KO]`
 
@@ -82,7 +47,7 @@ USAGE
 
 OPTIONS
   -i, --implementation=implementation
-  --bundled
+  --flat
 
 ALIASES
   $ kgrid create:simple
@@ -100,6 +65,7 @@ USAGE
 
 OPTIONS
   -i, --implementation=implementation
+  --flat
 ```
 
 _See code: [src\commands\create\bundled.js](https://github.com/kgrid/kgrid-cli/blob/v0.0.6/src\commands\create\bundled.js)_
@@ -120,37 +86,6 @@ OPTIONS
 ```
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.1.6/src\commands\help.ts)_
-
-## `kgrid init [KO]`
-
-Create the knowledge object
-
-```
-USAGE
-  $ kgrid init [KO]
-
-OPTIONS
-  -i, --implementation=implementation
-
-ALIASES
-  $ kgrid create:simple
-```
-
-_See code: [src\commands\init\index.js](https://github.com/kgrid/kgrid-cli/blob/v0.0.6/src\commands\init\index.js)_
-
-## `kgrid init:bundled [KO]`
-
-Create the knowledge object
-
-```
-USAGE
-  $ kgrid init:bundled [KO]
-
-OPTIONS
-  -i, --implementation=implementation
-```
-
-_See code: [src\commands\init\bundled.js](https://github.com/kgrid/kgrid-cli/blob/v0.0.6/src\commands\init\bundled.js)_
 
 ## `kgrid package [KO] [DEST]`
 

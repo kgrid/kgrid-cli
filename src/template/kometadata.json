@@ -1,11 +1,11 @@
 {
-  "@id": "hello-world",
+  "@id": "naan-name",
   "@type":"koio:KnowledgeObject",
-  "identifier":"ark:/hello/world",
+  "identifier":"ark:/naan/name",
   "title":"Knowledge Object Title",
   "contributors": "Kgrid Team",
-  "description": "Test Hello World ",
-  "keywords": "test hello world",
+  "description": "Knowledge Object Description",
+  "keywords": "knowledge, object",
   "hasImplementation":[],
   "@context" : ["http://kgrid.org/koio/contexts/knowledgeobject.jsonld" ]
 }

@@ -6,7 +6,7 @@ const source = require.resolve('../src/template/kometadata.json')
 const topSourcePath = path.dirname(source)
 const os = require('os')
 
-async function createImplementation (ko, implementation, template) {
+async function createImplementation (ko, implementation, template, flat) {
   let ready = false
   let implementationPath = ko+'_'+implementation
   if (implementation!='') {
@@ -55,11 +55,15 @@ async function createImplementation (ko, implementation, template) {
       idName = path.basename(process.cwd())
     }
     // Update Top Level Metadata
-    topMeta.hasImplementation.push(idNaan + '-' + idName + '/' + implementation)
+    topMeta.hasImplementation.push(idNaan + '/' + idName + '/' + implementation)
     topMeta.identifier = 'ark:/' + idNaan + '/' + idName
     topMeta['@id'] = idNaan + '-' + idName
     fs.writeJsonSync(path.join(ko,'metadata.json'), topMeta, {spaces: 4})
-    implementationPath = ko+'_'+implementation
+    if(flat){
+      implementationPath = ko+'_'+implementation
+    } else {
+      implementationPath = path.join(ko,implementation)
+    }
     // Create the folder for implementation
     fs.ensureDirSync(implementationPath)
 

@@ -63,7 +63,7 @@ describe('test not happy day create ', () => {
   .it('runs create with existing ko name and implementation', output => {
 
     expect(output.stdout).to.include(
-      'exists');
+      'exist');
 
   });
 
@@ -73,7 +73,7 @@ describe('test not happy day create ', () => {
   .it('runs create with existing ko name and new implementation', output => {
 
     expect(output.stdout).to.include(
-      'exists');
+      'exist');
 
   });
 

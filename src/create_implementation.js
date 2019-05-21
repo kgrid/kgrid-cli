@@ -55,7 +55,7 @@ async function createImplementation (ko, implementation, template, flat) {
       idName = path.basename(process.cwd())
     }
     // Update Top Level Metadata
-    topMeta.hasImplementation.push(idNaan + '/' + idName + '/' + implementation)
+    topMeta.hasImplementation.push(idNaan + '-' + idName + '/' + implementation)
     topMeta.identifier = 'ark:/' + idNaan + '/' + idName
     topMeta['@id'] = idNaan + '-' + idName
     fs.writeJsonSync(path.join(ko,'metadata.json'), topMeta, {spaces: 4})
@@ -70,11 +70,11 @@ async function createImplementation (ko, implementation, template, flat) {
     // Update Implementation Metadata
     impleMeta['@id'] = implementation
     impleMeta.identifier = 'ark:/' + idNaan + '/' + idName + '/' + implementation
-    impleMeta.hasServiceSpecification = 'service.yaml'
+    impleMeta.hasServiceSpecification = implementation + '/service.yaml'
     if(template=='bundled') {
-      impleMeta.hasPayload =  'dist/main.js'
+      impleMeta.hasPayload =  implementation + '/dist/main.js'
     } else {
-      impleMeta.hasPayload = 'src/index.js'
+      impleMeta.hasPayload = implementation + '/src/index.js'
     }
     fs.writeJsonSync(path.join(implementationPath,'metadata.json'), impleMeta, {spaces: 4})
 

@@ -54,8 +54,7 @@ CreateCommand.description = 'Create the knowledge object'
 
 CreateCommand.flags = {
   implementation: flags.string({char: 'i'}),
-  // bundled: flags.boolean()
-  flat:flags.boolean({})
+  flat: flags.boolean({})
 }
 
 CreateCommand.args = [

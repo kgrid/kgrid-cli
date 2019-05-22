@@ -22,27 +22,45 @@ class CreateCommand extends Command {
 
     if(cwdtype=='shelf'){
       if (ko) {
-        if (fs.pathExistsSync(path.join(ko,'metadata.json'))) {
+        if (fs.pathExistsSync(path.join(ko,'metadata.json'))) {  // KO Existing
           topMeta = fs.readJsonSync(path.join(ko,'metadata.json'))
-          if(implementation!='' && topMeta.hasImplementation.length>0){
-            topMeta.hasImplementation.forEach(function(e){
-              implExists = implExists | e.includes(implementation)
-            })
-          }
-          if(!implExists){
-            this.log('The Knowledge Object of '+ko+' exists. \n\nAn new implementation will be added to '+ko+'\n')
-            console.log(colors.green('==== Add an implementation ==== '))
-          }
-        } else {
-          this.log('==== Create the Knowledge Object ==== ')
+          console.log('The Knowledge Object of '+ko+' exists. \n')
+          console.log('An new implementation will be added to '+ko+'\n')
+          console.log(colors.green('==== Add an implementation ==== '))
+        } else {    // KO not existing; create folder and write metadata
+          console.log(colors.green('==== Create the Knowledge Object ==== '))
           fs.ensureDirSync(ko)
-          // Generate Top Level Metadata
           fs.writeJsonSync(ko+'/metadata.json', topMeta, {spaces: 4})
+          console.log('The first implementation will be added to '+ko+'\n')
           console.log(colors.green('==== Initialize the implementation ==== '))
+        }
+        if(implementation==''){
+          let responses = await inquirer.prompt([
+            {
+              type: 'input',
+              name: 'implementation',
+              message: 'Implementation: ',
+              default: 'implementation',
+              validate: function (input) {
+                if(input==''){
+                  return 'Invalid Input'
+                } else {
+                  return !fs.pathExistsSync(path.join(ko,input)) || 'Path existing. Please provide a different name for the implementation.'
+                }
+              },
+            },
+          ])
+          implementation = responses.implementation
+        }
+        if(topMeta.hasImplementation.length>0){
+          topMeta.hasImplementation.forEach(function(e){
+            let imples = e.split('/')
+            implExists = implExists | implementation == imples[imples.length-1]
+          })
         }
         if(!implExists){
           await createImplementation(ko, implementation, template, flat).then(()=>{
-             console.log('Ready.')
+             console.log('The knowledge object is Ready.')
           }).catch(e=>console.log(e.message))
         } else {
           console.log(colors.yellow('Path existing. Please start over with a different name for the implementation.'))

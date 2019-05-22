@@ -79,7 +79,7 @@ async function createImplementation (ko, implementation, template, flat) {
     fs.writeJsonSync(path.join(implementationPath,'metadata.json'), impleMeta, {spaces: 4})
 
     // Update Implementation Service Specification
-    impleService.info.implementation = implementation
+    impleService.info.version = implementation
     impleService.servers[0].url = impleMeta.identifier.replace('ark:', '')
     fs.writeFileSync(path.join(implementationPath,'service.yaml'),
       yaml.safeDump(impleService, {

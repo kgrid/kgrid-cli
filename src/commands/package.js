@@ -9,13 +9,12 @@ class CreateCommand extends Command {
   async run() {
     this.log('KGrid CLI v'+this.config.version+'\n')
 
-    const {args, flags} = this.parse(CreateCommand);
+    const {args} = this.parse(CreateCommand);
     let ko = args.ko;
-    let dest = args.dest;
+    let dest = args.destination;
     if (!ko) {
       ko = process.cwd();
     }
-
     console.log("Packaging " + ko);
 
     // Zip ko and only put in the artifacts needed for activation by looking
@@ -111,15 +110,9 @@ class CreateCommand extends Command {
 
 CreateCommand.description = 'Package the knowledge object';
 
-CreateCommand.flags = {
-  implementation: flags.string({char: 'i'}),
-  includeSource: flags.string({char: 's'}), // Future option
-  includeTests: flags.string({char: 't'}) // Future option
-};
-
 CreateCommand.args = [
   {name:'ko'},
-  {name: 'dest'}
+  {name: 'destination'}
 ];
 
 module.exports = CreateCommand;

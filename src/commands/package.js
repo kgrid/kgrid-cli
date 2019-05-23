@@ -13,7 +13,8 @@ class CreateCommand extends Command {
     let ko = args.ko;
     let dest = args.destination;
     if (!ko) {
-      ko = process.cwd();
+      ko = path.basename(process.cwd());
+      process.chdir("..");
     }
     console.log("Packaging " + ko);
 

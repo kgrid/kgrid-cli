@@ -4,6 +4,7 @@ const yaml = require('js-yaml');
 const jp = require('jsonpath');
 const fs = require('fs-extra');
 const path = require('path');
+const documentations = require('../extradoc.json')
 
 class CreateCommand extends Command {
   async run() {
@@ -109,8 +110,9 @@ class CreateCommand extends Command {
   }
 }
 
-CreateCommand.description = 'Package the knowledge object';
-
+CreateCommand.description = `Package the knowledge object.
+${documentations.package}
+`
 CreateCommand.args = [
   {name:'ko'},
   {name: 'destination'}

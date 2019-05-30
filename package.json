@@ -46,7 +46,8 @@
   ],
   "homepage": "https://github.com/kgrid/kgrid-cli",
   "keywords": [
-    "oclif"
+    "oclif",
+    "kgrid"
   ],
   "license": "MIT",
   "main": "src/index.js",

@@ -4,17 +4,15 @@ const fs = require('fs-extra')
 const path = require('path')
 const download = require('download');
 const kgridmanifest = 'https://demo.kgrid.org/kgrid/manifest.json'
+const documentations = require('../extradoc.json')
 var manifest = {}
 var kgridHome = ''
 
 class SetupCommand extends Command {
   async run() {
     this.log('KGrid CLI v'+this.config.version+'\n')
-
     const {flags} = this.parse(SetupCommand)
     let userHome =  process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE;
-    // let userHome =  this.config.home;
-
     kgridHome = path.join(process.cwd(), '.kgrid')
     if(flags.global){
       kgridHome =  process.env.KGRID_HOME || path.join(userHome, '.kgrid');
@@ -32,7 +30,9 @@ class SetupCommand extends Command {
   }
 }
 
-SetupCommand.description = 'Setup KGrid Component'
+SetupCommand.description = `Install KGrid Components and set up kgrid environment.
+${documentations.setup}
+`
 
 SetupCommand.flags = {
   global: flags.boolean({char:'g'}),
@@ -40,7 +40,6 @@ SetupCommand.flags = {
 }
 
 function downloadAssets (manifestFile) {
-  // console.log(kgridHome)
   manifest = fs.readJsonSync(manifestFile)
   let requests = [];
   for (let key in manifest.kitAssets) {

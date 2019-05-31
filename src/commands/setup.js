@@ -35,8 +35,8 @@ ${documentations.setup}
 `
 
 SetupCommand.flags = {
-  global: flags.boolean({char:'g'}),
-  update: flags.boolean({char:'u'})
+  global: flags.boolean({char:'g',description:'Install at a globally accessible location'}),
+  update: flags.boolean({char:'u', description:'Update the KGrid components to the latest release'})
 }
 
 function downloadAssets (manifestFile) {

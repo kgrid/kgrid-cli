@@ -9,7 +9,6 @@ const colors = require('colors/safe');
 const documentations = require('../extradoc.json')
 
 var topMeta = JSON.parse(JSON.stringify(kometaObj))
-// var documentation = '`'+documentations.create+'`'
 
 class CreateCommand extends Command {
   async run() {
@@ -68,7 +67,7 @@ class CreateCommand extends Command {
           console.log(colors.yellow('Path existing. Please start over with a different name for the implementation.'))
         }
       } else {
-        this.log('Please provide a name for your knowledge object. \nUsage: \n    kgrid create <ko>')
+        this.log('Please provide a name for your knowledge object. \n\nUSAGE: \n  $ kgrid create [ko]')
       }
     } else {
       let l = cwdtype=='ko' ? 'KO Level' : 'Implementation Level'
@@ -81,36 +80,12 @@ class CreateCommand extends Command {
 CreateCommand.description = `Create Knowledge Object and initialize the implementation.
 ${documentations.create}
 `
-// `Create Knowledge Object and initialize the implementation.
-// The create command requires a name for the knowledge object.
-// It can only run at the shelf level.
-//
-// A folder for the knowledge object will be created.
-// An implementation will be created and initialized in the folder of [ko].
-//
-// If the specified KO exists, an implementation will be added to the KO.
-//
-// IMPLEMENTATION NAME:
-//   The user will be prompted to enter a name;
-//   Or, the name can be specified on the command line using the falg -i.
-//
-// ARK ID:
-//   A development ARK ID will be assigned {username}/{ko}/{implementation}.
-//   The ARK ID is unique by having different implementation names in the same KO.
-//
-// IMPLEMENTATION TEMPLATE TYPE:
-//   The implementation will be initialized using one of the templates.
-//   The template can be specified using the flags:
-//     --simple    for the template with simple JAVASCRIPT file as payload
-//     --bundled   for the template with JAVASCRIPT file(s); the payload will require bundling
-//   By default, the simple template will be used
-//
-// `
 
 CreateCommand.flags = {
   implementation: flags.string({char: 'i', description:"the name for the implementation"}),
   simple: flags.boolean({default: true, exclusive:['bundled'], description:"Using the simple template"}),
-  bundled: flags.boolean({default: false, exclusive:['simple'], description:"Using the template for bundled KO"})
+  bundled: flags.boolean({default: false, exclusive:['simple'], description:"Using the template for bundled KO"}),
+  help: flags.help({char:'h'})
   // , flat: flags.boolean({})
 }
 

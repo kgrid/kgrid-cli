@@ -19,7 +19,7 @@ ${documentations.start}
 `
 
 StartCommand.flags = {
-  shelf: flags.string({char: 's'}),
+  shelf: flags.string({char: 's', description:'Specify an absolute path to use as the shelf containing KOs'}),
 }
 
 module.exports = StartCommand

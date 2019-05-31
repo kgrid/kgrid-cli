@@ -18,9 +18,9 @@ ActivatorCommand.description = `Start KGrid Activator.
 ${documentations.startactivator}
 `
 ActivatorCommand.flags = {
-  shelf: flags.string({char: 's'}),
-  port: flags.string({char: 'p'}),
-  jarfile: flags.string({char: 'j'}),
+  shelf: flags.string({char: 's', description:'Specify an absolute path to use as the shelf containing KOs'}),
+  port: flags.string({char: 'p', description:'Specify the port for KGRID Activator'}),
+  jarfile: flags.string({char: 'j', description:'Specify the activator JAR file to use other than the installed one'}),
 }
 
 module.exports = ActivatorCommand

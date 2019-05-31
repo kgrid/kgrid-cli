@@ -6,11 +6,11 @@ const fs = require('fs-extra');
 const path = require('path');
 const documentations = require('../extradoc.json')
 
-class CreateCommand extends Command {
+class PackageCommand extends Command {
   async run() {
     this.log('KGrid CLI v'+this.config.version+'\n')
 
-    const {args} = this.parse(CreateCommand);
+    const {args} = this.parse(PackageCommand);
     let ko = args.ko;
     let dest = args.destination;
     if (!ko) {
@@ -110,12 +110,18 @@ class CreateCommand extends Command {
   }
 }
 
-CreateCommand.description = `Package the knowledge object.
+PackageCommand.description = `Package the knowledge object.
 ${documentations.package}
 `
-CreateCommand.args = [
+
+PackageCommand.flags = {
+  implementation: flags.string({char: 'i', description:"the name for the implementation"}),
+  help: flags.help({char:'h'})
+}
+
+PackageCommand.args = [
   {name:'ko'},
   {name: 'destination'}
 ];
 
-module.exports = CreateCommand;
+module.exports = PackageCommand;

@@ -138,9 +138,12 @@ OPTIONS
 
 DESCRIPTION
   This command will start both KGrid Activator and KGrid Library.
-  By default, the command will use the current directory as the shelf
+
+  By default, the command will use the current directory as the shelf.
   The shelf can be specified using the flag -s.
-  The default port for Activator and library are 8081 and 8082, respectively.
+
+  The default ports for Activator and Library are 8082 and 8081, respectively.
+
   KGrid Activator and KGrid Library can be started individually, also with more options for configuration.
   See the commands listed below.
 ```
@@ -161,8 +164,12 @@ OPTIONS
   -s, --shelf=shelf
 
 DESCRIPTION
-  Start KGrid Activator. 
-  Default port: 8080
+  This command starts KGrid Activator at the default port of 8080.
+
+  The port can be configured using the flag -p.
+     Example: kgrid start:activator -p 8088
+
+  The current directory will be used as the default shelf unless specified using the flag -s.
 ```
 
 _See code: [src\commands\start\activator.js](https://github.com/kgrid/kgrid-cli/blob/v0.0.9/src\commands\start\activator.js)_
@@ -181,8 +188,12 @@ OPTIONS
   -s, --shelf=shelf
 
 DESCRIPTION
-  Start KGrid Library. 
-  Default port: 8080
+  This command starts KGrid Library at the default port of 8080.
+
+  The port can be configured using the flag -p.
+     Example: kgrid start:library -p 8088
+
+  The current directory will be used as the default shelf unless specified using the flag -s.
 ```
 
 _See code: [src\commands\start\library.js](https://github.com/kgrid/kgrid-cli/blob/v0.0.9/src\commands\start\library.js)_

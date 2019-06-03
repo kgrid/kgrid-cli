@@ -12,6 +12,7 @@ class CreateCommand extends Command {
     const {args} = this.parse(CreateCommand);
     let ko = args.ko;
     let dest = args.destination;
+    let checkSpec = false;
     if (!ko) {
       ko = path.basename(process.cwd());
       process.chdir("..");
@@ -65,48 +66,68 @@ class CreateCommand extends Command {
       implementations.forEach(implementation => {
         implementation = implementation.replace(arkId, ko);
         let implementationMetadataPath = path.join(implementation, 'metadata.json');
+
         if (fs.pathExistsSync(implementationMetadataPath)) {
           let implementationMetadata = fs.readJsonSync(implementationMetadataPath);
-          let specPath = path.join(ko, implementationMetadata.hasServiceSpecification);
 
-          if (fs.pathExistsSync(specPath)) {
-            console.log("Copying " + specPath);
-            archive.append(fs.createReadStream(specPath), {name: specPath});
+          if(implementationMetadata.hasDeploymentSpecification &&
+            fs.pathExistsSync(path.join(ko, implementationMetadata.hasDeploymentSpecification))) {
+            let deploymentSpecPath = path.join(ko, implementationMetadata.hasDeploymentSpecification);
+            archiveFileFromLocation(archive, deploymentSpecPath);
+            let deploymentSpec = yaml.safeLoad(fs.readFileSync(deploymentSpecPath));
+            let endpoints = deploymentSpec.endpoints;
+
+            if(endpoints) {
+              Object.keys(endpoints).forEach(endpoint => {
+                console.log("endpoint: " + JSON.stringify(endpoints[endpoint]));
+                let payloadPath = path.join(implementation, endpoints[endpoint].artifact);
+                archiveFileFromLocation(archive, payloadPath);
+              });
+            } else {
+              // Has deployment spec but no endpoints
+              checkSpec = true;
+            }
           } else {
-            console.log("Cannot find service specification at " + specPath);
+            // Doesn't have deployment spec
+            checkSpec = true;
           }
-          let serviceSpec = yaml.safeLoad(fs.readFileSync(specPath));
-          let endpoints = serviceSpec.paths;
-          Object.keys(endpoints).forEach(endpoint => {
-            let payloadPaths = jp.query(endpoints[endpoint], "$.*['x-kgrid-activation'].artifact");
-            payloadPaths.forEach(methodPath => {
-              let payloadPath = path.join(implementation, methodPath);
-              if (fs.pathExistsSync(payloadPath)) {
-                console.log("Copying " + payloadPath);
-                archive.append(fs.createReadStream(payloadPath),
-                  {name: payloadPath});
-              } else {
-                console.log("Cannot find payload at " + payloadPath);
-              }
+
+          let specPath = path.join(ko, implementationMetadata.hasServiceSpecification);
+          archiveFileFromLocation(archive, specPath);
+
+          if(checkSpec) {
+            let serviceSpec = yaml.safeLoad(fs.readFileSync(specPath));
+            let endpoints = serviceSpec.paths;
+            Object.keys(endpoints).forEach(endpoint => {
+              let payloadPaths = jp.query(endpoints[endpoint],
+                "$.*['x-kgrid-activation'].artifact");
+              payloadPaths.forEach(methodPath => {
+                let payloadPath = path.join(implementation, methodPath);
+                archiveFileFromLocation(archive, payloadPath);
+              });
             });
-          });
-          if (fs.pathExistsSync(implementationMetadataPath)) {
-            console.log("Copying " + implementationMetadataPath);
-            archive.append(fs.createReadStream(implementationMetadataPath),
-              {name: implementationMetadataPath});
-          } else {
-            console.log(
-              "Cannot find implementation metadata at " + implementationMetadataPath);
           }
+          archiveFileFromLocation(archive, implementationMetadataPath);
         } else {
           console.log("Cannot find implementation folder " + implementation);
         }
       });
-      console.log("Copying " + koMetadataPath);
-      archive.append(fs.createReadStream(koMetadataPath), { name: koMetadataPath });
+      archiveFileFromLocation(archive, koMetadataPath);
       archive.finalize();
     }
   }
+}
+
+function archiveFileFromLocation (archive, location) {
+
+  if (fs.pathExistsSync(location)) {
+    console.log("Copying " + location);
+    archive.append(fs.createReadStream(location),
+      {name: location});
+  } else {
+    console.log("Cannot find file at " + location);
+  }
+
 }
 
 CreateCommand.description = 'Package the knowledge object';

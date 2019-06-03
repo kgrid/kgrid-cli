@@ -6,6 +6,7 @@ const kometaObj = require('../template/kometadata.json')
 const createImplementation = require('../create_implementation')
 const checkKoiotype = require('../check_koiotype')
 const colors = require('colors/safe');
+const documentations = require('../extradoc.json')
 
 var topMeta = JSON.parse(JSON.stringify(kometaObj))
 
@@ -66,7 +67,7 @@ class CreateCommand extends Command {
           console.log(colors.yellow('Path existing. Please start over with a different name for the implementation.'))
         }
       } else {
-        this.log('Please provide a name for your knowledge object. \nUsage: \n    kgrid create <ko>')
+        this.log('Please provide a name for your knowledge object. \n\nUSAGE: \n  $ kgrid create [ko]')
       }
     } else {
       let l = cwdtype=='ko' ? 'KO Level' : 'Implementation Level'
@@ -76,12 +77,16 @@ class CreateCommand extends Command {
   }
 }
 
-CreateCommand.description = 'Create the knowledge object'
+CreateCommand.description = `Create Knowledge Object and initialize the implementation.
+${documentations.create}
+`
 
 CreateCommand.flags = {
-  implementation: flags.string({char: 'i'}),
-  bundled: flags.boolean({}),
-  flat: flags.boolean({})
+  implementation: flags.string({char: 'i', description:"the name for the implementation"}),
+  simple: flags.boolean({default: true, exclusive:['bundled'], description:"Using the simple template"}),
+  bundled: flags.boolean({default: false, exclusive:['simple'], description:"Using the template for bundled KO"}),
+  help: flags.help({char:'h'})
+  // , flat: flags.boolean({})
 }
 
 CreateCommand.args = [

@@ -1,7 +1,7 @@
 {
   "name": "@kgrid/cli",
   "description": "Command-line tool for Knowledge Object Developers",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "author": "kgrid",
   "bin": {
     "kgrid": "./bin/run"
@@ -46,7 +46,8 @@
   ],
   "homepage": "https://github.com/kgrid/kgrid-cli",
   "keywords": [
-    "oclif"
+    "oclif",
+    "kgrid"
   ],
   "license": "MIT",
   "main": "src/index.js",
@@ -60,6 +61,7 @@
   "repository": "kgrid/kgrid-cli",
   "scripts": {
     "postpack": "rimraf oclif.manifest.json",
+    "posttest": "eslint .",
     "prepack": "oclif-dev manifest && oclif-dev readme",
     "test": "nyc mocha --forbid-only \"test/**/*.test.js\"",
     "version": "oclif-dev readme && git add README.md"

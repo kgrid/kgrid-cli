@@ -1,5 +1,6 @@
 const {Command, flags} = require('@oclif/command')
 const runKgrid = require('../../run_kgrid')
+const documentations = require('../../extradoc.json')
 
 class StartCommand extends Command {
   async run() {
@@ -13,10 +14,12 @@ class StartCommand extends Command {
   }
 }
 
-StartCommand.description = 'Start KGrid'
+StartCommand.description = `Start Both KGrid Activator and KGrid Library.
+${documentations.start}
+`
 
 StartCommand.flags = {
-  shelf: flags.string({char: 's'}),
+  shelf: flags.string({char: 's', description:'Specify an absolute path to use as the shelf containing KOs'}),
 }
 
 module.exports = StartCommand

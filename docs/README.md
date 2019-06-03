@@ -1,164 +1,112 @@
-# `kgrid-cli` Quick Start
+# KGRID CLI
+
+[![oclif](https://img.shields.io/badge/cli-oclif-brightgreen.svg)](https://oclif.io)
+[![npm version](https://img.shields.io/npm/v/@kgrid/cli.svg)](https://www.npmjs.com/package/@kgrid/cli)
+[![CircleCI](https://circleci.com/gh/kgrid/kgrid-cli/tree/master.svg?style=shield)](https://circleci.com/gh/kgrid/kgrid-cli/tree/master)
+[![Downloads/week](https://img.shields.io/npm/dw/@kgrid/cli.svg)](https://npmjs.org/package/@kgrid/cli)
+[![License](https://img.shields.io/npm/l/@kgrid/cli.svg)](https://github.com/kgrid/kgrid-cli/blob/master/package.json)
 
 A command-line tool kit for knowledge object development.
 
-### Under development
+## Installation
 
-This CLI kit is still under development and not published yet. To try it, you need to clone this repo and perform a manual installation.
-
-## Installing the Kgrid command line tool
-
-Node.js is required to use this CLI kit and can be found at https://nodejs.org/en/.
+Node.js is required to use this CLI kit and can be found at [https://nodejs.org/en/](https://nodejs.org/en/).
 
 In your terminal:
-- Clone this repo
 
-  ` git clone https://github.com/kgrid/kgrid-cli.git `
+  ```
+  $ npm install -g @kgrid/cli
+  ```
 
-- Go to the repo folder and manually installation
-
-    `npm install -g`
-
-    You should be able to run `kgrid` as a node command globally. Change to another directory and run
-
-    `kgrid -h`
-
-Note: If you have installed previous version of kgrid-cli, uninstall first by `npm uninstall kgrid -g` and reinstall by `npm install -g`.
-
-Once the kgrid command line tool is installed, you don't need the repo you checked out, but you can update and reinstall using:
-
-```bash
-npm uninstall kgrid -g
-git pull
-npm install kgrid -g
-```
 
 ## Usage
 
-Change to your working directory (which should not be the kgrid-cli repo you checked out during installation). Type:
+### Basic Use
 
-`kgrid -h`
+You should be able to run the CLI tool globally.
 
-The listed subcommands are prototypes and subject to change during development.
+  ```
+  $ kgrid [command]
+  ```
 
-Before a knowledge object can be created, a folder needs to be designated or created as your project.
+If no command is entered, a list of available commands will be displayed.
 
-- Create a project folder.
+To display the usage information about that command, you can use
 
-  `mkdir <my-project>`
+  ```
+  $ kgrid help [command]
+  ```
+or
 
-- Change the created project folder
+  ```
+  $ kgrid [command] -h
+  ```
 
-  `cd <my-project>`
 
-### Create the knowledge object in the project folder
+### Set Up Knowledge Grid
 
-- Create the Knowledge Object (KO)
+  The command `SETUP` will check if you have KGRID components installed and set up.
 
-  `kgrid create <ko>`
+  ```
+  $ kgrid setup
+  ```
+  will use the current directory to install KGRID components. Library and Activator jar files will be downloaded and installed under `.kgrid`;
 
+  Using the flag `-g` will install KGRID components in the location specified by the environmental variable KGRID_HOME. if KGRID_HOME is not set, the default location will be `.kgrid` under the user home.
 
-If the KO exists, you will be prompted to choose a different name for the KO.
+  Using the flag `-u` will enable the setup process to install the latest releases of the KGRID components
 
-Once the KO is created, you will be prompted to name the first implementation for this KO. And the first implementation will be initialized using the build-in template.
 
-Now you are ready to browse your first KO implementation.
 
-The sample test can be tried by running
+### Create KO
 
-```
-npm install
-npm run test
-```
+The current directory will be used as the shelf serving KGRID Activator and/or KGRID Library.
 
-from the implementation directory.
+To create a Knowledge Object (KO), run
 
+  ```
+  $ kgrid create [ko]
+  ```
 
-### Initializing an knowledge object implementation in a KO folder
+The create command requires a name for the knowledge object. It can only run at the shelf level.
 
-If a KO directory exists or you like to use a existing folder as KO folder, you can add an implementation by
+A folder for the knowledge object will be created. An implementation will be created and initialized in the folder of `[ko]`. If the specified KO exists, an implementation will be added to the KO.
 
-`kgrid add`
+#### IMPLEMENTATION NAME:
 
-An implementation will be initialized using the build-in template. The top level metadata for the KO will be updated.
+The user will be prompted to enter a name; Alternatively, the name can be specified on the command line using the flag `-i`.
 
+#### ARK ID:
 
-### Setup Knowledge Kgrid
+A development ARK ID will be assigned as `{username}/{ko}/{implementation}`. The ARK ID is unique by having different implementation names in the same KO.
 
-The command SETUP will check if you have KGRID components installed and set up.
+####  IMPLEMENTATION TEMPLATE TYPE:
 
-`kgrid setup` will use the current directory to install KGRID components. Library and Activator jar files will be downloaded and installed under `.kgrid`;
+The implementation will be initialized using one of the templates.
 
-`kgrid setup -g` will install KGRID components in the location specified by the environmental variable KGRID_HOME. if KGRID_HOME is not set, the default location will be `.kgrid` under the user home.
+The template can be specified using the flags:
 
-`-u` will enable the setup process to install the latest releases of the KGRID components
+  `--simple`    for the template with simple JAVASCRIPT file as payload
 
+  `--bundled`   for the template with JAVASCRIPT file(s); the payload will require bundling
 
+By default, the *simple* template will be used.
 
 
-### Start Knowledge Kgrid
 
-`kgrid start`
+### Package KO
 
-`kgrid start:acvtivator`
+Knowledge objects in the project will be individually packaged into zip files and stored in the destination folder.
 
-`kgrid start:library`
+  ```
+  $ kgrid package [ko] [destination]
+  ```
 
 
+### Start Knowledge Grid
 
+  `kgrid start`
 
+  `kgrid start:acvtivator`
 
-<!--
-
-
-
-### Install needed Node modules and K-Grid components, including activator and adapters
-
-` kgrid install `
-
-It will install needed node modules defined in devDependencies, as well as the KGrid runtime dependencies.
-
-If the knowledge object has been modified or new knowledge objects have been added, you might need to run install command to load the latest set of knowledge objects and adapters
-
-
-
-### Start the activator and activate the knowledge object
-
-You start the activator in two modes:
-
- - In DEV mode,
-
-    ` npm run dev `
-
-    The activator will use the project directory as the shelf serving all knowledge objects within the directory.
-
-- In PROD mode,
-
-    `npm run prod -- <options>`
-
-    You can use command line arguments to specify the options for the activator.
-
-    `npm run prod` will use the default shelf location, which is equivalent to `npm run prod -- --kgrid.shelf.cdostore.filesystem.location=activator/shelf`
-
-To start the activator on a different port (Default port: 8080), include ` --server.port=8090 ` as part of the options on the command line.
-
-
-
-### Package the knowledge objects
-
-Knowledge objects in the project will be individually packaged into zip files and stored in target folder.
-
-  ` npm run package <objectname> `
-
-
-### Update the knowledge object Project
-
-After you create a new knowledge object from template, or simply copy/move a knowledge object from another project/directory, or add a new version of existing knowledge object, the file of package.json needs to be updated by
-
-`kgrid update` .
-
-If new dependencies are added, you will need to run `kgrid install` to get the new components ready for use. -->
-
----
-
-For details in using these command, run the commands with -h option.
+  `kgrid start:library`

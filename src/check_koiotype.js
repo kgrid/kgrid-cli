@@ -15,4 +15,5 @@ function checkKoiotype () {
     return 'shelf'
   }
 }
+
 module.exports=checkKoiotype

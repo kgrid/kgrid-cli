@@ -2,6 +2,7 @@ const fs = require('fs-extra')
 const yaml = require('js-yaml')
 const path =require('path')
 const source = require.resolve('../src/template/kometadata.json')
+const userConfig = require('../src/user_config')
 const topSourcePath = path.dirname(source)
 const os = require('os')
 
@@ -28,8 +29,13 @@ async function createImplementation (ko, implementation, template, flat) {
   var impleService = JSON.parse(JSON.stringify(serviceObj))
   var pkgJson = JSON.parse(JSON.stringify(packageObj))
 
+  var userNaan = os.userInfo().username
+  const userConfigJson =  userConfig()
+  if(userConfigJson){
+    userNaan = userConfigJson.devDefault.naan
+  }
   let idArr = topMeta.identifier.split('/')
-  let idNaan = os.userInfo().username
+  let idNaan = userNaan
   let idName = ko
 
   if(idName==''){
@@ -88,4 +94,5 @@ async function createImplementation (ko, implementation, template, flat) {
   }
   console.log('\nThe implementation of ' + implementation + ' has been initialized.')
 }
+
 module.exports=createImplementation

@@ -28,6 +28,7 @@ USAGE
 <!-- usagestop -->
 # Commands
 <!-- commands -->
+* [`kgrid config`](#kgrid-config)
 * [`kgrid create [KO]`](#kgrid-create-ko)
 * [`kgrid help [COMMAND]`](#kgrid-help-command)
 * [`kgrid package [KO] [DESTINATION]`](#kgrid-package-ko-destination)
@@ -35,6 +36,28 @@ USAGE
 * [`kgrid start`](#kgrid-start)
 * [`kgrid start:activator`](#kgrid-startactivator)
 * [`kgrid start:library`](#kgrid-startlibrary)
+
+## `kgrid config`
+
+Install KGrid Components and set up kgrid environment.
+
+```
+USAGE
+  $ kgrid config
+
+DESCRIPTION
+  KGrid Activator and Library JAR files will be downloaded and installed.
+
+  By default, the components will be downloaded and saved in /.kgrid under current directory.
+
+  The flag -g can be used to install the KGrid components as globally accessible.
+
+  The global location will be the folder defined by the environment variable of KGRID_HOME.
+
+  IF KGRID_HOME is not defined, the user home will be used.
+```
+
+_See code: [src\commands\config.js](https://github.com/kgrid/kgrid-cli/blob/v0.0.9/src\commands\config.js)_
 
 ## `kgrid create [KO]`
 
@@ -45,8 +68,10 @@ USAGE
   $ kgrid create [KO]
 
 OPTIONS
+  -h, --help                           show CLI help
   -i, --implementation=implementation  the name for the implementation
   --bundled                            Using the template for bundled KO
+  --executive                          Using the template for executive KO
   --simple                             Using the simple template
 
 DESCRIPTION
@@ -101,8 +126,12 @@ Package the knowledge object.
 USAGE
   $ kgrid package [KO] [DESTINATION]
 
+OPTIONS
+  -h, --help                           show CLI help
+  -i, --implementation=implementation  the name for the implementation
+
 DESCRIPTION
-  Package the specified KO into a ZIP file, ready for depositing into a KGrid Library or deploying to a KGrid Activator
+  Package the specified KO into a ZIP file, ready for depositing into a KGrid Library or deploying to a KGrid Activator.
 ```
 
 _See code: [src\commands\package.js](https://github.com/kgrid/kgrid-cli/blob/v0.0.9/src\commands\package.js)_
@@ -116,11 +145,19 @@ USAGE
   $ kgrid setup
 
 OPTIONS
-  -g, --global
-  -u, --update
+  -g, --global  Install at a globally accessible location
+  -u, --update  Update the KGrid components to the latest release
 
 DESCRIPTION
   KGrid Activator and Library JAR files will be downloaded and installed.
+
+  By default, the components will be downloaded and saved in /.kgrid under current directory.
+
+  The flag -g can be used to install the KGrid components as globally accessible.
+
+  The global location will be the folder defined by the environment variable of KGRID_HOME.
+
+  IF KGRID_HOME is not defined, the user home will be used.
 ```
 
 _See code: [src\commands\setup.js](https://github.com/kgrid/kgrid-cli/blob/v0.0.9/src\commands\setup.js)_
@@ -134,7 +171,7 @@ USAGE
   $ kgrid start
 
 OPTIONS
-  -s, --shelf=shelf
+  -s, --shelf=shelf  Specify an absolute path to use as the shelf containing KOs
 
 DESCRIPTION
   This command will start both KGrid Activator and KGrid Library.
@@ -159,9 +196,9 @@ USAGE
   $ kgrid start:activator
 
 OPTIONS
-  -j, --jarfile=jarfile
-  -p, --port=port
-  -s, --shelf=shelf
+  -j, --jarfile=jarfile  Specify the activator JAR file to use other than the installed one
+  -p, --port=port        Specify the port for KGRID Activator
+  -s, --shelf=shelf      Specify an absolute path to use as the shelf containing KOs
 
 DESCRIPTION
   This command starts KGrid Activator at the default port of 8080.
@@ -183,9 +220,9 @@ USAGE
   $ kgrid start:library
 
 OPTIONS
-  -j, --jarfile=jarfile
-  -p, --port=port
-  -s, --shelf=shelf
+  -j, --jarfile=jarfile  Specify the library JAR file to use other than the installed one
+  -p, --port=port        Specify the port for KGRID Library
+  -s, --shelf=shelf      Specify an absolute path to use as the shelf containing KOs
 
 DESCRIPTION
   This command starts KGrid Library at the default port of 8080.

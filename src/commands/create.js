@@ -6,7 +6,7 @@ const kometaObj = require('../template/kometadata.json')
 const createImplementation = require('../create_implementation')
 const checkKoiotype = require('../check_koiotype')
 const colors = require('colors/safe');
-const documentations = require('../extradoc.json')
+const documentations = require('../json/extradoc.json')
 
 var topMeta = JSON.parse(JSON.stringify(kometaObj))
 
@@ -20,7 +20,9 @@ class CreateCommand extends Command {
     let flat = flags.flat || false
     let implExists = false
     let template = flags.bundled ? 'bundled' : 'simple'
-
+    if(flags.executive) {
+      template='executive'
+    }
     if(cwdtype=='shelf'){
       if (ko) {
         if (fs.pathExistsSync(path.join(ko,'metadata.json'))) {  // KO Existing
@@ -83,8 +85,9 @@ ${documentations.create}
 
 CreateCommand.flags = {
   implementation: flags.string({char: 'i', description:"the name for the implementation"}),
-  simple: flags.boolean({default: true, exclusive:['bundled'], description:"Using the simple template"}),
-  bundled: flags.boolean({default: false, exclusive:['simple'], description:"Using the template for bundled KO"}),
+  simple: flags.boolean({default: true, exclusive:['bundled', 'executive'], description:"Using the simple template"}),
+  bundled: flags.boolean({default: false, exclusive:['simple', 'executive'], description:"Using the template for bundled KO"}),
+  executive: flags.boolean({default: false, exclusive:['simple','bundled'], description:"Using the template for executive KO"}),
   help: flags.help({char:'h'})
   // , flat: flags.boolean({})
 }

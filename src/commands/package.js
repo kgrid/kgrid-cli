@@ -4,7 +4,7 @@ const yaml = require('js-yaml');
 const jp = require('jsonpath');
 const fs = require('fs-extra');
 const path = require('path');
-const documentations = require('../extradoc.json')
+const documentations = require('../json/extradoc.json')
 
 class PackageCommand extends Command {
   async run() {

@@ -1,6 +1,6 @@
 const {Command, flags} = require('@oclif/command')
 const runKgrid = require('../../run_kgrid')
-const documentations = require('../../extradoc.json')
+const documentations = require('../../json/extradoc.json')
 
 class LibraryCommand extends Command {
   async run() {

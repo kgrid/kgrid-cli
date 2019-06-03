@@ -2,9 +2,11 @@ const {Command, flags} = require('@oclif/command');
 const {cli} = require('cli-ux');
 const fs = require('fs-extra')
 const path = require('path')
+const os = require('os')
 const download = require('download');
 const kgridmanifest = 'https://demo.kgrid.org/kgrid/manifest.json'
-const documentations = require('../extradoc.json')
+const documentations = require('../json/extradoc.json')
+var userConfig = require('../json/config.json')
 var manifest = {}
 var kgridHome = ''
 
@@ -12,10 +14,19 @@ class SetupCommand extends Command {
   async run() {
     this.log('KGrid CLI v'+this.config.version+'\n')
     const {flags} = this.parse(SetupCommand)
-    let userHome =  process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE;
+    let userHome = process.env.HOME || process.env.USERPROFILE || process.env.HOMEPATH ;
     kgridHome = path.join(process.cwd(), '.kgrid')
     if(flags.global){
       kgridHome =  process.env.KGRID_HOME || path.join(userHome, '.kgrid');
+    }
+    // Write user config
+    let configPath = path.join(userHome,'.config')
+    let userConfigFile = path.join(configPath, 'kgrid-cli-config.json')
+    if(fs.pathExistsSync(userConfigFile)){
+
+    } else {
+      userConfig.devDefault.naan=os.userInfo().username;
+      fs.writeJsonSync(userConfigFile, userConfig, {spaces: 4})
     }
     this.log("Setting up kgrid at", kgridHome);
     fs.ensureDirSync(kgridHome)

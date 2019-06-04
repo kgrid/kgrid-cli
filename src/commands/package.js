@@ -120,7 +120,6 @@ class PackageCommand extends Command {
 }
 
 function archiveFileFromLocation (archive, location) {
-
   if (fs.pathExistsSync(location)) {
     console.log("Copying " + location);
     archive.append(fs.createReadStream(location),
@@ -128,7 +127,6 @@ function archiveFileFromLocation (archive, location) {
   } else {
     console.log("Cannot find file at " + location);
   }
-
 }
 
 PackageCommand.description = `Package the knowledge object.

@@ -27,7 +27,7 @@ class CreateCommand extends Command {
       if (ko) {
         if (fs.pathExistsSync(path.join(ko,'metadata.json'))) {  // KO Existing
           topMeta = fs.readJsonSync(path.join(ko,'metadata.json'))
-          console.log('The Knowledge Object of '+ko+' exists. \n')
+          console.log('The Knowledge Object of '+colors.yellow.inverse(ko)+' exists. \n')
           console.log('An new implementation will be added to '+ko+'\n')
           console.log(colors.green('==== Add an implementation ==== '))
         } else {    // KO not existing; create folder and write metadata

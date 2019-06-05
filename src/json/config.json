@@ -1,5 +1,7 @@
 {
   "devDefault":{
-    "naan":"99999"
+    "naan":"99999",
+    "activator_port":"",
+    "library_port":""
   }
 }

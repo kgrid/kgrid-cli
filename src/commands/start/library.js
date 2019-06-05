@@ -1,13 +1,21 @@
 const {Command, flags} = require('@oclif/command')
 const runKgrid = require('../../run_kgrid')
 const documentations = require('../../json/extradoc.json')
+const userConfig = require('../../user_config')
 
 class LibraryCommand extends Command {
   async run() {
     const {flags} = this.parse(LibraryCommand)
     this.log('KGrid CLI v'+this.config.version+'\n')
+    const userConfigJson =  userConfig()
+    let library_port = ''
+    if(userConfigJson){
+      if(userConfigJson.devDefault.library_port!=''){
+        library_port  = userConfigJson.devDefault.library_port
+      }
+    }
     let shelf = flags.shelf || ''
-    let port = flags.port || ''
+    let port = flags.port || library_port
     let jar = flags.jarfile || ''
     let cmdObj = {name:'library',component: jar, shelf: shelf, port: port}
     runKgrid(cmdObj)

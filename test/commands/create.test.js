@@ -15,32 +15,32 @@ describe('test happy day create ', () => {
 
   test
   .stdout()
-  .command(['create', 'test-ko', '-i', 'koversion'])
-  .it('runs create with test-ko name and koversion implementation', output => {
+  .command(['create', 'testko', '-i', 'koversion'])
+  .it('runs create with testko name and koversion implementation', output => {
 
     expect(output.stdout).to.include('Ready');
 
     expect(fs.existsSync(path.join(
-      testDirectory.name, "test-ko", "metadata.json"))).to.be.true;
+      testDirectory.name, "testko", "metadata.json"))).to.be.true;
 
     expect(fs.existsSync(path.join(
-      testDirectory.name, "test-ko", "koversion", "metadata.json")),
+      testDirectory.name, "testko", "koversion", "metadata.json")),
       "find metadata.json file").to.be.true;
 
     expect(fs.existsSync(path.join(
-      testDirectory.name, "test-ko", "koversion", "package.json")),
+      testDirectory.name, "testko", "koversion", "package.json")),
       "find package.json file").to.be.true;
 
     expect(fs.existsSync(path.join(
-      testDirectory.name, "test-ko", "koversion", "service.yaml")),
+      testDirectory.name, "testko", "koversion", "service.yaml")),
       "find service.yaml file").to.be.true;
 
     expect(fs.existsSync(path.join(
-      testDirectory.name, "test-ko", "koversion", "src", "index.js")),
+      testDirectory.name, "testko", "koversion", "src", "index.js")),
       "find index.js file").to.be.true;
 
     expect(fs.existsSync(path.join(
-      testDirectory.name, "test-ko", "koversion", "test", "welcome.test.js")),
+      testDirectory.name, "testko", "koversion", "test", "welcome.test.js")),
       "find welcome.test.js file").to.be.true;
 
   });
@@ -59,7 +59,7 @@ describe('test not happy day create ', () => {
 
   test
   .stdout()
-  .command(['create', 'test-ko', '-i', 'koversion'])
+  .command(['create', 'testko', '-i', 'koversion'])
   .it('runs create with existing ko name and implementation', output => {
 
     expect(output.stdout).to.include(
@@ -69,7 +69,7 @@ describe('test not happy day create ', () => {
 
   test
   .stdout()
-  .command(['create', 'test-ko', '-i', 'anotherversion'])
+  .command(['create', 'testko', '-i', 'anotherversion'])
   .it('runs create with existing ko name and new implementation', output => {
 
     expect(output.stdout).to.include(

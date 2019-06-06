@@ -56,7 +56,10 @@
     "bin": "kgrid",
     "plugins": [
       "@oclif/plugin-help"
-    ]
+    ],
+    "hooks": {
+      "init": "./src/hooks/init/checkversion"
+    }
   },
   "repository": "kgrid/kgrid-cli",
   "scripts": {

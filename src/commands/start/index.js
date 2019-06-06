@@ -6,7 +6,6 @@ const userConfig = require('../../user_config')
 class StartCommand extends Command {
   async run() {
     const {flags} = this.parse(StartCommand)
-    this.log('KGrid CLI v'+this.config.version+'\n')
     const userConfigJson =  userConfig()
     let library_port = 8081
     let activator_port = 8082

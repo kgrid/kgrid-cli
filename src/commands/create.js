@@ -12,7 +12,6 @@ var topMeta = JSON.parse(JSON.stringify(kometaObj))
 
 class CreateCommand extends Command {
   async run() {
-    console.log(colors.blue('KGrid CLI v'+this.config.version+'\n'))
     const {args, flags} = this.parse(CreateCommand)
     let cwdtype = checkKoiotype()
     let ko = args.ko
@@ -58,8 +57,17 @@ class CreateCommand extends Command {
             ])
             implementation = responses.implementation
           }
-          if(topMeta.hasImplementation.length>0){
-            topMeta.hasImplementation.forEach(function(e){
+
+          let topMetaImplementations = topMeta.hasImplementation;
+          let implementations = []
+          if(!Array.isArray(topMetaImplementations)){
+            implementations.push(topMetaImplementations)
+          } else {
+            implementations= JSON.parse(JSON.stringify(topMetaImplementations))
+          }
+
+          if(implementations.length>0){
+            implementations.forEach(function(e){
               let imples = e.split('/')
               implExists = implExists | implementation == imples[imples.length-1]
             })

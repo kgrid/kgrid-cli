@@ -10,7 +10,6 @@ const documentations = require('../json/extradoc.json')
 
 class PackageCommand extends Command {
   async run() {
-    console.log(colors.blue('KGrid CLI v'+this.config.version+'\n'))
     const {args, flags} = this.parse(PackageCommand);
     let ko = args.ko;
     let dest = args.destination;
@@ -100,10 +99,17 @@ class PackageCommand extends Command {
     }
     destinationName=path.join(shelfpath,destinationName)
 
-    let implementations = topMeta.hasImplementation;
+    let topMetaImplementations = topMeta.hasImplementation;
     topMeta.hasImplementation =[]
+    let implementations = []
     let arkId = topMeta["@id"];
-    if (implementations) {
+
+    if (topMetaImplementations) {
+      if(!Array.isArray(topMetaImplementations)){
+        implementations.push(topMetaImplementations)
+      } else {
+        implementations= JSON.parse(JSON.stringify(topMetaImplementations))
+      }
       // console.log("Found implementations " + JSON.stringify(implementations));
       implementations.forEach(implementation => {
         let imp = implementation.replace(arkId+'/', '');
@@ -115,14 +121,11 @@ class PackageCommand extends Command {
             impIncluded=true
           }
         }
-
         if(impIncluded){
           topMeta.hasImplementation.push(implementation)
           implementation = implementation.replace(arkId, path.basename(imppath));
           let implementationMetadataPath = path.join(kopath, imp, 'metadata.json');
-          // if(cwdtype=='implementation'){
-          //   implementationMetadataPath='metadata.json'
-          // }
+
           if (fs.pathExistsSync(implementationMetadataPath)) {
             let implementationMetadata = fs.readJsonSync(implementationMetadataPath);
             if(implementationMetadata.hasDeploymentSpecification &&

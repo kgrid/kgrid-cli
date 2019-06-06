@@ -43,6 +43,14 @@ async function createImplementation (ko, implementation, template, flat) {
     idName = path.basename(process.cwd())
   }
   // Update Top Level Metadata
+  let topMetaImplementations = topMeta.hasImplementation;
+  topMeta.hasImplementation =[]
+  if(!Array.isArray(topMetaImplementations)){
+    topMeta.hasImplementation.push(topMetaImplementations)
+  } else {
+    topMeta.hasImplementation= JSON.parse(JSON.stringify(topMetaImplementations))
+  }
+
   topMeta.hasImplementation.push(idNaan + '-' + idName + '/' + implementation)
   topMeta.identifier = 'ark:/' + idNaan + '/' + idName
   topMeta['@id'] = idNaan + '-' + idName

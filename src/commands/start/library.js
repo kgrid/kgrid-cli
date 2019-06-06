@@ -6,7 +6,6 @@ const userConfig = require('../../user_config')
 class LibraryCommand extends Command {
   async run() {
     const {flags} = this.parse(LibraryCommand)
-    this.log('KGrid CLI v'+this.config.version+'\n')
     const userConfigJson =  userConfig()
     let library_port = ''
     if(userConfigJson){

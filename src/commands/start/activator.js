@@ -6,7 +6,6 @@ const userConfig = require('../../user_config')
 class ActivatorCommand extends Command {
   async run() {
     const {args, flags} = this.parse(ActivatorCommand)
-    this.log('KGrid CLI v'+this.config.version+'\n')
     const userConfigJson =  userConfig()
     let activator_port = ''
     if(userConfigJson){

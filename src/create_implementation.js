@@ -7,17 +7,17 @@ const source = require.resolve('../src/template/kometadata.json')
 const userConfig = require('../src/user_config')
 const topSourcePath = path.dirname(source)
 
-async function createImplementation (ko, implementation, template, flat) {
+async function createImplementation (shelf, ko, implementation, template, flat) {
   let implementationPath = ''
   if(flat){
     implementationPath = ko+'_'+implementation
   } else {
-    implementationPath = path.join(ko,implementation)
+    implementationPath = path.join(shelf, ko,implementation)
   }
   var sourcePath = path.join(topSourcePath, template)
   var topMeta
-  if (fs.pathExistsSync(path.join(ko,'metadata.json'))) {
-    topMeta = fs.readJsonSync(path.join(ko,'metadata.json'))
+  if (fs.pathExistsSync(path.join(shelf, ko,'metadata.json'))) {
+    topMeta = fs.readJsonSync(path.join(shelf, ko,'metadata.json'))
   } else {
     topMeta = fs.readJsonSync(path.join(topSourcePath,'metadata.json'))
   }
@@ -54,11 +54,11 @@ async function createImplementation (ko, implementation, template, flat) {
   topMeta.hasImplementation.push(idNaan + '-' + idName + '/' + implementation)
   topMeta.identifier = 'ark:/' + idNaan + '/' + idName
   topMeta['@id'] = idNaan + '-' + idName
-  fs.writeJsonSync(path.join(ko,'metadata.json'), topMeta, {spaces: 4})
+  fs.writeJsonSync(path.join(shelf, ko,'metadata.json'), topMeta, {spaces: 4})
   if(flat){
     implementationPath = ko+'_'+implementation
   } else {
-    implementationPath = path.join(ko,implementation)
+    implementationPath = path.join(shelf, ko,implementation)
   }
   // Create the folder for implementation
   fs.ensureDirSync(implementationPath)

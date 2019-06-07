@@ -67,11 +67,11 @@ async function createImplementation (shelf, ko, implementation, template, flat) 
   impleMeta['@id'] = implementation
   impleMeta.identifier = 'ark:/' + idNaan + '/' + idName + '/' + implementation
   impleMeta.hasServiceSpecification = implementation + '/service.yaml'
-  if(template=='bundled') {
-    impleMeta.hasPayload =  implementation + '/dist/main.js'
-  } else {
-    impleMeta.hasPayload = implementation + '/src/index.js'
-  }
+  // if(template=='bundled') {
+  //   impleMeta.hasPayload =  implementation + '/dist/main.js'
+  // } else {
+  //   impleMeta.hasPayload = implementation + '/src/index.js'
+  // }
   fs.writeJsonSync(path.join(implementationPath,'metadata.json'), impleMeta, {spaces: 4})
 
   // Update Implementation Service Specification

@@ -67,8 +67,7 @@
     "posttest": "eslint .",
     "prepack": "oclif-dev manifest && oclif-dev readme",
     "test": "nyc mocha --forbid-only \"test/**/*.test.js\"",
-    "version": "oclif-dev readme && git add README.md",
-    "docs:dev": "vuepress dev docs",
-    "docs:build": "vuepress build docs"
+    "version": "oclif-dev readme && git add README.md"
+
   }
 }

@@ -54,7 +54,7 @@ class CreateCommand extends Command {
     }
     if (fs.pathExistsSync(path.join(shelfpath, ko,'metadata.json'))) {  // KO Existing
       topMeta = fs.readJsonSync(path.join(shelfpath, ko,'metadata.json'))
-      if(pathtype=='shelf') {
+      if(pathtype.type=='shelf') {
         console.log('The Knowledge Object of '+colors.yellow.inverse(ko)+' exists. \n')
       }
       console.log('An new implementation will be added to '+ko+'\n')

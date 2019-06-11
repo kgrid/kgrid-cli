@@ -18,7 +18,6 @@ class PackageCommand extends Command {
     let shelfpath = pathtype.shelfpath
     let kopath = pathtype.kopath
     let implpath = pathtype.implpath
-
     if(pathtype.type=='shelf'){
       if(ko){
         kopath=path.join(pathtype.shelfpath,ko)
@@ -26,7 +25,7 @@ class PackageCommand extends Command {
           implpath = path.join(kopath, srcImplementation)
         }
       }else {
-        console.log("Please provide the name of the knowledge object you'd like to package.")
+        console.log(colors.yellow("Please provide the name of the knowledge object you'd like to package. \n\nUSAGE: \n  $ kgrid package [ko]"))
         return 1
       }
     } else {
@@ -55,13 +54,9 @@ class PackageCommand extends Command {
         }
       }
     }
-
     let tmpko = path.join(shelfpath, 'tmp',path.basename(kopath))
     fs.ensureDirSync(tmpko)
-
     let checkSpec = false;
-    // Zip ko and only put in the artifacts needed for activation by looking
-    // for links to files in the implementation metadata
     let koMetadataPath = path.join(kopath,'metadata.json');
     let topMeta;
     if (fs.pathExistsSync(koMetadataPath)) {
@@ -84,8 +79,9 @@ class PackageCommand extends Command {
       }else {
         destinationName = path.basename(kopath) + ".zip";
       }
+      destinationName=path.join(shelfpath,destinationName)
     }
-    destinationName=path.join(shelfpath,destinationName)
+
     let topMetaImplementations = topMeta.hasImplementation;
     topMeta.hasImplementation =[]
     let implementations = []
@@ -96,86 +92,94 @@ class PackageCommand extends Command {
       } else {
         implementations= JSON.parse(JSON.stringify(topMetaImplementations))
       }
-      implementations.forEach(implementation => {
-        let imp = implementation.replace(arkId+'/', '');
-        let impIncluded = false
-        if(implpath==''){
-          impIncluded = true
-        } else {
-          if(path.basename(implpath)==imp) {
-            impIncluded=true
+      try{
+        implementations.forEach(implementation => {
+          let imp = implementation.replace(arkId+'/', '');
+          let impIncluded = false
+          if(implpath==''){
+            impIncluded = true
+          } else {
+            if(path.basename(implpath)==imp) {
+              impIncluded=true
+            }
           }
-        }
-        if(impIncluded){
-          topMeta.hasImplementation.push(implementation)
-          implementation = implementation.replace(arkId, path.basename(implpath));
-          let implementationMetadataPath = path.join(kopath, imp, 'metadata.json');
-          if (fs.pathExistsSync(implementationMetadataPath)) {
-            let implementationMetadata = fs.readJsonSync(implementationMetadataPath);
-            if(implementationMetadata.hasDeploymentSpecification &&
-              fs.pathExistsSync(path.join(path.basename(kopath), implementationMetadata.hasDeploymentSpecification))) {
-              let deploymentSpecPath = path.join(path.basename(kopath), implementationMetadata.hasDeploymentSpecification);
-              console.log('Copying Deployment:')
-              fs.copySync(deploymentSpecPath, path.join(tmpko, implementationMetadata.hasDeploymentSpecification))
-              let deploymentSpec = yaml.safeLoad(fs.readFileSync(deploymentSpecPath));
-              let endpoints = deploymentSpec.endpoints;
-              if(endpoints) {
-                Object.keys(endpoints).forEach(endpoint => {
-                  console.log("endpoint: " + JSON.stringify(endpoints[endpoint]));
-                  let payloadPath = path.join(kopath, imp,  endpoints[endpoint].artifact);
-                });
+          if(impIncluded){
+            topMeta.hasImplementation.push(implementation)
+            implementation = implementation.replace(arkId, path.basename(implpath));
+            let implementationMetadataPath = path.join(kopath, imp, 'metadata.json');
+            if (fs.pathExistsSync(implementationMetadataPath)) {
+              let implementationMetadata = fs.readJsonSync(implementationMetadataPath);
+              if(implementationMetadata.hasDeploymentSpecification &&
+                fs.pathExistsSync(path.join(kopath, implementationMetadata.hasDeploymentSpecification))) {
+                let deploymentSpecPath = path.join(kopath, implementationMetadata.hasDeploymentSpecification);
+                console.log('Adding '+deploymentSpecPath+' ...')
+                fs.copySync(deploymentSpecPath, path.join(tmpko, implementationMetadata.hasDeploymentSpecification))
+                let deploymentSpec = yaml.safeLoad(fs.readFileSync(deploymentSpecPath));
+                let endpoints = deploymentSpec.endpoints;
+                if(endpoints) {
+                  Object.keys(endpoints).forEach(endpoint => {
+                    let payloadPath = path.join(kopath, imp,  endpoints[endpoint].artifact);
+                    console.log('Adding '+payloadPath+' ...')
+                    fs.copySync(payloadPath, path.join(tmpko, imp, endpoints[endpoint].artifact))
+                  });
+                } else {
+                  checkSpec = true;  // Has deployment spec but no endpoints
+                }
               } else {
-                checkSpec = true;  // Has deployment spec but no endpoints
+                checkSpec = true;   // Doesn't have deployment spec
               }
-            } else {
-              checkSpec = true;   // Doesn't have deployment spec
-            }
-
-            let specPath = path.join(kopath, implementationMetadata.hasServiceSpecification);
-            fs.copySync(specPath, path.join(tmpko, implementationMetadata.hasServiceSpecification))
-
-            if(checkSpec) {
-              let serviceSpec = yaml.safeLoad(fs.readFileSync(specPath));
-              let endpoints = serviceSpec.paths;
-              Object.keys(endpoints).forEach(endpoint => {
-                let payloadPaths = jp.query(endpoints[endpoint],
-                  "$.*['x-kgrid-activation'].artifact");
-                payloadPaths.forEach(methodPath => {
-                  let payloadPath = path.join(kopath, imp,  methodPath);
-                  fs.copySync(payloadPath, path.join(tmpko, imp, methodPath))
+              let specPath = path.join(kopath, implementationMetadata.hasServiceSpecification);
+              console.log('Adding '+specPath+' ...')
+              fs.copySync(specPath, path.join(tmpko, implementationMetadata.hasServiceSpecification))
+              if(checkSpec) {
+                let serviceSpec = yaml.safeLoad(fs.readFileSync(specPath));
+                let endpoints = serviceSpec.paths;
+                Object.keys(endpoints).forEach(endpoint => {
+                  let payloadPaths = jp.query(endpoints[endpoint],
+                    "$.*['x-kgrid-activation'].artifact");
+                  payloadPaths.forEach(methodPath => {
+                    let payloadPath = path.join(kopath, imp,  methodPath);
+                    console.log('Adding '+payloadPath+' ...')
+                    fs.copySync(payloadPath, path.join(tmpko, imp, methodPath))
+                  });
                 });
-              });
+              }
+              console.log('Adding '+implementationMetadataPath+' ...')
+              fs.copySync(implementationMetadataPath, path.join(tmpko, imp, 'metadata.json'))
+            } else {
+              console.log("Cannot find implementation folder " + implementation);
             }
-            fs.copySync(implementationMetadataPath, path.join(tmpko, imp, 'metadata.json'))
-          } else {
-            console.log("Cannot find implementation folder " + implementation);
           }
-        }
-      });
-      fs.writeJsonSync(path.join(tmpko,'metadata.json'), topMeta, {spaces: 4})
-      if(topMeta.hasImplementation.length>0){
-        let output = fs.createWriteStream(destinationName);
-        let archive = archiver('zip', {zlib: {level: 9}});
-        output.on('close', () => {
-          fs.removeSync(path.join(shelfpath,'tmp'))
-          console.log('Created package:  \n\n    '  + colors.inverse(destinationName)+'      (Total bytes: '+ archive.pointer()+')');
         });
-        archive.pipe(output);
-        archive.on('warning', function(err) {
-          if (err.code === 'ENOENT') {
-            console.log(err);
-          } else {
+        console.log('Adding '+path.join(kopath,'metadata.json')+' ...')
+        fs.writeJsonSync(path.join(tmpko,'metadata.json'), topMeta, {spaces: 4})
+        if(topMeta.hasImplementation.length>0){
+          let output = fs.createWriteStream(destinationName);
+          let archive = archiver('zip', {zlib: {level: 9}});
+          output.on('close', () => {
+            fs.removeSync(path.join(shelfpath,'tmp'))
+            console.log('\nCreated package:  \n\n    '  + colors.inverse(destinationName)+'      (Total bytes: '+ archive.pointer()+')');
+          });
+          archive.pipe(output);
+          archive.on('warning', function(err) {
+            if (err.code === 'ENOENT') {
+              console.log(err);
+            } else {
+              throw err;
+            }
+          });
+          archive.on('error', function(err) {
             throw err;
-          }
-        });
-        archive.on('error', function(err) {
-          throw err;
-        });
-        archive.directory(tmpko, path.basename(kopath))
-        archive.finalize();
-      } else {
+          });
+          archive.directory(tmpko, path.basename(kopath))
+          archive.finalize();
+        } else {
+          fs.removeSync(path.join(shelfpath,'tmp'))
+          console.log('No matching implementation found.')
+        }
+      }catch(e){
         fs.removeSync(path.join(shelfpath,'tmp'))
-        console.log('No matching implementation found.')
+        console.log(colors.yellow(e.message))
       }
     }
   }

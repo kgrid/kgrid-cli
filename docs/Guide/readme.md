@@ -28,8 +28,6 @@ To update KGRID components, run
   $ kgrid setup -g -u     // If installed globally
   ```
 
-
-
 ## Change the default {naan}
 
 The default `{naan}` is the username.
@@ -39,8 +37,23 @@ To change, set the value in the file of `kgrid-cli-config.json`. See [Config CLI
 
 ## Start KGRID Library/Activator at different ports
 
-You can set the port values in the file of `kgrid-cli-config.json`. See [Config CLI](#config-cli)
+When KGRID Library and Activator are started together by running `kgrid start`, the default values are 8081 and 8082, respectively. The values can not be overwritten on the command line.
+
+You can change the default port values in the file of `kgrid-cli-config.json`. See [Config CLI](#config-cli). To be noted, the values will always be used once set. To revert back to the original default, change the values to `''`.
+
+If you'd like to run KGRID Library/Activator at different ports without changing the defaults, you need to start the components individually with the option of port by running
+  ```
+  $ kgrid start:library -p 9000
+  $ kgrid start:activator -p 9001
+  ```
 
 
 ## Config CLI
-A config file of `kgrid-cli-config.json` is saved at `{USERHOME}/.config`. It specifies values to override the default value for certain development settings .
+A config file of `kgrid-cli-config.json` is saved at `{USERHOME}/.config`. It specifies values to override the default value for certain development settings.
+
+Current fields available for configuration:
+```
+naan
+activator_port
+library_port
+```

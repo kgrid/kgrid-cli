@@ -1,112 +1,225 @@
-# KGRID CLI
-
+kgrid-cli
+=========
 [![oclif](https://img.shields.io/badge/cli-oclif-brightgreen.svg)](https://oclif.io)
 [![npm version](https://img.shields.io/npm/v/@kgrid/cli.svg)](https://www.npmjs.com/package/@kgrid/cli)
 [![CircleCI](https://circleci.com/gh/kgrid/kgrid-cli/tree/master.svg?style=shield)](https://circleci.com/gh/kgrid/kgrid-cli/tree/master)
 [![Downloads/week](https://img.shields.io/npm/dw/@kgrid/cli.svg)](https://npmjs.org/package/@kgrid/cli)
 [![License](https://img.shields.io/npm/l/@kgrid/cli.svg)](https://github.com/kgrid/kgrid-cli/blob/master/package.json)
 
-A command-line tool kit for knowledge object development.
+Command-line tool for Knowledge Object developers
 
-## Installation
+<!-- toc -->
+* [Usage](#usage)
+* [Commands](#commands)
+<!-- tocstop -->
+# Usage
+<!-- usage -->
+```sh-session
+$ npm install -g @kgrid/cli
+$ kgrid COMMAND
+running command...
+$ kgrid (-v|--version|version)
+@kgrid/cli/0.0.12 win32-x64 node-v10.15.3
+$ kgrid --help [COMMAND]
+USAGE
+  $ kgrid COMMAND
+...
+```
+<!-- usagestop -->
+# Commands
+<!-- commands -->
+* [`kgrid create [KO]`](#kgrid-create-ko)
+* [`kgrid help [COMMAND]`](#kgrid-help-command)
+* [`kgrid package [KO] [DESTINATION]`](#kgrid-package-ko-destination)
+* [`kgrid setup`](#kgrid-setup)
+* [`kgrid start`](#kgrid-start)
+* [`kgrid start:activator`](#kgrid-startactivator)
+* [`kgrid start:library`](#kgrid-startlibrary)
 
-Node.js is required to use this CLI kit and can be found at [https://nodejs.org/en/](https://nodejs.org/en/).
+## `kgrid create [KO]`
 
-In your terminal:
+Create Knowledge Object and initialize the implementation.
 
-  ```
-  $ npm install -g @kgrid/cli
-  ```
+```
+USAGE
+  $ kgrid create [KO]
 
+OPTIONS
+  -h, --help                           show CLI help
+  -i, --implementation=implementation  the name for the implementation
+  --bundled                            Using the template for bundled KO
+  --executive                          Using the template for executive KO
+  --simple                             Using the simple template
 
-## Usage
+DESCRIPTION
+  The create command requires a name for the knowledge object.
+  It can only run at the shelf level.
 
-### Basic Use
+  A folder for the knowledge object will be created.
+  An implementation will be created and initialized in the folder of [ko].
 
-You should be able to run the CLI tool globally.
+  If the specified KO exists, an implementation will be added to the KO.
 
-  ```
-  $ kgrid [command]
-  ```
+  IMPLEMENTATION NAME:
+     The user will be prompted to enter a name;
+     Or, the name can be specified on the command line using the flag -i.
 
-If no command is entered, a list of available commands will be displayed.
+  ARK ID:
+     A development ARK ID will be assigned {username}/{ko}/{implementation}.
+     The ARK ID is unique by having different implementation names in the same KO.
 
-To display the usage information about that command, you can use
+  IMPLEMENTATION TEMPLATE TYPE:
+     The implementation will be initialized using one of the templates.
+     The template can be specified using the flags:
+       --simple    for the template with simple JAVASCRIPT file as payload
+       --bundled   for the template with JAVASCRIPT file(s); the payload will require bundling
+       --executive for the template with simple JAVASCRIPT file as payload calling other KOs
+     By default, the simple template will be used
+```
 
-  ```
-  $ kgrid help [command]
-  ```
-or
+_See code: [src\commands\create.js](https://github.com/kgrid/kgrid-cli/blob/v0.0.12/src\commands\create.js)_
 
-  ```
-  $ kgrid [command] -h
-  ```
+## `kgrid help [COMMAND]`
 
+display help for kgrid
 
-### Set Up Knowledge Grid
+```
+USAGE
+  $ kgrid help [COMMAND]
 
-  The command `SETUP` will check if you have KGRID components installed and set up.
+ARGUMENTS
+  COMMAND  command to show help for
 
-  ```
+OPTIONS
+  --all  see all commands in CLI
+```
+
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.1.6/src\commands\help.ts)_
+
+## `kgrid package [KO] [DESTINATION]`
+
+Package the knowledge object.
+
+```
+USAGE
+  $ kgrid package [KO] [DESTINATION]
+
+OPTIONS
+  -h, --help                           show CLI help
+  -i, --implementation=implementation  the name for the implementation
+
+DESCRIPTION
+  The package command will package the specified KO into a ZIP file, ready for depositing into a KGrid Library or 
+  deploying to a KGrid Activator.
+
+  If running at the shelf level, it requires a name for the knowledge object.
+  The flag -i can be used to specfiy the implementation you'd like to package.
+
+  If running at the KO level, the flag -i can be used to specify the implementation
+  If a KO name is also provided at the command line, the name will be ignored.
+
+  If running at the implementation level, the current implementation will be packaged.
+  Any command line inputs will be ignored.
+```
+
+_See code: [src\commands\package.js](https://github.com/kgrid/kgrid-cli/blob/v0.0.12/src\commands\package.js)_
+
+## `kgrid setup`
+
+Install KGrid Components and set up kgrid environment.
+
+```
+USAGE
   $ kgrid setup
-  ```
-  will use the current directory to install KGRID components. Library and Activator jar files will be downloaded and installed under `.kgrid`;
 
-  Using the flag `-g` will install KGRID components in the location specified by the environmental variable KGRID_HOME. if KGRID_HOME is not set, the default location will be `.kgrid` under the user home.
+OPTIONS
+  -g, --global  Install at a globally accessible location
+  -u, --update  Update the KGrid components to the latest release
 
-  Using the flag `-u` will enable the setup process to install the latest releases of the KGRID components
+DESCRIPTION
+  KGrid Activator and Library JAR files will be downloaded and installed.
 
+  By default, the components will be downloaded and saved in /.kgrid under current directory.
 
+  The flag -g can be used to install the KGrid components as globally accessible.
 
-### Create KO
+  The global location will be the folder defined by the environment variable of KGRID_HOME.
 
-The current directory will be used as the shelf serving KGRID Activator and/or KGRID Library.
+  IF KGRID_HOME is not defined, the user home will be used.
+```
 
-To create a Knowledge Object (KO), run
+_See code: [src\commands\setup.js](https://github.com/kgrid/kgrid-cli/blob/v0.0.12/src\commands\setup.js)_
 
-  ```
-  $ kgrid create [ko]
-  ```
+## `kgrid start`
 
-The create command requires a name for the knowledge object. It can only run at the shelf level.
+Start Both KGrid Activator and KGrid Library.
 
-A folder for the knowledge object will be created. An implementation will be created and initialized in the folder of `[ko]`. If the specified KO exists, an implementation will be added to the KO.
+```
+USAGE
+  $ kgrid start
 
-#### IMPLEMENTATION NAME:
+OPTIONS
+  -s, --shelf=shelf  Specify an absolute path to use as the shelf containing KOs
 
-The user will be prompted to enter a name; Alternatively, the name can be specified on the command line using the flag `-i`.
+DESCRIPTION
+  This command will start both KGrid Activator and KGrid Library.
 
-#### ARK ID:
+  By default, the command will use the current directory as the shelf.
+  The shelf can be specified using the flag -s.
 
-A development ARK ID will be assigned as `{username}/{ko}/{implementation}`. The ARK ID is unique by having different implementation names in the same KO.
+  The default ports for Activator and Library are 8082 and 8081, respectively.
 
-####  IMPLEMENTATION TEMPLATE TYPE:
+  KGrid Activator and KGrid Library can be started individually, also with more options for configuration.
+  See the commands listed below.
+```
 
-The implementation will be initialized using one of the templates.
+_See code: [src\commands\start\index.js](https://github.com/kgrid/kgrid-cli/blob/v0.0.12/src\commands\start\index.js)_
 
-The template can be specified using the flags:
+## `kgrid start:activator`
 
-  `--simple`    for the template with simple JAVASCRIPT file as payload
+Start KGrid Activator.
 
-  `--bundled`   for the template with JAVASCRIPT file(s); the payload will require bundling
+```
+USAGE
+  $ kgrid start:activator
 
-By default, the *simple* template will be used.
+OPTIONS
+  -j, --jarfile=jarfile  Specify the activator JAR file to use other than the installed one
+  -p, --port=port        Specify the port for KGRID Activator
+  -s, --shelf=shelf      Specify an absolute path to use as the shelf containing KOs
 
+DESCRIPTION
+  This command starts KGrid Activator at the default port of 8080.
 
+  The port can be configured using the flag -p.
+     Example: kgrid start:activator -p 8088
 
-### Package KO
+  The current directory will be used as the default shelf unless specified using the flag -s.
+```
 
-Knowledge objects in the project will be individually packaged into zip files and stored in the destination folder.
+_See code: [src\commands\start\activator.js](https://github.com/kgrid/kgrid-cli/blob/v0.0.12/src\commands\start\activator.js)_
 
-  ```
-  $ kgrid package [ko] [destination]
-  ```
+## `kgrid start:library`
 
+Start KGrid Library.
 
-### Start Knowledge Grid
+```
+USAGE
+  $ kgrid start:library
 
-  `kgrid start`
+OPTIONS
+  -j, --jarfile=jarfile  Specify the library JAR file to use other than the installed one
+  -p, --port=port        Specify the port for KGRID Library
+  -s, --shelf=shelf      Specify an absolute path to use as the shelf containing KOs
 
-  `kgrid start:acvtivator`
+DESCRIPTION
+  This command starts KGrid Library at the default port of 8080.
 
-  `kgrid start:library`
+  The port can be configured using the flag -p.
+     Example: kgrid start:library -p 8088
+
+  The current directory will be used as the default shelf unless specified using the flag -s.
+```
+
+_See code: [src\commands\start\library.js](https://github.com/kgrid/kgrid-cli/blob/v0.0.12/src\commands\start\library.js)_
+<!-- commandsstop -->

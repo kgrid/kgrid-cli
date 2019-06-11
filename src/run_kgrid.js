@@ -4,25 +4,14 @@ const path = require('path')
 const shelljs = require('shelljs')
 const download = require('download');
 const kgridmanifest = 'https://demo.kgrid.org/kgrid/manifest.json'
-
+const kHome = require('./kgridhome')
 function runKgrid(cmd) {
   let shelf = cmd.shelf
   let kgridcomponent = cmd.component
   let port = cmd.port
   let cmdstring ='java -jar '
 
-  let userHome = process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE
-  let khome = process.env.KGRID_HOME;
-  let kgridHome = path.join(userHome, '.kgrid');
-  let currentHome = path.join(process.cwd(), '.kgrid');
-  let kgridAssets = {}
-  if (!khome) {
-    khome = currentHome
-    if(!fs.pathExistsSync(khome)){
-      console.log("Could not find the required KGRID Component in current directory. \nWill look for the component in the default kgrid directory ...")
-      khome = kgridHome;
-    }
-  }
+  let khome = kHome()
 
   if(fs.pathExistsSync(khome)){
     let manifest = fs.readJsonSync(path.join(khome, 'manifest.json'))

@@ -21,7 +21,8 @@
     "jsonpath": "^1.0.1",
     "listr": "^0.14.3",
     "request": "^2.88.0",
-    "shelljs": "^0.8.3"
+    "shelljs": "^0.8.3",
+    "vuepress": "^1.0.1"
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1.22.0",
@@ -67,6 +68,8 @@
     "posttest": "eslint .",
     "prepack": "oclif-dev manifest && oclif-dev readme",
     "test": "nyc mocha --forbid-only \"test/**/*.test.js\"",
-    "version": "oclif-dev readme && git add README.md"
+    "version": "oclif-dev readme && git add README.md",
+    "docs:dev": "vuepress dev docs",
+    "docs:build": "vuepress build docs"
   }
 }

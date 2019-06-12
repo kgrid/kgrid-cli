@@ -134,8 +134,9 @@ USAGE
   $ kgrid play [KO]
 
 OPTIONS
-  -h, --help       show CLI help
-  -p, --port=port  Specify the port for KGRID Activator
+  -h, --help                           show CLI help
+  -i, --implementation=implementation  the name for the implementation
+  -p, --port=port                      Specify the port for KGRID Activator
 
 DESCRIPTION
   The create command requires a name for the knowledge object.

@@ -16,12 +16,29 @@ async function createImplementation (shelf, ko, implementation, template, flat) 
   }
   var sourcePath = path.join(topSourcePath, template)
   var topMeta
+
+  var userNaan = os.userInfo().username
+  const userConfigJson =  userConfig()
+  if(userConfigJson){
+    userNaan = userConfigJson.devDefault.naan
+  }
+
+  let idNaan = userNaan
+  let idName = ko
+  if(idName==''){
+    idName = path.basename(process.cwd())
+  }
+
   if (fs.pathExistsSync(path.join(shelf, ko,'metadata.json'))) {
     topMeta = fs.readJsonSync(path.join(shelf, ko,'metadata.json'))
   } else {
     topMeta = fs.readJsonSync(path.join(topSourcePath,'metadata.json'))
   }
-
+  if(topMeta['@id']!='naan-name'){
+    let idArr = topMeta['@id'].split('-')
+    idNaan = idArr[0]
+    idName = idArr[1]
+  }
   const serviceObj = fs.readJsonSync(path.join(sourcePath,'service.json'))
   const implementationMetaObj = fs.readJsonSync(path.join(sourcePath,'impmetadata.json'))
   const packageObj = fs.readJsonSync(path.join(sourcePath,'package.json'))
@@ -30,18 +47,7 @@ async function createImplementation (shelf, ko, implementation, template, flat) 
   var impleService = JSON.parse(JSON.stringify(serviceObj))
   var pkgJson = JSON.parse(JSON.stringify(packageObj))
 
-  var userNaan = os.userInfo().username
-  const userConfigJson =  userConfig()
-  if(userConfigJson){
-    userNaan = userConfigJson.devDefault.naan
-  }
-  let idArr = topMeta.identifier.split('/')
-  let idNaan = userNaan
-  let idName = ko
 
-  if(idName==''){
-    idName = path.basename(process.cwd())
-  }
   // Update Top Level Metadata
   let topMetaImplementations = topMeta.hasImplementation;
   topMeta.hasImplementation =[]

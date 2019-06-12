@@ -57,13 +57,13 @@ class CreateCommand extends Command {
       if(pathtype.type=='shelf') {
         console.log('The Knowledge Object of '+colors.yellow.inverse(ko)+' exists. \n')
       }
-      console.log('An new implementation will be added to '+ko+'\n')
+      console.log('An new implementation will be added to '+colors.yellow.inverse(ko)+'\n')
       console.log(colors.green('==== Add an implementation ==== '))
     } else {    // KO not existing; create folder and write metadata
       console.log(colors.green('==== Create the Knowledge Object ==== '))
       fs.ensureDirSync(path.join(shelfpath, ko))
       fs.writeJsonSync(path.join(shelfpath, ko)+'/metadata.json', topMeta, {spaces: 4})
-      console.log('The first implementation will be added to '+ko+'\n')
+      console.log('The first implementation will be added to '+colors.yellow.inverse(ko)+'\n')
       console.log(colors.green('==== Initialize the implementation ==== '))
     }
     if(implementation==''){
@@ -72,7 +72,7 @@ class CreateCommand extends Command {
           type: 'input',
           name: 'implementation',
           message: 'Implementation: ',
-          default: 'implementation',
+          default: 'one',
           validate: function (input) {
             if(input==''){
               return 'Invalid Input'

@@ -54,8 +54,7 @@ class PackageCommand extends Command {
         }
       }
     }
-    let tmpko = path.join(shelfpath, 'tmp',path.basename(kopath))
-    fs.ensureDirSync(tmpko)
+
     let checkSpec = false;
     let koMetadataPath = path.join(kopath,'metadata.json');
     let topMeta;
@@ -63,29 +62,27 @@ class PackageCommand extends Command {
       topMeta = fs.readJsonSync(koMetadataPath);
     } else {
       this.log("Cannot find metadata.json for " + colors.yellow.inverse(path.basename(kopath)));
-      fs.removeSync(path.join(shelfpath,'tmp'))
       return 1; // Error
     }
-    let destinationName;
+    let arkId = topMeta["@id"];
+    let destinationName = arkId + ".zip";
+    let tmpko = path.join(shelfpath, 'tmp',arkId)
+    fs.ensureDirSync(tmpko)
     if(dest) {
-      if(dest.endsWith(".zip")) {
-        destinationName = dest;
+      if(fs.pathExistsSync(dest)){
+        destinationName=path.join(dest, destinationName)
       } else {
-        destinationName = dest + ".zip";
+        console.log(colors.yellow('Please provide a valid directory as the destination for the packaged file.'))
+        return 1
       }
     } else {
-      if(implpath!=''){
-        destinationName = path.basename(kopath) +'-'+path.basename(implpath)+ ".zip";
-      }else {
-        destinationName = path.basename(kopath) + ".zip";
-      }
-      destinationName=path.join(shelfpath,destinationName)
+      destinationName=path.join(shelfpath, destinationName)
     }
 
     let topMetaImplementations = topMeta.hasImplementation;
     topMeta.hasImplementation =[]
     let implementations = []
-    let arkId = topMeta["@id"];
+
     if (topMetaImplementations) {
       if(!Array.isArray(topMetaImplementations)){
         implementations.push(topMetaImplementations)
@@ -119,8 +116,10 @@ class PackageCommand extends Command {
                 if(endpoints) {
                   Object.keys(endpoints).forEach(endpoint => {
                     let payloadPath = path.join(kopath, imp,  endpoints[endpoint].artifact);
-                    console.log('Adding '+payloadPath+' ...')
-                    fs.copySync(payloadPath, path.join(tmpko, imp, endpoints[endpoint].artifact))
+                    if(!fs.pathExistsSync(path.join(tmpko, imp, endpoints[endpoint].artifact))){
+                      console.log('Adding '+payloadPath+' ...')
+                      fs.copySync(payloadPath, path.join(tmpko, imp, endpoints[endpoint].artifact))
+                    }
                   });
                 } else {
                   checkSpec = true;  // Has deployment spec but no endpoints
@@ -139,8 +138,10 @@ class PackageCommand extends Command {
                     "$.*['x-kgrid-activation'].artifact");
                   payloadPaths.forEach(methodPath => {
                     let payloadPath = path.join(kopath, imp,  methodPath);
-                    console.log('Adding '+payloadPath+' ...')
-                    fs.copySync(payloadPath, path.join(tmpko, imp, methodPath))
+                    if(!fs.pathExistsSync(path.join(tmpko, imp, methodPath))){
+                      console.log('Adding '+payloadPath+' ...')
+                      fs.copySync(payloadPath, path.join(tmpko, imp, methodPath))
+                    }
                   });
                 });
               }
@@ -171,7 +172,7 @@ class PackageCommand extends Command {
           archive.on('error', function(err) {
             throw err;
           });
-          archive.directory(tmpko, path.basename(kopath))
+          archive.directory(tmpko, path.basename(tmpko))
           archive.finalize();
         } else {
           fs.removeSync(path.join(shelfpath,'tmp'))

@@ -1,5 +1,6 @@
 const {Command, flags} = require('@oclif/command')
 const inquirer = require('inquirer')
+const os = require('os')
 const path= require('path')
 const fs = require('fs-extra')
 const axios = require('axios')
@@ -93,9 +94,13 @@ class PlayCommand extends Command {
             targetimple = responses.implementation
             targeturl = `https://editor.swagger.io/?url=${url}${targetimple}/service.yaml`
             console.log('')
-            console.log(colros.inverse(targeturl))
+            console.log(colors.inverse(targeturl))
             console.log('will be opened in your default browser.')
-            shelljs.exec('start '+targeturl)
+            if(os.platform()=='win32'){
+              shelljs.exec('start '+targeturl)
+            } else {
+              shelljs.exec('open '+targeturl)
+            }
           } else {
             console.log(colors.yellow('No implementation has been activated.'))
           }

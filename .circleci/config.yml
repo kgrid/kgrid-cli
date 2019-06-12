@@ -63,7 +63,7 @@ jobs:
     - run:
         name: Deploy VuePress GitHub Pages
         command: |
-              (cd docs && oclif-dev readme)
+              (cd docs && npm run oclif-readme)
               chmod 775 .circleci/vuepress_deploy.sh && .circleci/vuepress_deploy.sh
 
 workflows:

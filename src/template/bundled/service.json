@@ -71,14 +71,10 @@
         "properties": {
           "age": {
             "type": "number",
-            "x-kgrid-label": "Patient Age",
-            "x-kgrid-unit": "yr",
             "example": 48
           },
           "gender": {
             "type": "string",
-            "x-kgrid-label": "Gender of the patient",
-            "x-kgrid-unit": "",
             "enum": [
               "Male",
               "Female"
@@ -87,8 +83,6 @@
           },
           "risk": {
             "type": "string",
-            "x-kgrid-label": "Choose the population risk level",
-            "x-kgrid-unit": "",
             "enum": [
               "high",
               "low"
@@ -97,20 +91,14 @@
           },
           "sbp": {
             "type": "number",
-            "x-kgrid-label": "Systolic Blood Pressure",
-            "x-kgrid-unit": "mmHg",
             "example": 120
           },
           "cholesterol": {
             "type": "number",
-            "x-kgrid-label": "Total Cholesterol",
-            "x-kgrid-unit": "mmol/L",
             "example": 8
           },
           "smoker": {
             "type": "boolean",
-            "x-kgrid-label": "Is the patient a current smoker?",
-            "x-kgrid-unit": "",
             "example": false
           }
         }

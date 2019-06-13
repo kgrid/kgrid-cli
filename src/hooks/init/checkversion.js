@@ -6,14 +6,14 @@ const kHome = require('../../kgridhome')
 module.exports = async function () {
     let cmd = process.argv[2]
     if(cmd=='version'|cmd=='-v'|cmd=='--version') {
-      console.log(colors.inverse('Checking JAVA Version ...'))
+      console.log(colors.green('Checking JAVA Version ...'))
       shelljs.exec('java -version')
       console.log('')
-      console.log(colors.inverse('Checking Node Version ...'))
+      console.log(colors.green('Checking Node Version ...'))
       shelljs.exec('node --version')
       console.log('')
       let khome = kHome()
-      console.log(colors.inverse('Checking KGrid Components Version ...'))
+      console.log(colors.green('Checking KGrid Components Version ...'))
       if(fs.pathExistsSync(khome)){
         console.log('KGRID Components are installed at: '+khome)
         let manifest = fs.readJsonSync(path.join(khome, 'manifest.json'))

@@ -32,7 +32,7 @@ class PackageCommand extends Command {
       if(pathtype.type=='ko'){
         if(ko){
           if(path.join(shelfpath,ko)!=kopath){
-            console.log('Current directory is the knowledge object '+colors.yellow.inverse(path.basename(kopath))+'.\n\nThe command line input of '+colors.inverse(ko)+' will be ignored.\n')
+            console.log('Current directory is the knowledge object '+colors.yellow(path.basename(kopath))+'.\n\nThe command line input of '+colors.yellow(ko)+' will be ignored.\n')
           }
         }
         if(srcImplementation){
@@ -43,11 +43,11 @@ class PackageCommand extends Command {
           if(ko){
             if(srcImplementation){
               if(path.join(shelfpath,ko,srcImplementation)!=implpath){
-                console.log('Current directory is the implementation '+colors.cyan.inverse(path.basename(implpath))+' of the knowledge object '+colors.yellow.inverse(path.basename(kopath))+'.\n\nThe command line input of '+colors.inverse(ko)+' and '+colors.inverse(srcImplementation)+' will be ignored.\n')
+                console.log('Current directory is the implementation '+colors.cyan(path.basename(implpath))+' of the knowledge object '+colors.yellow(path.basename(kopath))+'.\n\nThe command line input of '+colors.yellow(ko)+' and '+colors.cyan(srcImplementation)+' will be ignored.\n')
               }
             } else {
               if(path.join(shelfpath,ko)!=kopath){
-                console.log('Current directory is the implementation '+colors.cyan.inverse(path.basename(implpath))+' of the knowledge object '+colors.yellow.inverse(path.basename(kopath))+'.\n\nThe command line input of '+colors.inverse(ko)+' will be ignored.\n')
+                console.log('Current directory is the implementation '+colors.cyan(path.basename(implpath))+' of the knowledge object '+colors.yellow(path.basename(kopath))+'.\n\nThe command line input of '+colors.yellow(ko)+' will be ignored.\n')
               }
             }
           }
@@ -61,7 +61,7 @@ class PackageCommand extends Command {
     if (fs.pathExistsSync(koMetadataPath)) {
       topMeta = fs.readJsonSync(koMetadataPath);
     } else {
-      this.log("Cannot find metadata.json for " + colors.yellow.inverse(path.basename(kopath)));
+      this.log("Cannot find metadata.json for " + colors.yellow(path.basename(kopath)));
       return 1; // Error
     }
     let arkId = topMeta["@id"];
@@ -159,7 +159,7 @@ class PackageCommand extends Command {
           let archive = archiver('zip', {zlib: {level: 9}});
           output.on('close', () => {
             fs.removeSync(path.join(shelfpath,'tmp'))
-            console.log('\nCreated package:  \n\n    '  + colors.inverse(destinationName)+'      (Total bytes: '+ archive.pointer()+')');
+            console.log('\nCreated package:  \n\n    '  + destinationName +'      (Total bytes: '+ archive.pointer()+')');
           });
           archive.pipe(output);
           archive.on('warning', function(err) {

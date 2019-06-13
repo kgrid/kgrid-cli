@@ -39,7 +39,7 @@ class PlayCommand extends Command {
       if(pathtype.type=='ko'){
         if(ko){
           if(path.join(shelfpath,ko)!=kopath){
-            console.log('Current directory is the knowledge object '+colors.yellow.inverse(path.basename(kopath))+'.\n\nThe command line input of '+colors.inverse(ko)+' will be ignored.\n')
+            console.log('Current directory is the knowledge object '+colors.yellow(path.basename(kopath))+'.\n\nThe command line input of '+colors.yellow(ko)+' will be ignored.\n')
           }
         }
         if(srcImplementation){
@@ -50,11 +50,11 @@ class PlayCommand extends Command {
           if(ko){
             if(srcImplementation){
               if(path.join(shelfpath,ko,srcImplementation)!=implpath){
-                console.log('Current directory is the implementation '+colors.cyan.inverse(path.basename(implpath))+' of the knowledge object '+colors.yellow.inverse(path.basename(kopath))+'.\n\nThe command line input of '+colors.inverse(ko)+' and '+colors.inverse(srcImplementation)+' will be ignored.\n')
+                console.log('Current directory is the implementation '+colors.cyan(path.basename(implpath))+' of the knowledge object '+colors.yellow(path.basename(kopath))+'.\n\nThe command line input of '+colors.yellow(ko)+' and '+colors.cyan(srcImplementation)+' will be ignored.\n')
               }
             } else {
               if(path.join(shelfpath,ko)!=kopath){
-                console.log('Current directory is the implementation '+colors.cyan.inverse(path.basename(implpath))+' of the knowledge object '+colors.yellow.inverse(path.basename(kopath))+'.\n\nThe command line input of '+colors.inverse(ko)+' will be ignored.\n')
+                console.log('Current directory is the implementation '+colors.cyan(path.basename(implpath))+' of the knowledge object '+colors.yellow(path.basename(kopath))+'.\n\nThe command line input of '+colors.yellow(ko)+' will be ignored.\n')
               }
             }
           }
@@ -71,7 +71,7 @@ class PlayCommand extends Command {
         koid.naan=arkId.split('-')[0]
         koid.name=arkId.split('-')[1]
       } else {
-        this.log("Cannot find metadata.json for " + colors.yellow.inverse(path.basename(kopath)));
+        this.log("Cannot find metadata.json for " + colors.yellow(path.basename(kopath)));
         return 1; // Error
       }
     }
@@ -136,7 +136,7 @@ class PlayCommand extends Command {
             targetimple= koid.naan+'/'+koid.name+'/'+koid.imp
           }
           targeturl = `https://editor.swagger.io/?url=${url}${targetimple}/service.yaml`
-          console.log(colors.inverse(targeturl))
+          console.log(targeturl)
           console.log('will be opened in your default browser.')
           if(os.platform()=='win32'){
             shelljs.exec('start '+targeturl, {async:true})

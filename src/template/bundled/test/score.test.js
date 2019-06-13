@@ -19,7 +19,8 @@ test('Female non-smoker 65', () => {
         }
     }
 
-    expect(scoreFunction(inputs).cvdrisk).toEqual(outputs.cvdrisk);
+    expect(scoreFunction(inputs).cvdrisk)
+      .toEqual(outputs.cvdrisk);
 
 });
 

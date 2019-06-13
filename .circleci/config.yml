@@ -47,16 +47,16 @@ jobs:
               echo "Update package version to $RELEASE"
               npm version $RELEASE
               git push
-              npm publish --access public
+              npm publish --dry-run --access public
 
               echo "Create release tag $TAG_NAME"
+              git tag
               git tag $TAG_NAME
               git push origin $TAG_NAME
 
               echo "Create release $RELEASE"
               RELEASE_ID=$(curl -X POST "https://api.github.com/repos/kgrid/kgrid-cli/releases?access_token=$GITHUB_TOKEN" \
                         -H 'Content-Type:application/json' -d "{\"tag_name\":\"$TAG_NAME\",  \"name\":\"KGrid CLI $RELEASE\", \"prerelease\":$PRERELEASE}" | jq -r ".id")
-
 
           fi
 

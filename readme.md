@@ -9,4 +9,4 @@
 ## Overview
 
 A command-line tool kit for knowledge object development. More information on using Knowledge Objects 
-in the KGrid CLI can be found here: [Getting Started with the KGrid CLI](http://kgrid.org/kgrid-cli/).  
+in the KGrid CLI can be found here: [Getting Started with the KGrid CLI](http://kgrid.org/kgrid-cli/).

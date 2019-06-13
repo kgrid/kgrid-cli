@@ -67,7 +67,7 @@
   "scripts": {
     "postpack": "rimraf oclif.manifest.json",
     "posttest": "eslint .",
-    "prepack": "oclif-dev manifest && oclif-dev readme",
+    "prepack": "oclif-dev manifest && npm run oclif-readme",
     "test": "nyc mocha --forbid-only \"test/**/*.test.js\"",
     "oclif-readme": "(cd docs && oclif-dev readme)",
     "version": "npm run oclif-readme && git add docs/README.md",

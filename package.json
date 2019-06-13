@@ -70,7 +70,7 @@
     "prepack": "oclif-dev manifest && oclif-dev readme",
     "test": "nyc mocha --forbid-only \"test/**/*.test.js\"",
     "oclif-readme": "(cd docs && oclif-dev readme)",
-    "version": "oclif-readme && git add docs/README.md",
+    "version": "npm run oclif-readme && git add docs/README.md",
     "docs:dev": "vuepress dev docs",
     "docs:build": "vuepress build docs"
   }

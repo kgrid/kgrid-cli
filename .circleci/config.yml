@@ -66,6 +66,7 @@ jobs:
               npm run oclif-readme
               chmod 775 .circleci/vuepress_deploy.sh && .circleci/vuepress_deploy.sh
 
+
 workflows:
   version: 2
   main:

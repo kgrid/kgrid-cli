@@ -15,6 +15,7 @@ var topMeta = JSON.parse(JSON.stringify(kometaObj))
 
 class PlayCommand extends Command {
   async run() {
+    try{
     const {args, flags} = this.parse(PlayCommand)
     let cust_port =flags.port
     let targeturl='https://editor.swagger.io/'
@@ -98,7 +99,7 @@ class PlayCommand extends Command {
     let targetimple =''
     axios({
       method: 'get',
-      url: url,
+      url: url
     })
       .then(async function (response) {
         Object.keys(response.data).forEach(function(e){
@@ -142,28 +143,30 @@ class PlayCommand extends Command {
           } else {
             shelljs.exec('open '+targeturl, {async:true})
           }
+          return 0
         } else {
           console.log(colors.yellow('No implementation has been activated.'))
         }
+
       })
       .catch(function(error){
         if (error.response) {
           // The request was made and the server responded with a status code
           // that falls out of the range of 2xx
-          console.log(error.response.data);
-          console.log(error.response.status);
-          console.log(error.response.headers);
+          console.log(error)
         } else {
           // Something happened in setting up the request that triggered an Error
           console.log(colors.yellow('Cannot connect to the activator at: '+url+'\n\nPlease make sure the activator is running and the correct port is specified to connect.\n\nUSAGE:\n    $ kgrid play -p [port]'));
         }
-        console.log(error);
       });
+    } catch (e) {
+      console.log(e)
+    }
   }
 }
 
 PlayCommand.description = `Create Knowledge Object and initialize the implementation.
-${documentations.create}
+${documentations.play}
 `
 
 PlayCommand.flags = {

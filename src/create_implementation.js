@@ -2,6 +2,7 @@ const fs = require('fs-extra')
 const yaml = require('js-yaml')
 const path =require('path')
 const os = require('os')
+const shelljs = require('shelljs')
 const source = require.resolve('../src/template/kometadata.json')
 const userConfig = require('../src/user_config')
 const topSourcePath = path.dirname(source)
@@ -21,7 +22,6 @@ async function createImplementation (shelf, ko, implementation, template, flat) 
   if(userConfigJson){
     userNaan = userConfigJson.devDefault.naan
   }
-
   let idNaan = userNaan
   let idName = ko
   if(idName==''){
@@ -38,15 +38,13 @@ async function createImplementation (shelf, ko, implementation, template, flat) 
     idNaan = idArr[0]
     idName = idArr[1]
   }
+
   const serviceObj = fs.readJsonSync(path.join(sourcePath,'service.json'))
   const implementationMetaObj = fs.readJsonSync(path.join(sourcePath,'impmetadata.json'))
   const packageObj = fs.readJsonSync(path.join(sourcePath,'package.json'))
-
   var impleMeta = JSON.parse(JSON.stringify(implementationMetaObj))
   var impleService = JSON.parse(JSON.stringify(serviceObj))
   var pkgJson = JSON.parse(JSON.stringify(packageObj))
-
-
   // Update Top Level Metadata
   let topMetaImplementations = topMeta.hasImplementation;
   topMeta.hasImplementation =[]
@@ -55,7 +53,6 @@ async function createImplementation (shelf, ko, implementation, template, flat) 
   } else {
     topMeta.hasImplementation= JSON.parse(JSON.stringify(topMetaImplementations))
   }
-
   topMeta.hasImplementation.push(idNaan + '-' + idName + '/' + implementation)
   topMeta.identifier = 'ark:/' + idNaan + '/' + idName
   topMeta['@id'] = idNaan + '-' + idName
@@ -67,46 +64,43 @@ async function createImplementation (shelf, ko, implementation, template, flat) 
   }
   // Create the folder for implementation
   fs.ensureDirSync(implementationPath)
-
   // Update Implementation Metadata
   impleMeta['@id'] = implementation
   impleMeta.identifier = 'ark:/' + idNaan + '/' + idName + '/' + implementation
   impleMeta.hasServiceSpecification = implementation + '/service.yaml'
-  // if(template=='bundled') {
-  //   impleMeta.hasPayload =  implementation + '/dist/main.js'
-  // } else {
-  //   impleMeta.hasPayload = implementation + '/src/index.js'
-  // }
   fs.writeJsonSync(path.join(implementationPath,'metadata.json'), impleMeta, {spaces: 4})
-
   // Update Implementation Service Specification
   impleService.info.version = implementation
   impleService.servers[0].url = impleMeta.identifier.replace('ark:', '')
   fs.writeFileSync(path.join(implementationPath,'service.yaml'),
     yaml.safeDump(impleService, {
-      styles: {
-        '!!null': 'canonical', // dump null as ~
-      },
+      styles: { '!!null': 'canonical',}, // dump null as ~
       sortKeys: false,        // sort object keys
     })
   )
-
   // Update package.JSON
   fs.writeJsonSync(path.join(implementationPath,'package.json'), pkgJson, {spaces: 4})
-
   // Create src folder for js files
   fs.ensureDirSync(path.join(implementationPath, 'src'))
   fs.copySync(path.join(sourcePath,'src'), path.join(implementationPath, 'src'))
-
   // Create test folder for js files
   fs.ensureDirSync(path.join(implementationPath, 'test'))
   fs.copySync(path.join(sourcePath,'test'), path.join(implementationPath, 'test'))
-
   if(template=='bundled') {
     // Add webpack.config.js for bundled implementation
     fs.copySync(path.join(sourcePath,'webpack.config.js'), path.join(implementationPath,'webpack.config.js'))
   }
-  console.log('\nThe implementation of ' + implementation + ' has been initialized.')
+  console.log('\nThe implementation of ' + implementation + ' has been initialized.\n')
+  // // npm install and build
+  // shelljs.cd(implementationPath)
+  // console.log("Installing node modules ...\n")
+  // shelljs.exec('npm install')
+  //
+  // if(template=='bundled') {
+  //   console.log('Running build for the bundled KO...\n')
+  //   shelljs.exec('npm run build')
+  // }
+  // // ***** //
 }
 
 module.exports=createImplementation

@@ -10,7 +10,6 @@ function runKgrid(cmd) {
   let kgridcomponent = cmd.component
   let port = cmd.port
   let cmdstring ='java -jar '
-
   let khome = kHome()
 
   if(fs.pathExistsSync(khome)){
@@ -40,8 +39,6 @@ function runKgrid(cmd) {
       console.log("Starting KGrid "+cmd.name+"...")
       shelljs.exec(cmdstring, {async:true})
     })
-
-
   } else {
     console.log('Could not find the directory with the required KGRID component. Please run "kgrid setup".')
   }

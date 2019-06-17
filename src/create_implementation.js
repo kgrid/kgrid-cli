@@ -2,7 +2,6 @@ const fs = require('fs-extra')
 const yaml = require('js-yaml')
 const path =require('path')
 const os = require('os')
-const colors = require('colors/safe');
 const source = require.resolve('../src/template/kometadata.json')
 const userConfig = require('../src/user_config')
 const topSourcePath = path.dirname(source)
@@ -107,7 +106,7 @@ async function createImplementation (shelf, ko, implementation, template, flat) 
     // Add webpack.config.js for bundled implementation
     fs.copySync(path.join(sourcePath,'webpack.config.js'), path.join(implementationPath,'webpack.config.js'))
   }
-  console.log('\nThe implementation of ' + colors.cyan(implementation) + ' has been initialized.')
+  console.log('\nThe implementation of ' + implementation + ' has been initialized.')
 }
 
 module.exports=createImplementation

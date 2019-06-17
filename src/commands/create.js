@@ -5,7 +5,6 @@ const fs = require('fs-extra')
 const kometaObj = require('../template/kometadata.json')
 const createImplementation = require('../create_implementation')
 const checkPathKoioType = require('../check_pathkoiotype')
-const colors = require('colors/safe');
 const documentations = require('../json/extradoc.json')
 
 var topMeta = JSON.parse(JSON.stringify(kometaObj))
@@ -28,25 +27,25 @@ class CreateCommand extends Command {
     if(pathtype.type=='shelf'){
       if (ko) {
         if( ko.includes('-') | ko.includes('/') ){
-          console.log(colors.yellow('Please provide a valid name for your knowledge object. \n\nAlphanumeric characters only.'))
+          console.log('Please provide a valid name for your knowledge object. \n\nAlphanumeric characters only.')
           return 1
         }
       } else {
-        console.log(colors.yellow('Please provide a name for your knowledge object. \n\nUSAGE: \n  $ kgrid create [ko]'))
+        console.log('Please provide a name for your knowledge object. \n\nUSAGE: \n  $ kgrid create [ko]')
         return 1
       }
     } else {
       if(pathtype.type=='ko'){
         if(ko){
           if(path.join(shelfpath,ko)!=kopath){
-            console.log('Current directory is the knowledge object '+colors.yellow(path.basename(kopath))+'.\n\nThe command line input of '+colors.yellow(ko)+' will be ignored.\n')
+            console.log('Current directory is the knowledge object '+path.basename(kopath)+'.\n\nThe command line input of '+ko+' will be ignored.\n')
           }
         }
         ko =path.basename(kopath)
       } else {
         if(pathtype.type=='implementation'){
-          console.log('Current directory is the implementation '+colors.cyan(path.basename(implpath))+' of the knowledge object '+colors.yellow(path.basename(kopath))+'.\n')
-          console.log('If you intend to add an implementation to '+colors.yellow(path.basename(kopath))+'\n\n    return to the ko level by  '+'cd ..'+' and run '+'kgrid create'+'.\n')
+          console.log('Current directory is the implementation '+path.basename(implpath)+' of the knowledge object '+path.basename(kopath)+'.\n')
+          console.log('If you intend to add an implementation to '+path.basename(kopath)+'\n\n    return to the ko level by  '+'cd ..'+' and run '+'kgrid create'+'.\n')
           console.log('If you like to create a new knowledge object,\n\n    return to the shelf level by  '+'cd ../..'+' and run '+'kgrid create [ko]'+'.')
           return 1
         }
@@ -55,16 +54,16 @@ class CreateCommand extends Command {
     if (fs.pathExistsSync(path.join(shelfpath, ko,'metadata.json'))) {  // KO Existing
       topMeta = fs.readJsonSync(path.join(shelfpath, ko,'metadata.json'))
       if(pathtype.type=='shelf') {
-        console.log('The Knowledge Object of '+colors.yellow(ko)+' exists. \n')
+        console.log('The Knowledge Object of '+ko+' exists. \n')
       }
-      console.log('An new implementation will be added to '+colors.yellow(ko)+'\n')
-      console.log(colors.green('==== Add an implementation ==== '))
+      console.log('An new implementation will be added to '+ko+'\n')
+      console.log('==== Add an implementation ==== ')
     } else {    // KO not existing; create folder and write metadata
-      console.log(colors.green('==== Create the Knowledge Object ==== '))
+      console.log('==== Create the Knowledge Object ==== ')
       fs.ensureDirSync(path.join(shelfpath, ko))
       fs.writeJsonSync(path.join(shelfpath, ko)+'/metadata.json', topMeta, {spaces: 4})
-      console.log('The first implementation will be added to '+colors.yellow(ko)+'\n')
-      console.log(colors.green('==== Initialize the implementation ==== '))
+      console.log('The first implementation will be added to '+ko+'\n')
+      console.log('==== Initialize the implementation ==== ')
     }
     if(implementation==''){
       let responses = await inquirer.prompt([
@@ -104,7 +103,7 @@ class CreateCommand extends Command {
          console.log('\nThe knowledge object is Ready.')
       }).catch(e=>console.log(e.message))
     } else {
-      console.log(colors.yellow('Path existing. Please start over with a different name for the implementation.'))
+      console.log('Path existing. Please start over with a different name for the implementation.')
     }
   }
 }

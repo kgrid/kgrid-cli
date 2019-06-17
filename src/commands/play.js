@@ -8,7 +8,6 @@ const shelljs = require('shelljs')
 const kometaObj = require('../template/kometadata.json')
 const createImplementation = require('../create_implementation')
 const checkPathKoioType = require('../check_pathkoiotype')
-const colors = require('colors/safe');
 const documentations = require('../json/extradoc.json')
 
 var topMeta = JSON.parse(JSON.stringify(kometaObj))
@@ -39,7 +38,7 @@ class PlayCommand extends Command {
       if(pathtype.type=='ko'){
         if(ko){
           if(path.join(shelfpath,ko)!=kopath){
-            console.log('Current directory is the knowledge object '+colors.yellow(path.basename(kopath))+'.\n\nThe command line input of '+colors.yellow(ko)+' will be ignored.\n')
+            console.log('Current directory is the knowledge object '+path.basename(kopath)+'.\n\nThe command line input of '+ko+' will be ignored.\n')
           }
         }
         if(srcImplementation){
@@ -50,11 +49,11 @@ class PlayCommand extends Command {
           if(ko){
             if(srcImplementation){
               if(path.join(shelfpath,ko,srcImplementation)!=implpath){
-                console.log('Current directory is the implementation '+colors.cyan(path.basename(implpath))+' of the knowledge object '+colors.yellow(path.basename(kopath))+'.\n\nThe command line input of '+colors.yellow(ko)+' and '+colors.cyan(srcImplementation)+' will be ignored.\n')
+                console.log('Current directory is the implementation '+path.basename(implpath)+' of the knowledge object '+path.basename(kopath)+'.\n\nThe command line input of '+ko+' and '+srcImplementation+' will be ignored.\n')
               }
             } else {
               if(path.join(shelfpath,ko)!=kopath){
-                console.log('Current directory is the implementation '+colors.cyan(path.basename(implpath))+' of the knowledge object '+colors.yellow(path.basename(kopath))+'.\n\nThe command line input of '+colors.yellow(ko)+' will be ignored.\n')
+                console.log('Current directory is the implementation '+path.basename(implpath)+' of the knowledge object '+path.basename(kopath)+'.\n\nThe command line input of '+ko+' will be ignored.\n')
               }
             }
           }
@@ -71,7 +70,7 @@ class PlayCommand extends Command {
         koid.naan=arkId.split('-')[0]
         koid.name=arkId.split('-')[1]
       } else {
-        this.log("Cannot find metadata.json for " + colors.yellow(path.basename(kopath)));
+        this.log("Cannot find metadata.json for " +path.basename(kopath));
         return 1; // Error
       }
     }
@@ -145,7 +144,7 @@ class PlayCommand extends Command {
           }
           return 0
         } else {
-          console.log(colors.yellow('No implementation has been activated.'))
+          console.log('No implementation has been activated.')
         }
 
       })
@@ -156,7 +155,7 @@ class PlayCommand extends Command {
           console.log(error)
         } else {
           // Something happened in setting up the request that triggered an Error
-          console.log(colors.yellow('Cannot connect to the activator at: '+url+'\n\nPlease make sure the activator is running and the correct port is specified to connect.\n\nUSAGE:\n    $ kgrid play -p [port]'));
+          console.log('Cannot connect to the activator at: '+url+'\n\nPlease make sure the activator is running and the correct port is specified to connect.\n\nUSAGE:\n    $ kgrid play -p [port]');
         }
       });
     } catch (e) {

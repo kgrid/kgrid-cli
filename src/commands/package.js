@@ -4,7 +4,6 @@ const yaml = require('js-yaml');
 const jp = require('jsonpath');
 const fs = require('fs-extra');
 const path = require('path');
-const colors = require('colors/safe');
 const checkPathKoioType = require('../check_pathkoiotype')
 const documentations = require('../json/extradoc.json')
 
@@ -12,7 +11,7 @@ class PackageCommand extends Command {
   async run() {
     const {args, flags} = this.parse(PackageCommand);
     let ko = args.ko;
-    let dest = args.destination;
+    let dest = flags.destination;
     let srcImplementation = flags.implementation
     let pathtype = checkPathKoioType()
     let shelfpath = pathtype.shelfpath
@@ -25,14 +24,14 @@ class PackageCommand extends Command {
           implpath = path.join(kopath, srcImplementation)
         }
       }else {
-        console.log(colors.yellow("Please provide the name of the knowledge object you'd like to package. \n\nUSAGE: \n  $ kgrid package [ko]"))
+        console.log("Please provide the name of the knowledge object you'd like to package. \n\nUSAGE: \n  $ kgrid package [ko]")
         return 1
       }
     } else {
       if(pathtype.type=='ko'){
         if(ko){
           if(path.join(shelfpath,ko)!=kopath){
-            console.log('Current directory is the knowledge object '+colors.yellow(path.basename(kopath))+'.\n\nThe command line input of '+colors.yellow(ko)+' will be ignored.\n')
+            console.log('Current directory is the knowledge object '+path.basename(kopath)+'.\n\nThe command line input of '+ko+' will be ignored.\n')
           }
         }
         if(srcImplementation){
@@ -43,11 +42,11 @@ class PackageCommand extends Command {
           if(ko){
             if(srcImplementation){
               if(path.join(shelfpath,ko,srcImplementation)!=implpath){
-                console.log('Current directory is the implementation '+colors.cyan(path.basename(implpath))+' of the knowledge object '+colors.yellow(path.basename(kopath))+'.\n\nThe command line input of '+colors.yellow(ko)+' and '+colors.cyan(srcImplementation)+' will be ignored.\n')
+                console.log('Current directory is the implementation '+path.basename(implpath)+' of the knowledge object '+path.basename(kopath)+'.\n\nThe command line input of '+ko+' and '+srcImplementation+' will be ignored.\n')
               }
             } else {
               if(path.join(shelfpath,ko)!=kopath){
-                console.log('Current directory is the implementation '+colors.cyan(path.basename(implpath))+' of the knowledge object '+colors.yellow(path.basename(kopath))+'.\n\nThe command line input of '+colors.yellow(ko)+' will be ignored.\n')
+                console.log('Current directory is the implementation '+path.basename(implpath)+' of the knowledge object '+path.basename(kopath)+'.\n\nThe command line input of '+ko+' will be ignored.\n')
               }
             }
           }
@@ -61,7 +60,7 @@ class PackageCommand extends Command {
     if (fs.pathExistsSync(koMetadataPath)) {
       topMeta = fs.readJsonSync(koMetadataPath);
     } else {
-      this.log("Cannot find metadata.json for " + colors.yellow(path.basename(kopath)));
+      this.log("Cannot find metadata.json for " + path.basename(kopath));
       return 1; // Error
     }
     let arkId = topMeta["@id"];
@@ -72,7 +71,7 @@ class PackageCommand extends Command {
       if(fs.pathExistsSync(dest)){
         destinationName=path.join(dest, destinationName)
       } else {
-        console.log(colors.yellow('Please provide a valid directory as the destination for the packaged file.'))
+        console.log('Please provide a valid directory as the destination for the packaged file.')
         return 1
       }
     } else {
@@ -180,7 +179,7 @@ class PackageCommand extends Command {
         }
       }catch(e){
         fs.removeSync(path.join(shelfpath,'tmp'))
-        console.log(colors.yellow(e.message))
+        console.log(e.message)
       }
     }
   }
@@ -192,12 +191,12 @@ ${documentations.package}
 
 PackageCommand.flags = {
   implementation: flags.string({char: 'i', description:"the name for the implementation"}),
-  help: flags.help({char:'h'})
+  help: flags.help({char:'h'}),
+  destination: flags.string({char:'d', description:"the directory for the packaged file"})
 }
 
 PackageCommand.args = [
-  {name:'ko'},
-  {name: 'destination'}
+  {name:'ko'}
 ];
 
 module.exports = PackageCommand;

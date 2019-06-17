@@ -48,6 +48,19 @@ If you'd like to run KGRID Library/Activator at different ports without changing
   ```
 
 
+## Start KGRID Library/Activator using a different directory as the shelf
+
+When KGRID Library and Activator are started, the default shelf will be the current directory.  The values can be overwritten on the command line, using the option of shelf by running
+  ```
+  $ kgrid start -s [shelf]
+  $ kgrid start:library -s [shelf]
+  $ kgrid start:activator -s [shelf]
+  ```
+
+If you'd like to run KGRID Library/Activator at different shelves, you need to start the components individually.
+
+
+
 ## Config CLI
 A config file of `kgrid-cli-config.json` is saved at `{USERHOME}/.config`. It specifies values to override the default value for certain development settings.
 

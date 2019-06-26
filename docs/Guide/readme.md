@@ -37,7 +37,7 @@ To change, set the value in the file of `kgrid-cli-config.json`. See [Config CLI
 
 ## Start KGRID Library/Activator at different ports
 
-When KGRID Library and Activator are started together by running `kgrid start`, the default values are 8081 and 8082, respectively. The values can not be overwritten on the command line.
+When KGRID Library and Activator are started together by running `kgrid start`, the default values are 8081 and 8080, respectively. The values can not be overwritten on the command line.
 
 You can change the default port values in the file of `kgrid-cli-config.json`. See [Config CLI](#config-cli). To be noted, the values will always be used once set. To revert back to the original default, change the values to `''`.
 

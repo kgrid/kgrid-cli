@@ -34,7 +34,11 @@ function runKgrid(cmd) {
       if(manifest.kitAssets[key].installed==kgridAssets.tag_name){
         console.log(key+": You have the latest version.")
       } else {
-        console.log(key+": A new version is available. Please run `kgrid setup -u` to update.")
+        if(manifest.kitAssets[key].installed<kgridAssets.tag_name){
+          console.log(key+": A new version is available. Please run `kgrid setup -u` to update.")
+        } else {
+          console.log(key+": You are running a development version.")
+        }
       }
       console.log("Starting KGrid "+cmd.name+"...")
       shelljs.exec(cmdstring, {async:true})

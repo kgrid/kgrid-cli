@@ -68,9 +68,10 @@ class PlayCommand extends Command {
             let impMetadataPath = path.join(implpath,'metadata.json');
             if (fs.pathExistsSync(impMetadataPath)) {
               metaJSON = fs.readJsonSync(impMetadataPath);
-              koid.naan=metaJSON.identifier.split('/')[1]
-              koid.name=metaJSON.identifier.split('/')[2]
-              koid.imp=metaJSON.identifier.split('/')[3]
+              var arr = metaJSON.identifier.split('/')
+              koid.naan=arr[1]
+              koid.name=arr[2]
+              koid.imp=arr[3]
             } else {
               this.log("Cannot find metadata.json for " +path.basename(implpath));
               return 1; // Error
@@ -124,7 +125,6 @@ class PlayCommand extends Command {
             }
           })
         });
-        // console.log(imples.length)
         if(imples.length!=0){
           if(koid.imp==''){
             let responses = await inquirer.prompt([
@@ -135,7 +135,7 @@ class PlayCommand extends Command {
                   default: 0,
                   scroll: false,
                   choices: imples,
-                  pageSize: imples.length
+                  pageSize: Math.min(15, imples.length)
                 }
               ])
             targetimple = responses.implementation.replace('ark:/','')
@@ -154,7 +154,7 @@ class PlayCommand extends Command {
           }
           return 0
         } else {
-          console.log('No implementation with ark id of '+ koid.naan+'/'+koid.name+'/'+koid.imp+' has been activated.')
+          console.log('No implementation with ark id of ark:/'+ koid.naan+'/'+koid.name+'/'+koid.imp+' has been activated.')
         }
       })
       .catch(function(error){

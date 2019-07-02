@@ -8,7 +8,7 @@ class StartCommand extends Command {
     const {flags} = this.parse(StartCommand)
     const userConfigJson =  userConfig()
     let library_port = 8081
-    let activator_port = 8080
+    let activator_port = ""
     if(userConfigJson){
       if(userConfigJson.devDefault.library_port!=''){
         library_port  = userConfigJson.devDefault.library_port

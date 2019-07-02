@@ -18,7 +18,7 @@ describe('test happy day create ', () => {
   .command(['create', 'testko', '-i', 'koversion'])
   .it('runs create with testko name and koversion implementation', output => {
 
-    expect(output.stdout).to.include('Ready');
+    expect(output.stdout).to.include('ready');
 
     expect(fs.existsSync(path.join(
       testDirectory.name, "testko", "metadata.json"))).to.be.true;

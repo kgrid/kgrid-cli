@@ -90,17 +90,8 @@ async function createImplementation (shelf, ko, implementation, template, flat) 
     // Add webpack.config.js for bundled implementation
     fs.copySync(path.join(sourcePath,'webpack.config.js'), path.join(implementationPath,'webpack.config.js'))
   }
-  console.log('\nThe implementation of ' + implementation + ' has been initialized.\n')
-  // // npm install and build
-  // shelljs.cd(implementationPath)
-  // console.log("Installing node modules ...\n")
-  // shelljs.exec('npm install')
-  //
-  // if(template=='bundled') {
-  //   console.log('Running build for the bundled KO...\n')
-  //   shelljs.exec('npm run build')
-  // }
-  // // ***** //
+  console.log('The implementation of ' + implementation + ' has been initialized.\n')
+  return idNaan + '/' + idName
 }
 
 module.exports=createImplementation

@@ -71,7 +71,7 @@ class CreateCommand extends Command {
           type: 'input',
           name: 'implementation',
           message: 'Implementation: ',
-          default: 'one',
+          default: 'impl',
           validate: function (input) {
             if(input==''){
               return 'Invalid Input'
@@ -99,9 +99,11 @@ class CreateCommand extends Command {
       })
     }
     if(!implExists){
-      await createImplementation(shelfpath, ko, implementation, template, flat).then(()=>{
-         console.log('\nThe knowledge object is Ready.')
-      }).catch(e=>console.log(e.message))
+      var arkid = await createImplementation(shelfpath, ko, implementation, template, flat)
+      console.log('\nThe knowledge object '+ arkid+' is ready.')
+      // .then(()=>{
+      //    console.log('\nThe knowledge object is Ready.')
+      // }).catch(e=>console.log(e.message))
     } else {
       console.log('Path existing. Please start over with a different name for the implementation.')
     }

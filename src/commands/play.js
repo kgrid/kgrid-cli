@@ -14,6 +14,7 @@ class PlayCommand extends Command {
     try{
       const {args, flags} = this.parse(PlayCommand)
       let cust_port =flags.port
+      let openurl = flags.open
       let targeturl='https://editor.swagger.io/'
       let ark = args.ark
       let pathtype = checkPathKoioType()
@@ -26,19 +27,23 @@ class PlayCommand extends Command {
       if(ark) {
         arkid = ark.split('/')
         if(arkid[0]==''){
-          arkid.shift()
+          arkid[0]='ark:'
+        } else {
+          if(arkid[0]!='ark:'){
+            arkid.unshift('ark:')
+          }
         }
         if(arkid.length<=1){
           console.log('Please provide a valid ark id for the implementation.\n')
-          console.log('  Example: kgrid play hello/world/v1')
+          console.log('  Example: kgrid play ark:/hello/world/v1')
           return 1
         }
       }
       if(pathtype.type=='shelf'){
         if(ark){
-          koid.naan=arkid[0] || ''
-          koid.name=arkid[1] || ''
-          koid.imp=arkid[2] || ''
+          koid.naan=arkid[1] || ''
+          koid.name=arkid[2] || ''
+          koid.imp=arkid[3] || ''
         }
       } else {
         if(pathtype.type=='ko'){
@@ -52,8 +57,8 @@ class PlayCommand extends Command {
             return 1; // Error
           }
           if(ark){
-            if(koid.naan==arkid[0]&&koid.name==arkid[1]){
-              koid.imp=arkid[2] || ''
+            if(koid.naan==arkid[1]&&koid.name==arkid[2]){
+              koid.imp=arkid[3] || ''
             }else {
               console.log('Current directory is the knowledge object of '+koid.naan+'/'+koid.name+'.\n\nThe command line input of '+ark+' will be ignored.\n')
             }
@@ -71,7 +76,7 @@ class PlayCommand extends Command {
               return 1; // Error
             }
             if(ark){
-              if(koid.naan==arkid[0]&&koid.name==arkid[1]&&koid.imp==arkid[2]){
+              if(koid.naan==arkid[1]&&koid.name==arkid[2]&&koid.imp==arkid[3]){
 
               }else {
                 console.log('Current directory is the knowledge object of '+koid.naan+'/'+koid.name+'/'+koid.imp+'.\n\nThe command line input of '+ark+' will be ignored.\n')
@@ -100,24 +105,26 @@ class PlayCommand extends Command {
         url: url
       })
       .then(async function (response) {
+        imples = []
         Object.keys(response.data).forEach(function(e){
           let kometa = response.data[e]
           kometa.hasImplementation.forEach(function(ie){
             if(koid.imp!=''){
               if(ie==(koid.naan+'-'+koid.name+'/'+koid.imp)){
-                imples.push(ie.replace('-','/'))
+                imples.push('ark:/'+ie.replace('-','/'))
               }
             } else {
               if(koid.name!=''){
                 if(ie.includes(koid.naan+'-'+koid.name)){
-                  imples.push(ie.replace('-','/'))
+                  imples.push('ark:/'+ie.replace('-','/'))
                 }
               } else {
-                imples.push(ie.replace('-','/'))
+                imples.push('ark:/'+ie.replace('-','/'))
               }
             }
           })
         });
+        // console.log(imples.length)
         if(imples.length!=0){
           if(koid.imp==''){
             let responses = await inquirer.prompt([
@@ -126,20 +133,24 @@ class PlayCommand extends Command {
                   name: 'implementation',
                   message: 'Please select an implementation: ',
                   default: 0,
-                  choices: imples
+                  scroll: false,
+                  choices: imples,
+                  pageSize: imples.length
                 }
               ])
-            targetimple = responses.implementation
+            targetimple = responses.implementation.replace('ark:/','')
           } else {
             targetimple= koid.naan+'/'+koid.name+'/'+koid.imp
           }
           targeturl = `https://editor.swagger.io/?url=${url}${targetimple}/service`
-          console.log(targeturl)
-          console.log('will be opened in your default browser.')
-          if(os.platform()=='win32'){
-            shelljs.exec('start '+targeturl, {async:true})
-          } else {
-            shelljs.exec('open '+targeturl, {async:true})
+          console.log('\nOpen the URL in your browser:\n')
+          console.log('    '+targeturl)
+          if(openurl){
+            if(os.platform()=='win32'){
+              shelljs.exec('start '+targeturl, {async:true})
+            } else {
+              shelljs.exec('open '+targeturl, {async:true})
+            }
           }
           return 0
         } else {
@@ -165,7 +176,8 @@ ${documentations.play}
 
 PlayCommand.flags = {
   port: flags.string({char: 'p', description:'Specify the port for KGRID Activator'}),
-  help: flags.help({char:'h'})
+  help: flags.help({char:'h'}),
+  open: flags.boolean({char:'o', description:'Open the url in the default browser'})
 }
 
 PlayCommand.args = [

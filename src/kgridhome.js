@@ -1,4 +1,3 @@
-const shelljs = require('shelljs');
 const fs = require('fs-extra')
 const path = require('path')
 

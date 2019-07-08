@@ -4,51 +4,92 @@ const yaml = require('js-yaml');
 const jp = require('jsonpath');
 const fs = require('fs-extra');
 const path = require('path');
+const list = require('../getall')
 const checkPathKoioType = require('../check_pathkoiotype')
 const documentations = require('../json/extradoc.json')
 
 class PackageCommand extends Command {
   async run() {
     const {args, flags} = this.parse(PackageCommand);
-    let ko = args.ko;
+    let ko = flags.source
+    let ark =  args.ark;
     let dest = flags.destination;
-    let srcImplementation = flags.implementation
     let pathtype = checkPathKoioType()
     let shelfpath = pathtype.shelfpath
     let kopath = pathtype.kopath
     let implpath = pathtype.implpath
-    if(pathtype.type=='shelf'){
-      if(ko){
-        kopath=path.join(pathtype.shelfpath,ko)
-        if(srcImplementation){
-          implpath = path.join(kopath, srcImplementation)
+    let koid = {naan:'',name:'',imp:''}
+    let arkid= []
+    let kolist = list(pathtype.shelfpath)
+    let idkey = ''
+    let srcpath = ''
+    let srckopath = ''
+    let srcimplpath = ''
+
+    if(ark) {
+      arkid = ark.split('/')
+      if(arkid[0]==''){
+        arkid[0]='ark:'
+      } else {
+        if(arkid[0]!='ark:'){
+          arkid.unshift('ark:')
         }
+      }
+      idkey=arkid.join('/')
+      var idIndex = kolist.findIndex(function(e){
+          return e.id==idkey
+      })
+      if(idIndex!=-1){
+        koid.naan=arkid[1] || ''
+        koid.name=arkid[2] || ''
+        koid.imp=arkid[3] || ''
+        srcpath = path.join(pathtype.shelfpath,kolist[idIndex].path)
+        if(koid.imp!=''){
+          srckopath=path.dirname(srcpath)
+          srcimplpath = srcpath
+        } else {
+          srckopath=srcpath
+        }
+      }
+    }
+
+    if (ko) {
+      srcpath = path.join(pathtype.shelfpath, ko)
+      if (fs.pathExistsSync(path.join(srcpath, 'metadata.json'))) {
+        let srcmeta = fs.readJsonSync(path.join(srcpath, 'metadata.json'))
+        let idarray = srcmeta.identifier.split('/')
+        koid.naan=idarray[1] || ''
+        koid.name=idarray[2] || ''
+        koid.imp=idarray[3] || ''
+      }
+      if(koid.imp!=''){
+        srckopath=path.dirname(srcpath)
+        srcimplpath = srcpath
       }else {
-        console.log("Please provide the name of the knowledge object you'd like to package. \n\nUSAGE: \n  $ kgrid package [ko]")
+        srckopath=srcpath
+      }
+    }
+
+    if(pathtype.type=='shelf'){
+      if(srckopath==''){
+        console.log('Please provide a valid ark id or source directory to package. \n')
+        console.log('  Example: kgrid package ark:/hello/world/v1\n')
+        console.log('    Or\n')
+        console.log('  Example: kgrid package --source hello-world/v1')
         return 1
+      } else {
+        kopath = srckopath
+        implpath = srcimplpath
       }
     } else {
       if(pathtype.type=='ko'){
-        if(ko){
-          if(path.join(shelfpath,ko)!=kopath){
-            console.log('Current directory is the knowledge object '+path.basename(kopath)+'.\n\nThe command line input of '+ko+' will be ignored.\n')
-          }
+        if(srckopath!=kopath){
+          console.log('Current directory is the knowledge object '+path.basename(kopath)+'.\n\nThe command line input will be ignored.\n')
         }
-        if(srcImplementation){
-          implpath = path.join(kopath, srcImplementation)
-        }
-      }else {
+      } else {
         if(pathtype.type=='implementation'){
-          if(ko){
-            if(srcImplementation){
-              if(path.join(shelfpath,ko,srcImplementation)!=implpath){
-                console.log('Current directory is the implementation '+path.basename(implpath)+' of the knowledge object '+path.basename(kopath)+'.\n\nThe command line input of '+ko+' and '+srcImplementation+' will be ignored.\n')
-              }
-            } else {
-              if(path.join(shelfpath,ko)!=kopath){
-                console.log('Current directory is the implementation '+path.basename(implpath)+' of the knowledge object '+path.basename(kopath)+'.\n\nThe command line input of '+ko+' will be ignored.\n')
-              }
-            }
+          if(srcimplpath!=implpath){
+            console.log('Current directory is the implementation '+path.basename(implpath)+' of the knowledge object '+path.basename(kopath)+'.\n\nThe command line input of will be ignored.\n')
           }
         }
       }
@@ -190,13 +231,13 @@ ${documentations.package}
 `
 
 PackageCommand.flags = {
-  implementation: flags.string({char: 'i', description:"the name for the implementation"}),
   help: flags.help({char:'h'}),
+  source: flags.string({description:'The folder holding the ko as the source directory'}),
   destination: flags.string({char:'d', description:"the directory for the packaged file"})
 }
 
 PackageCommand.args = [
-  {name:'ko'}
+  {name:'ark'}
 ];
 
 module.exports = PackageCommand;

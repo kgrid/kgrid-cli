@@ -11,7 +11,6 @@ const userConfig = require('../user_config')
 
 class PlayCommand extends Command {
   async run() {
-    try{
       const {args, flags} = this.parse(PlayCommand)
       let cust_port =flags.port
       let openurl = flags.open
@@ -158,15 +157,8 @@ class PlayCommand extends Command {
         }
       })
       .catch(function(error){
-        if (error.response) {
-          console.log(error)
-        } else {
-          console.log('Cannot connect to the activator at: '+url+'\n\nPlease make sure the activator is running and the correct port is specified to connect.\n\nUSAGE:\n    $ kgrid play -p [port]');
-        }
+          console.log('Cannot connect to the activator at:  '+url+'\n\nPlease make sure the activator is running and the correct port is specified to connect.\n\nUSAGE:\n\n    $ kgrid play [ARK] -p [port]');
       });
-    } catch (e) {
-      console.log(e)
-    }
   }
 }
 

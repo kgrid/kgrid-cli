@@ -11,6 +11,7 @@ class ListCommand extends Command {
     let pathtype = checkPathKoioType()
     console.log("Shelf:  "+pathtype.shelfpath )
     console.log('----------------------------------------------------------')
+
     var kolist = list(pathtype.shelfpath)
     var displayArray = []
     kolist.forEach(function(e){

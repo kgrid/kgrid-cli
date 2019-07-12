@@ -15,7 +15,7 @@ function uploadFile(type, koid, filefullpath, url){
     url: url+'/info'
   })
   .then(function (response) {
-    console.log(response.data)
+    // console.log(response.data)
     var formData = new FormData();
     formData.append('ko', fs.createReadStream(filefullpath),  { knownLength: fs.statSync(filefullpath).size });
     const headers = {

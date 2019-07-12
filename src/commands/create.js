@@ -101,9 +101,6 @@ class CreateCommand extends Command {
     if(!implExists){
       var arkid = await createImplementation(shelfpath, ko, implementation, template, flat)
       console.log('\nThe knowledge object '+ arkid+' is ready.')
-      // .then(()=>{
-      //    console.log('\nThe knowledge object is Ready.')
-      // }).catch(e=>console.log(e.message))
     } else {
       console.log('Path existing. Please start over with a different name for the implementation.')
     }
@@ -120,7 +117,6 @@ CreateCommand.flags = {
   bundled: flags.boolean({default: false, exclusive:['simple', 'executive'], description:"Using the template for bundled KO"}),
   executive: flags.boolean({default: false, exclusive:['simple','bundled'], description:"Using the template for executive KO"}),
   help: flags.help({char:'h'})
-  // , flat: flags.boolean({})
 }
 
 CreateCommand.args = [

@@ -14,6 +14,7 @@ class PackageCommand extends Command {
     let ko = flags.source
     let ark =  args.ark;
     let dest = flags.destination;
+
     let pathtype = checkPathKoioType()
     let shelfpath = pathtype.shelfpath
     let kopath = pathtype.kopath

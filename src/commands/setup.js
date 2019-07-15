@@ -21,9 +21,7 @@ class SetupCommand extends Command {
     // Write user config
     let configPath = path.join(userHome,'.config')
     let userConfigFile = path.join(configPath, 'kgrid-cli-config.json')
-    if(fs.pathExistsSync(userConfigFile)){
-
-    } else {
+    if(!fs.pathExistsSync(userConfigFile)){
       userConfig.devDefault.naan=os.userInfo().username;
       fs.writeJsonSync(userConfigFile, userConfig, {spaces: 4})
     }

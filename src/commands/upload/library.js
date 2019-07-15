@@ -6,14 +6,11 @@ const parseInput = require('../../parse_input')
 class LibraryCommand extends Command {
   async run() {
       const {args, flags} = this.parse(LibraryCommand)
-      let zip =flags.file
-      let url = flags.url
-      let ark = args.ark
-      var parsedinput = parseInput ('upload', ark,zip,null)
+      var parsedinput = parseInput ('upload', args.ark, flags.file, null)
       if(parsedinput ==1){
         return 1
       }else {
-        uploadFile('library', parsedinput.koid, parsedinput.filefullpath, url)
+        uploadFile('library', parsedinput.koid, parsedinput.filefullpath, flags.url)
       }
   }
 }

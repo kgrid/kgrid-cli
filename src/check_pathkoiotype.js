@@ -1,19 +1,19 @@
 const fs = require('fs-extra')
 const path =require('path')
-const os = require('os')
-
-var pathtype = {
-  type: '',
-  shelfpath: '',
-  kopath: '',
-  implpath: ''
-}
 
 function checkPathKoioType () {
+  var pathtype = {
+    type: '',
+    shelfpath: '',
+    kopath: '',
+    implpath: ''
+  }
   let koiotype = ''
   if (fs.existsSync('metadata.json')) {
     let meta = fs.readJsonSync('metadata.json')
-    koiotype = meta['@type'].replace('koio:','').toLowerCase()
+    if(meta['@type']){
+      koiotype = meta['@type'].replace('koio:','').toLowerCase()
+    }
   }
   switch(koiotype){
     case 'implementation':

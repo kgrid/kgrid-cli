@@ -7,22 +7,22 @@ const filterFn = item => {
 }
 
 function getall(shelf){
-    var kolist = []
-    const paths = klawSync(shelf, {nofile: true, depthLimit: 2, filter: filterFn})
-    paths.forEach(function(p){
-      if(fs.pathExistsSync(path.join(p.path,'metadata.json'))) {
-        var meta = fs.readJsonSync(path.join(p.path,'metadata.json'))
-        if((!meta['@type'])||(meta['@type'].includes('koio'))) {
-          var obj={
-            id : meta.identifier,
-            path : p.path.replace(shelf,''),
-            type : meta['@type']
-          }
-          kolist.push(obj)
+  var kolist = []
+  const paths = klawSync(shelf, {nofile: true, depthLimit: 2, filter: filterFn})
+  paths.forEach(function(p){
+    if(fs.pathExistsSync(path.join(p.path,'metadata.json'))) {
+      var meta = fs.readJsonSync(path.join(p.path,'metadata.json'))
+      if((!meta['@type'])||(meta['@type'].includes('koio'))) {
+        var obj={
+          id : meta.identifier,
+          path : p.path.replace(shelf,''),
+          type : meta['@type']
         }
+        kolist.push(obj)
       }
-    })
-    return kolist
+    }
+  })
+  return kolist
 }
 
 module.exports = getall

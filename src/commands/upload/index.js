@@ -6,14 +6,11 @@ const parseInput = require('../../parse_input')
 class UploadCommand extends Command {
   async run() {
       const {args, flags} = this.parse(UploadCommand)
-      let zip =flags.file
-      let url = flags.url
-      let ark = args.ark
-      var parsedinput = parseInput ('upload',ark,zip,null)
-      if(parsedinput ==1){
+      var parsedinput = parseInput ('upload', args.ark, flags.file, null)
+      if (parsedinput == 1){
         return 1
-      }else {
-        uploadFile('activator', parsedinput.koid, parsedinput.filefullpath, url)
+      } else {
+        uploadFile('activator', parsedinput.koid, parsedinput.filefullpath, flags.url)
       }
   }
 }

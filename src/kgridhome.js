@@ -6,7 +6,6 @@ function kgridhome() {
   let khome = process.env.KGRID_HOME;
   let kgridHome = path.join(userHome, '.kgrid');
   let currentHome = path.join(process.cwd(), '.kgrid');
-  let kgridAssets = {}
   if (!khome) {
     khome = currentHome
     if(!fs.pathExistsSync(khome)){

@@ -10,7 +10,7 @@ class LibraryCommand extends Command {
       if(parsedinput ==1){
         return 1
       }else {
-        uploadFile('library', parsedinput.koid, parsedinput.filefullpath, flags.url)
+        uploadFile('library', parsedinput.koid, parsedinput.fullpath, flags.url)
       }
   }
 }
@@ -22,7 +22,7 @@ ${documentations.uploadlibrary}
 LibraryCommand.flags = {
   file: flags.string({char: 'f', description:'The filename of the packaged KO to be uploaded',exclusive: ['ark']}),
   help: flags.help({char:'h'}),
-  url: flags.string({required: true, description:'The URL of the library tp upload the packaged KO'})
+  url: flags.string({description:'The URL of the library tp upload the packaged KO'})
 }
 
 LibraryCommand.args = [

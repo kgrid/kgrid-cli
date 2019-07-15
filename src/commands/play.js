@@ -15,8 +15,8 @@ class PlayCommand extends Command {
       let targeturl='https://editor.swagger.io/'
       let ark = args.ark
       let koid = {naan:'',name:'',imp:''}
-      var parsedinput = parseInput ('play', ark,null,null)
-      if(parsedinput ==1){
+      var parsedinput = parseInput ('play', ark, null, null)
+      if(parsedinput == 1){
         return 1
       }
       koid=JSON.parse(JSON.stringify(parsedinput.koid))

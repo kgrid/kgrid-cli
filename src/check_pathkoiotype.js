@@ -6,14 +6,17 @@ function checkPathKoioType () {
     type: '',
     shelfpath: '',
     kopath: '',
-    implpath: ''
+    implpath: '',
+    arkid: ''
   }
   let koiotype = ''
+  let arkid = ''
   if (fs.existsSync('metadata.json')) {
     let meta = fs.readJsonSync('metadata.json')
     if(meta['@type']){
       koiotype = meta['@type'].replace('koio:','').toLowerCase()
     }
+    arkid = meta.identifier
   }
   switch(koiotype){
     case 'implementation':
@@ -32,6 +35,7 @@ function checkPathKoioType () {
       pathtype.type = 'shelf'
       break;
   }
+  pathtype.arkid = arkid
   return pathtype
 }
 

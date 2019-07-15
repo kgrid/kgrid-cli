@@ -10,7 +10,7 @@ class UploadCommand extends Command {
       if (parsedinput == 1){
         return 1
       } else {
-        uploadFile('activator', parsedinput.koid, parsedinput.filefullpath, flags.url)
+        uploadFile('activator', parsedinput.koid, parsedinput.fullpath, flags.url)
       }
   }
 }
@@ -22,7 +22,7 @@ ${documentations.upload}
 UploadCommand.flags = {
   file: flags.string({char: 'f', description:'The filename of the packaged KO to be uploaded',exclusive: ['ark']}),
   help: flags.help({char:'h'}),
-  url: flags.string({required: true, description:'The URL of the activator or library to upload the packaged KO'})
+  url: flags.string({ description:'The URL of the activator or library to upload the packaged KO'})
 }
 
 UploadCommand.args = [

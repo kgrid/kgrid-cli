@@ -138,15 +138,12 @@ class PackageCommand extends Command {
 PackageCommand.description = `Package the knowledge object.
 ${documentations.package}
 `
-
 PackageCommand.flags = {
   help: flags.help({char:'h'}),
   source: flags.string({description:'The folder holding the ko as the source directory'}),
   destination: flags.string({char:'d', description:"the directory for the packaged file"})
 }
-
 PackageCommand.args = [
   {name:'ark'}
 ];
-
 module.exports = PackageCommand;

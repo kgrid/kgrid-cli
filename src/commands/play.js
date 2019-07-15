@@ -100,15 +100,12 @@ class PlayCommand extends Command {
 PlayCommand.description = `Try out a Knowledge Object implementation using Swagger Editor.
 ${documentations.play}
 `
-
 PlayCommand.flags = {
   port: flags.string({char: 'p', description:'Specify the port for KGRID Activator'}),
   help: flags.help({char:'h'}),
   open: flags.boolean({char:'o', description:'Open the url in the default browser'})
 }
-
 PlayCommand.args = [
   {name:'ark'}
 ]
-
 module.exports = PlayCommand

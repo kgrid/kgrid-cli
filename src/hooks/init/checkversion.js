@@ -8,13 +8,11 @@ module.exports = async function () {
     if(cmd=='version'|cmd=='-v'|cmd=='--version') {
       console.log(colors.green('Checking JAVA Version ...'))
       shelljs.exec('java -version')
-      console.log('')
-      console.log(colors.green('Checking Node Version ...'))
+      console.log('\n'+colors.green('Checking Node Version ...'))
       shelljs.exec('node --version')
-      console.log('')
       let khome = await kVersion('')
       if(!fs.pathExistsSync(khome)){
-        console.log('KGRID components are not installed. Please run "kgrid setup".\n')
+        console.log('\nKGRID components are not installed. Please run "kgrid setup".\n')
       }
       console.log('=========================================================')
     } else {

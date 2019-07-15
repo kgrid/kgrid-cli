@@ -1,15 +1,10 @@
 const FormData = require('form-data');
-const path= require('path')
 const fs = require('fs-extra')
 const axios = require('axios')
 
 function uploadFile(type, koid, fullpath, url){
-  let endpoint = '/kos'
-  let targeturl= url || 'http://localhost:8080/'
-  if(type=='library'){
-    endpoint = '/shelf'
-    targeturl= url || 'http://localhost:8081/'
-  }
+  let endpoint = (type=='library') ? '/shelf' : '/kos'
+  let targeturl= (type=='library') ?  url || 'http://localhost:8081/' : url || 'http://localhost:8080/'
   axios({
     method: 'get',
     url: targeturl + '/info'
@@ -37,7 +32,6 @@ function uploadFile(type, koid, fullpath, url){
   .catch(function(error){
     console.log('Cannot connect to '+targeturl+'\n\nPlease make sure the url is accessible.\n\nUSAGE:\n\n    $ kgrid upload [ARK] --file [FILE] --url [URL]');
   });
-
 }
 
 module.exports = uploadFile

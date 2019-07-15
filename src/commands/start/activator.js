@@ -8,19 +8,17 @@ const kVersion = require('../../check_kgridversion')
 class ActivatorCommand extends Command {
   async run() {
     const {args, flags} = this.parse(ActivatorCommand)
-    const userConfigJson =  userConfig()
     let khome = await kVersion('activator')
-    let activator_port = ''
-    if(userConfigJson){
-      if(userConfigJson.devDefault.activator_port!=''){
-        activator_port  = userConfigJson.devDefault.activator_port
-      }
-    }
-    let shelf = flags.shelf || ''
-    let port = flags.port || activator_port
-    let jar = flags.jarfile || ''
-    let cmdObj = {name:'activator',component: jar, shelf: shelf, port: port, khome:khome}
     if(fs.pathExistsSync(khome)){
+      const userConfigJson =  userConfig()
+      let activator_port = ''
+      if(userConfigJson){
+          activator_port  = userConfigJson.devDefault.activator_port
+      }
+      let cmdObj = {name:'activator',component: '', shelf: '', port: '', khome:khome}
+      cmdObj.shelf = flags.shelf || ''
+      cmdObj.port = flags.port || activator_port
+      cmdObj.jar = flags.jarfile || ''
       runKgrid(cmdObj)
     } else {
       console.log('KGRID components are not installed. Please run "kgrid setup".\n')
@@ -31,11 +29,9 @@ class ActivatorCommand extends Command {
 ActivatorCommand.description = `Start KGrid Activator.
 ${documentations.startactivator}
 `
-
 ActivatorCommand.flags = {
   shelf: flags.string({char: 's', description:'Specify an absolute path to use as the shelf containing KOs'}),
   port: flags.string({char: 'p', description:'Specify the port for KGRID Activator'}),
   jarfile: flags.string({char: 'j', description:'Specify the activator JAR file to use other than the installed one'}),
 }
-
 module.exports = ActivatorCommand

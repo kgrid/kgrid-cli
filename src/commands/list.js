@@ -11,15 +11,13 @@ class ListCommand extends Command {
     let pathtype = checkPathKoioType()
     console.log("Shelf:  "+pathtype.shelfpath )
     console.log('----------------------------------------------------------')
-
     var kolist = list(pathtype.shelfpath)
     var displayArray = []
     kolist.forEach(function(e){
       var obj = {}
       obj.id = (!implOnly && e.type.includes('Implementation')) ? "   "+e.id : e.id
       obj.path = (!implOnly && e.type.includes('Implementation')) ? "  "+e.path : e.path
-      var includeEntry = !implOnly | e.type.includes('Implementation')
-      if(includeEntry){
+      if(!implOnly | e.type.includes('Implementation')){
         displayArray.push(obj)
       }
     })

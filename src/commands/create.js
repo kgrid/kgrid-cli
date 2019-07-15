@@ -110,7 +110,6 @@ class CreateCommand extends Command {
 CreateCommand.description = `Create Knowledge Object and initialize the implementation.
 ${documentations.create}
 `
-
 CreateCommand.flags = {
   implementation: flags.string({char: 'i', description:"the name for the implementation"}),
   simple: flags.boolean({default: true, exclusive:['bundled', 'executive'], description:"Using the simple template"}),
@@ -118,9 +117,7 @@ CreateCommand.flags = {
   executive: flags.boolean({default: false, exclusive:['simple','bundled'], description:"Using the template for executive KO"}),
   help: flags.help({char:'h'})
 }
-
 CreateCommand.args = [
-  {name:'ko'},
+  {name:'ko'}
 ]
-
 module.exports = CreateCommand

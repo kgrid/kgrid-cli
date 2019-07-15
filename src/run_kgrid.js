@@ -16,9 +16,7 @@ function runKgrid(cmd) {
   if(shelf == ''){
     shelf = process.cwd()
   }
-  if(shelf!=''){
-    cmdstring = cmdstring + ' --kgrid.shelf.cdostore.url=filesystem:file:///' + shelf.split(path.sep).join('/')
-  }
+  cmdstring = cmdstring + ' --kgrid.shelf.cdostore.url=filesystem:file:///' + shelf.split(path.sep).join('/')
   if(port!=''){
     cmdstring = cmdstring + ' --server.port='+port
   }

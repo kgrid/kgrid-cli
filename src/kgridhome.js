@@ -4,12 +4,10 @@ const path = require('path')
 function kgridhome() {
   let userHome = process.env.HOME || process.env.USERPROFILE || process.env.HOMEPATH
   let khome = process.env.KGRID_HOME;
-  let kgridHome = path.join(userHome, '.kgrid');
-  let currentHome = path.join(process.cwd(), '.kgrid');
   if (!khome) {
-    khome = currentHome
+    khome = path.join(process.cwd(), '.kgrid')
     if(!fs.pathExistsSync(khome)){
-      khome = kgridHome;
+      khome = path.join(userHome, '.kgrid');
     }
   }
   return khome

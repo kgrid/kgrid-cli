@@ -73,13 +73,15 @@ function parseInput(cmd, ark, zip, src) {
       switch(cmd){
         case 'upload':
           console.log('Please provide a valid ark id for the KO or a valid file name in .zip format.\n')
-          console.log('  Example: kgrid upload ark:/hello/world')
+          console.log('  Example: kgrid upload ark:/hello/world\n\nOr\n')
+          console.log('  Example: kgrid upload --file hello-world.zip')
           return 1
         case 'play':
           break;
         case 'package':
           console.log('Please provide a valid ark id or a directory of KO\n')
-          console.log('  Example: kgrid package ark:/hello/world')
+          console.log('  Example: kgrid package ark:/hello/world\n\nOr\n')
+          console.log('  Example: kgrid package --source myko')
           return 1
       }
   }

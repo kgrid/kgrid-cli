@@ -24,9 +24,7 @@ class StartCommand extends Command {
       let activatorObj = {name:'activator', component:'', shelf: shelf, port: activator_port, khome:khome}
       runKgrid(libraryObj)
       runKgrid(activatorObj)
-    } else {
-      console.log('KGRID components are not installed. Please run "kgrid setup".\n')
-    }
+    } 
   }
 }
 

@@ -10,11 +10,9 @@ module.exports = async function () {
       shelljs.exec('java -version')
       console.log('\n'+colors.green('Checking Node Version ...'))
       shelljs.exec('node --version')
+      console.log('')
       let khome = await kVersion('')
-      if(!fs.pathExistsSync(khome)){
-        console.log('\nKGRID components are not installed. Please run "kgrid setup".\n')
-      }
-      console.log('=========================================================')
+      console.log('______________________________________________________________')
     } else {
       console.log(colors.blue('KGrid CLI v'+this.config.version+'\n'))
     }

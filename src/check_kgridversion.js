@@ -6,7 +6,7 @@ const download = require('download')
 
 async function checkKgridVersion(component) {
     let khome = kHome()
-    console.log('\n'+colors.green('Checking KGrid Components Version ...'))
+    console.log(colors.green('Checking KGrid Components Version ...'))
     if(fs.pathExistsSync(khome)){
       console.log('KGRID Components are installed at: '+khome+'\n')
       let manifest = fs.readJsonSync(path.join(khome, 'manifest.json'))
@@ -46,7 +46,7 @@ async function checkKgridVersion(component) {
         console.log(error)
       })
     } else {
-      console.log('KGRID components are not installed. Please run "kgrid setup".\n')
+      console.log('KGRID components are not installed. Please run "kgrid setup".')
     }
     return khome
 }

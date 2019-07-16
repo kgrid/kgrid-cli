@@ -24,6 +24,9 @@ function uploadFile(type, koid, fullpath, url){
     })
     .then(function (response) {
       console.log(koid.naan+'/'+koid.name+' has been successfully uploaded to '+targeturl+'\n')
+      if(type=='activator'){
+        console.log('To activate the KO, browse to '+targeturl+'activate')
+      }
     })
     .catch(function(error){
       console.log('Error when uploading the file to '+targeturl+'\n\n');

@@ -20,9 +20,7 @@ class LibraryCommand extends Command {
       cmdObj.port = flags.port || library_port
       cmdObj.jar = flags.jarfile || ''
       runKgrid(cmdObj)
-    } else {
-      console.log('KGRID components are not installed. Please run "kgrid setup".\n')
-    }
+    } 
   }
 }
 

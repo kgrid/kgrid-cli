@@ -13,10 +13,12 @@ class PackageCommand extends Command {
     let ko = flags.source
     let ark =  args.ark;
     let dest = flags.destination;
-    var parsedInput = parseInput ('package', args.ark, null, flags.source)
+    var parsedInput = parseInput ('package', args.ark, null, flags.source, null)
     if(parsedInput==1){
       return 1
     }
+    // console.log(parsedInput)
+    // return 0
     let checkSpec = false;
     let topMeta = fs.readJsonSync(path.join(parsedInput.fullpath,'metadata.json'));
     let arkId = topMeta["@id"];
@@ -101,9 +103,9 @@ class PackageCommand extends Command {
             }
           }
         });
-        console.log('Adding '+path.join(parsedInput.fullpath,'metadata.json')+' ...')
-        fs.writeJsonSync(path.join(tmpko,'metadata.json'), topMeta, {spaces: 4})
         if(topMeta.hasImplementation.length>0){
+          console.log('Adding '+path.join(parsedInput.fullpath,'metadata.json')+' ...')
+          fs.writeJsonSync(path.join(tmpko,'metadata.json'), topMeta, {spaces: 4})
           let output = fs.createWriteStream(destinationName);
           let archive = archiver('zip', {zlib: {level: 9}});
           output.on('close', () => {
@@ -140,7 +142,7 @@ ${documentations.package}
 `
 PackageCommand.flags = {
   help: flags.help({char:'h'}),
-  source: flags.string({description:'The folder holding the ko as the source directory'}),
+  source: flags.string({char:'s', description:'The folder holding the ko as the source directory'}),
   destination: flags.string({char:'d', description:"the directory for the packaged file"})
 }
 PackageCommand.args = [

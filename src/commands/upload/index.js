@@ -17,6 +17,7 @@ UploadCommand.description = `Upload a packaged Knowledge Object to a KGRID activ
 ${documentations.upload}
 `
 UploadCommand.flags = {
+  port: flags.string({char: 'p', description:'Specify the port for KGRID Activator', exclusive:['url']}),
   file: flags.string({char: 'f', description:'The filename of the packaged KO to be uploaded',exclusive: ['ark']}),
   help: flags.help({char:'h'}),
   url: flags.string({ description:'The URL of the activator or library to upload the packaged KO'})

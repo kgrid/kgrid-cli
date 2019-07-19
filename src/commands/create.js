@@ -6,6 +6,7 @@ const kometaObj = require('../template/kometadata.json')
 const createImplementation = require('../create_implementation')
 const checkPathKoioType = require('../check_pathkoiotype')
 const documentations = require('../json/extradoc.json')
+const parseInput = require('../parse_input')
 
 var topMeta = JSON.parse(JSON.stringify(kometaObj))
 
@@ -24,6 +25,13 @@ class CreateCommand extends Command {
     if(flags.executive) {
       template='executive'
     }
+    let inputPath = {ko:ko, imp:implementation}
+    var parsedInput = parseInput ('create', args.ark, null, null, inputPath)
+    if(parsedInput==1){
+      return 1
+    }
+    console.log(parsedInput)
+    return 0
     if(pathtype.type=='shelf'){
       if (ko) {
         if( ko.includes('-') | ko.includes('/') ){

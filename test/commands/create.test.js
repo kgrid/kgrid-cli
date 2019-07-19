@@ -54,7 +54,7 @@ describe('test not happy day create ', () => {
   .command(['create'])
   .it('runs create with no ko name', output => {
     expect(output.stdout).to.include(
-      'Please provide a name for your knowledge object')
+      'Please provide')
   });
 
   test
@@ -73,7 +73,7 @@ describe('test not happy day create ', () => {
   .it('runs create with existing ko name and new implementation', output => {
 
     expect(output.stdout).to.include(
-      'exist');
+      'ready');
 
   });
 

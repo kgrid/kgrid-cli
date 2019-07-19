@@ -44,11 +44,11 @@ function parseInput(cmd, ark, zip, src, newpath) {
         console.log(ark+' not found.\n')
         // return 1
       }
-      fullpath = (arkid.length==4 && pathtype.type=='implementation')?path.dirname(fullpath):fullpath
+      fullpath = (arkid.length==4)?path.dirname(fullpath):fullpath
     }
-    // console.log('****   DEBUG: Values with ARK input  ****')
-    // console.log(arkid)
-    // console.log(fullpath)
+    console.log('****   DEBUG: Values with ARK input  ****')
+    console.log(arkid)
+    console.log(fullpath)
   }
 
   if(src) { // For package KO from a source directory

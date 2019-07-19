@@ -17,12 +17,11 @@ class PackageCommand extends Command {
     if(parsedInput==1){
       return 1
     }
-    // console.log(parsedInput)
-    // return 0
     let checkSpec = false;
     let topMeta = fs.readJsonSync(path.join(parsedInput.fullpath,'metadata.json'));
     let arkId = topMeta["@id"];
-    let destinationName = arkId + ".zip";
+    let destinationName = parsedInput.koid.naan + '-'+ parsedInput.koid.name
+    destinationName = parsedInput.koid.imp==''? destinationName+'.zip' : destinationName+'-'+parsedInput.koid.imp+'.zip'
     let tmpko = path.join(path.dirname(parsedInput.fullpath), 'tmp',arkId)
     fs.ensureDirSync(tmpko)
     if(dest) {

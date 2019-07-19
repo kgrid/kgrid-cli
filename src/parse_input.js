@@ -10,12 +10,9 @@ function parseInput(cmd, ark, zip, src, newpath) {
   let arkid = []
   let fullpath = ''
   let koid = {naan:'',name:'',imp:''}
-  let srckopath = ''
   let pathFound = false
   let pathMatch = true
-  // console.log('****   DEBUG: Initial Values   ****')
-  // console.log(arkid)
-  // console.log(fullpath)
+
   if(ark) {  // For Specify KO ark id
     arkid = ark.split('/')
     if(arkid[0]==''){
@@ -46,9 +43,6 @@ function parseInput(cmd, ark, zip, src, newpath) {
       }
       fullpath = (arkid.length==4)?path.dirname(fullpath):fullpath
     }
-    // console.log('****   DEBUG: Values with ARK input  ****')
-    // console.log(arkid)
-    // console.log(fullpath)
   }
 
   if(src) { // For package KO from a source directory
@@ -76,9 +70,6 @@ function parseInput(cmd, ark, zip, src, newpath) {
       console.log('Source directory not found.')
       return 1
     }
-    // console.log('****   DEBUG: Values with SOURCE input  ****')
-    // console.log(arkid)
-    // console.log(fullpath)
   }
 
   if(zip) {  // For upload a zip file
@@ -95,8 +86,7 @@ function parseInput(cmd, ark, zip, src, newpath) {
         arkid.unshift('ark:')
         pathFound = true
       } else {
-        console.log('Can not find the zip fil of '+zip+' in the directory of '+pathtype.shelfpath)
-        return 1
+
       }
     }
   }
@@ -136,10 +126,6 @@ function parseInput(cmd, ark, zip, src, newpath) {
     if(fullpath!=''){
       pathFound=true
     }
-    // console.log('****   DEBUG: Values with Create input  ****')
-    // console.log(curArkid)
-    // console.log(arkid)
-    // console.log(fullpath)
   }
 
   if(arkid.length!=0){
@@ -158,37 +144,31 @@ function parseInput(cmd, ark, zip, src, newpath) {
       pathFound=(curArkid.length>=3)
     }
   }
-  srckopath = fullpath
   koid.imp = curArkid[3] || koid.imp
+  if (cmd=='upload') {
+    let fn = (koid.imp!='') ? koid.naan+'-'+koid.name +'-'+koid.imp :koid.naan+'-'+koid.name
+    fullpath = path.join(pathtype.shelfpath, fn +'.zip')
+    if(!fs.pathExistsSync(fullpath)){
+    pathFound =false
+    }
+  }
 
   if(!pathFound){
       switch(cmd){
         case 'upload':
-          console.log('Please provide a valid ark id for the KO or a valid file name in .zip format.\n')
-          console.log('  Example: kgrid upload ark:/hello/world\n\nOr\n')
-          console.log('  Example: kgrid upload --file hello-world.zip')
+          console.log('Can not find the zip file in the directory of '+pathtype.shelfpath+'\n\nPlease package the KO first and try again.')
           return 1
         case 'package':
           console.log('Please provide a valid ark id or a directory of KO/implementation\n')
-          console.log('  Example: kgrid package ark:/hello/world\n\nOr\n')
-          console.log('  Example: kgrid package --source myko')
+          console.log('  Example: kgrid package ark:/hello/world\n\nOr\n  Example: kgrid package --source myko')
           return 1
         case 'create':
           console.log('Please provide a valid name for the KO/implementation\n')
-          console.log('  Example: kgrid create myko\n\nOr\n')
-          console.log('  Example: kgrid create myko -i impl')
+          console.log('  Example: kgrid create myko\n\nOr\n  Example: kgrid create myko -i impl')
           return 1
       }
   }
-  var parsedInput = {}
-  parsedInput.koid = JSON.parse(JSON.stringify(koid))
-  parsedInput.fullpath = srckopath
-  if (cmd=='upload') {
-    let fn = (koid.imp!='') ? koid.naan+'-'+koid.name +'-'+koid.imp :koid.naan+'-'+koid.name
-    parsedInput.fullpath = path.join(pathtype.shelfpath, fn +'.zip') 
-  }
-
-  return parsedInput
+  return {koid : JSON.parse(JSON.stringify(koid)), fullpath : fullpath }
 }
 
 function checkInputMatch(type, arkid, curArkid){

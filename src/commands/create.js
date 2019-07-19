@@ -5,27 +5,35 @@ const fs = require('fs-extra')
 const kometaObj = require('../template/kometadata.json')
 const createImplementation = require('../create_implementation')
 const documentations = require('../json/extradoc.json')
+const os = require('os')
+const userConfig = require('../user_config')
 const parseInput = require('../parse_input')
-var topMeta = JSON.parse(JSON.stringify(kometaObj))
 
 class CreateCommand extends Command {
   async run() {
     const {args, flags} = this.parse(CreateCommand)
-    let ko = args.ko || ''
-    let implementation = flags.implementation || ''
     let template = flags.bundled ? 'bundled' : 'simple'
     template = flags.executive? 'executive' : template
-    let inputPath = {ko:ko, imp:implementation}
+    let inputPath = { ko : args.ko || '', imp : flags.implementation || ''}
     var parsedInput = parseInput ('create', null, null, null, inputPath)
     if(parsedInput==1){
       return 1
     }
+    var topMeta = JSON.parse(JSON.stringify(kometaObj))
+    if(parsedInput.koid.naan ==''){
+      parsedInput.koid.naan  = os.userInfo().username
+      const userConfigJson =  userConfig()
+      if(userConfigJson){
+        parsedInput.koid.naan  = userConfigJson.devDefault.naan
+      }
+    }
     if(fs.pathExistsSync(parsedInput.fullpath)){
-      topMeta = fs.readJsonSync(path.join(parsedInput.fullpath,'metadata.json'))
       console.log('====  Add an implementation  ==== \n')
     } else {
       console.log('====  Create the Knowledge Object  ==== \n')
       fs.ensureDirSync(parsedInput.fullpath)
+      topMeta.identifier = 'ark:/' + parsedInput.koid.naan + '/' + parsedInput.koid.name
+      topMeta['@id'] = parsedInput.koid.naan  + '-' + parsedInput.koid.name
       fs.writeJsonSync(path.join(parsedInput.fullpath,'metadata.json'), topMeta, {spaces: 4})
       console.log('====  Initialize the implementation  ==== ')
     }
@@ -45,9 +53,9 @@ class CreateCommand extends Command {
           },
         },
       ])
-      implementation = responses.implementation
+      parsedInput.koid.imp=responses.implementation
     }
-    var arkid = await createImplementation(path.dirname(parsedInput.fullpath), parsedInput.koid.name, implementation, template, false)
+    var arkid = await createImplementation(parsedInput.fullpath, parsedInput.koid, template)
     console.log('\nThe knowledge object '+ arkid+' is ready.')
   }
 }

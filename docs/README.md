@@ -260,8 +260,8 @@ USAGE
 OPTIONS
   -f, --file=file  The filename of the packaged KO to be uploaded
   -h, --help       show CLI help
+  -l, --url=url    The URL of the activator or library to upload the packaged KO
   -p, --port=port  Specify the port for KGRID Activator
-  --url=url        The URL of the activator or library to upload the packaged KO
 
 DESCRIPTION
   The upload command will send the packaged KO to a specified activator.
@@ -283,6 +283,7 @@ USAGE
 OPTIONS
   -f, --file=file  The filename of the packaged KO to be uploaded
   -h, --help       show CLI help
+  -p, --port=port  Specify the port for KGRID Activator
   --url=url        The URL of the library tp upload the packaged KO
 
 DESCRIPTION

@@ -46,9 +46,9 @@ function parseInput(cmd, ark, zip, src, newpath) {
       }
       fullpath = (arkid.length==4)?path.dirname(fullpath):fullpath
     }
-    console.log('****   DEBUG: Values with ARK input  ****')
-    console.log(arkid)
-    console.log(fullpath)
+    // console.log('****   DEBUG: Values with ARK input  ****')
+    // console.log(arkid)
+    // console.log(fullpath)
   }
 
   if(src) { // For package KO from a source directory
@@ -182,7 +182,12 @@ function parseInput(cmd, ark, zip, src, newpath) {
   }
   var parsedInput = {}
   parsedInput.koid = JSON.parse(JSON.stringify(koid))
-  parsedInput.fullpath = (cmd=='upload') ? path.join(pathtype.shelfpath, koid.naan+'-'+koid.name+'.zip') : srckopath
+  parsedInput.fullpath = srckopath
+  if (cmd=='upload') {
+    let fn = (koid.imp!='') ? koid.naan+'-'+koid.name +'-'+koid.imp :koid.naan+'-'+koid.name
+    parsedInput.fullpath = path.join(pathtype.shelfpath, fn +'.zip') 
+  }
+
   return parsedInput
 }
 

@@ -4,76 +4,32 @@ const path= require('path')
 const fs = require('fs-extra')
 const kometaObj = require('../template/kometadata.json')
 const createImplementation = require('../create_implementation')
-const checkPathKoioType = require('../check_pathkoiotype')
 const documentations = require('../json/extradoc.json')
 const parseInput = require('../parse_input')
-
 var topMeta = JSON.parse(JSON.stringify(kometaObj))
 
 class CreateCommand extends Command {
   async run() {
     const {args, flags} = this.parse(CreateCommand)
-    let pathtype = checkPathKoioType()
-    let shelfpath = pathtype.shelfpath
-    let kopath = pathtype.kopath
-    let implpath = pathtype.implpath
-    let ko = args.ko
+    let ko = args.ko || ''
     let implementation = flags.implementation || ''
-    let flat = flags.flat || false
-    let implExists = false
     let template = flags.bundled ? 'bundled' : 'simple'
-    if(flags.executive) {
-      template='executive'
-    }
+    template = flags.executive? 'executive' : template
     let inputPath = {ko:ko, imp:implementation}
-    var parsedInput = parseInput ('create', args.ark, null, null, inputPath)
+    var parsedInput = parseInput ('create', null, null, null, inputPath)
     if(parsedInput==1){
       return 1
     }
-    console.log(parsedInput)
-    return 0
-    if(pathtype.type=='shelf'){
-      if (ko) {
-        if( ko.includes('-') | ko.includes('/') ){
-          console.log('Please provide a valid name for your knowledge object. \n\nAlphanumeric characters only.')
-          return 1
-        }
-      } else {
-        console.log('Please provide a name for your knowledge object. \n\nUSAGE: \n  $ kgrid create [ko]')
-        return 1
-      }
+    if(fs.pathExistsSync(parsedInput.fullpath)){
+      topMeta = fs.readJsonSync(path.join(parsedInput.fullpath,'metadata.json'))
+      console.log('====  Add an implementation  ==== \n')
     } else {
-      if(pathtype.type=='ko'){
-        if(ko){
-          if(path.join(shelfpath,ko)!=kopath){
-            console.log('Current directory is the knowledge object '+path.basename(kopath)+'.\n\nThe command line input of '+ko+' will be ignored.\n')
-          }
-        }
-        ko =path.basename(kopath)
-      } else {
-        if(pathtype.type=='implementation'){
-          console.log('Current directory is the implementation '+path.basename(implpath)+' of the knowledge object '+path.basename(kopath)+'.\n')
-          console.log('If you intend to add an implementation to '+path.basename(kopath)+'\n\n    return to the ko level by  '+'cd ..'+' and run '+'kgrid create'+'.\n')
-          console.log('If you like to create a new knowledge object,\n\n    return to the shelf level by  '+'cd ../..'+' and run '+'kgrid create [ko]'+'.')
-          return 1
-        }
-      }
+      console.log('====  Create the Knowledge Object  ==== \n')
+      fs.ensureDirSync(parsedInput.fullpath)
+      fs.writeJsonSync(path.join(parsedInput.fullpath,'metadata.json'), topMeta, {spaces: 4})
+      console.log('====  Initialize the implementation  ==== ')
     }
-    if (fs.pathExistsSync(path.join(shelfpath, ko,'metadata.json'))) {  // KO Existing
-      topMeta = fs.readJsonSync(path.join(shelfpath, ko,'metadata.json'))
-      if(pathtype.type=='shelf') {
-        console.log('The Knowledge Object of '+ko+' exists. \n')
-      }
-      console.log('An new implementation will be added to '+ko+'\n')
-      console.log('==== Add an implementation ==== ')
-    } else {    // KO not existing; create folder and write metadata
-      console.log('==== Create the Knowledge Object ==== ')
-      fs.ensureDirSync(path.join(shelfpath, ko))
-      fs.writeJsonSync(path.join(shelfpath, ko)+'/metadata.json', topMeta, {spaces: 4})
-      console.log('The first implementation will be added to '+ko+'\n')
-      console.log('==== Initialize the implementation ==== ')
-    }
-    if(implementation==''){
+    if(parsedInput.koid.imp==''){
       let responses = await inquirer.prompt([
         {
           type: 'input',
@@ -84,34 +40,15 @@ class CreateCommand extends Command {
             if(input==''){
               return 'Invalid Input'
             } else {
-              return !fs.pathExistsSync(path.join(shelfpath,ko,input)) || 'Path existing. Please provide a different name for the implementation.'
+              return !fs.pathExistsSync(path.join(parsedInput.fullpath,input)) || 'Path existing. Please provide a different name for the implementation.'
             }
           },
         },
       ])
       implementation = responses.implementation
     }
-
-    let topMetaImplementations = topMeta.hasImplementation;
-    let implementations = []
-    if(!Array.isArray(topMetaImplementations)){
-      implementations.push(topMetaImplementations)
-    } else {
-      implementations= JSON.parse(JSON.stringify(topMetaImplementations))
-    }
-
-    if(implementations.length>0){
-      implementations.forEach(function(e){
-        let imples = e.split('/')
-        implExists = implExists | implementation == imples[imples.length-1]
-      })
-    }
-    if(!implExists){
-      var arkid = await createImplementation(shelfpath, ko, implementation, template, flat)
-      console.log('\nThe knowledge object '+ arkid+' is ready.')
-    } else {
-      console.log('Path existing. Please start over with a different name for the implementation.')
-    }
+    var arkid = await createImplementation(path.dirname(parsedInput.fullpath), parsedInput.koid.name, implementation, template, false)
+    console.log('\nThe knowledge object '+ arkid+' is ready.')
   }
 }
 

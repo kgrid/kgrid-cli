@@ -6,18 +6,13 @@ const list = require('./getall')
 function parseInput(cmd, ark, zip, src, newpath) {
   let pathtype = checkPathKoioType()
   let curArkid = pathtype.arkid.split('/')
-
   let kolist = list(pathtype.shelfpath)
-
   let arkid = []
   let fullpath = ''
-
   let koid = {naan:'',name:'',imp:''}
   let srckopath = ''
-
   let pathFound = false
   let pathMatch = true
-
   // console.log('****   DEBUG: Initial Values   ****')
   // console.log(arkid)
   // console.log(fullpath)
@@ -81,9 +76,9 @@ function parseInput(cmd, ark, zip, src, newpath) {
       console.log('Source directory not found.')
       return 1
     }
-    console.log('****   DEBUG: Values with SOURCE input  ****')
-    console.log(arkid)
-    console.log(fullpath)
+    // console.log('****   DEBUG: Values with SOURCE input  ****')
+    // console.log(arkid)
+    // console.log(fullpath)
   }
 
   if(zip) {  // For upload a zip file
@@ -112,39 +107,35 @@ function parseInput(cmd, ark, zip, src, newpath) {
       return 1
     }
     if(pathtype.type=='ko') {
-      if(newpath.ko){
+      if(newpath.ko!=''){
         if(path.join(pathtype.shelfpath, newpath.ko)!=pathtype.kopath) {
           console.log('Current directory is the knowledge object of '+pathtype.arkid+'.\n\nPlease change to the shelf level and try again.\n')
           return 1
         }
-      }
-      if(!newpath.imp){
-        console.log('Current directory is the knowledge object of '+pathtype.arkid+'.\n\nTo add an implementation, please provide a name for the implementation.\n\n  Example: kgrid create -i impl')
-        return 1
-      }else {
       }
     }
     arkid =[]
     fullpath = pathtype.kopath
     arkid.push('ark:')
     arkid.push(curArkid[1]||'')
-    if(newpath.ko){
+    if(newpath.ko!=''){
       arkid.push(newpath.ko)
       fullpath = path.join(pathtype.shelfpath, newpath.ko)
+    }else{
+      if(pathtype.type=='ko'){
+        arkid.push(curArkid[2])
+      }
     }
     if(newpath.imp){
       arkid.push(newpath.imp)
       if(fs.pathExistsSync(path.join(fullpath, newpath.imp))) {
-        console.log('The implementation '+newpath.imp+ ' of '+pathtype.arkid+' alrready exists.\n\nTo add an implementation, please provide a different name for the implementation.\n')
+        console.log('The implementation of '+arkid.join('/')+' already exists.\n\nTo add an implementation, please provide a different name for the implementation.\n')
         return 1
       }
-    } else {
-
     }
     if(fullpath!=''){
       pathFound=true
     }
-    //
     // console.log('****   DEBUG: Values with Create input  ****')
     // console.log(curArkid)
     // console.log(arkid)
@@ -169,10 +160,6 @@ function parseInput(cmd, ark, zip, src, newpath) {
   }
   srckopath = fullpath
   koid.imp = curArkid[3] || koid.imp
-
-
-
-  // console.log('========================')
 
   if(!pathFound){
       switch(cmd){

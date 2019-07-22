@@ -39,7 +39,7 @@ async function checkKgridVersion(component) {
           console.log('  KGRID Activator: version '+manifest.kitAssets.activator.installed+'    '+activatorStatus+'\n')
         }
         if(promptUpdate) {
-          console.log('To install the latest version, run `kgrid setup -u` to update.\n')
+          console.log('To install the latest release version, run `kgrid setup -u` to update.\n')
         }
       })
       .catch(error=>{

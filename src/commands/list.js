@@ -9,19 +9,24 @@ class ListCommand extends Command {
     const {flags} = this.parse(ListCommand)
     let implOnly = flags.implementation
     let pathtype = checkPathKoioType()
-    console.log("Shelf:  "+pathtype.shelfpath )
-    console.log('----------------------------------------------------------')
     var kolist = list(pathtype.shelfpath)
-    var displayArray = []
-    kolist.forEach(function(e){
-      var obj = {}
-      obj.id = (!implOnly && e.type.includes('Implementation')) ? "   "+e.id : e.id
-      obj.path = (!implOnly && e.type.includes('Implementation')) ? "  "+e.path : e.path
-      if(!implOnly | e.type.includes('Implementation')){
-        displayArray.push(obj)
-      }
-    })
-    cli.table(displayArray,{id:{header:'ARK ID',minWidth:36}, path:{header:'FILE PATH',minWidth:30}})
+    console.log(kolist)
+    if(kolist!=null){
+      console.log("Shelf:  "+pathtype.shelfpath )
+      console.log('----------------------------------------------------------')
+      var displayArray = []
+      kolist.forEach(function(e){
+        if(e.type && e.id && e.path){
+          var obj = {}
+          obj.id = (!implOnly && e.type.includes('Implementation')) ? "   "+e.id : e.id
+          obj.path = (!implOnly && e.type.includes('Implementation')) ? "  "+e.path : e.path
+          if(!implOnly | e.type.includes('Implementation')){
+            displayArray.push(obj)
+          }
+        }
+      })
+      cli.table(displayArray,{id:{header:'ARK ID',minWidth:36}, path:{header:'FILE PATH',minWidth:30}})
+    }
   }
 }
 

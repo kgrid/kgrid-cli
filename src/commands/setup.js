@@ -7,33 +7,37 @@ const download = require('download');
 const kgridmanifest = 'https://demo.kgrid.org/kgrid/manifest.json'
 const documentations = require('../json/extradoc.json')
 var userConfig = require('../json/config.json')
-var manifest = {}
-var kgridHome = ''
+const list = require('../getall')
 
 class SetupCommand extends Command {
   async run() {
-    const {flags} = this.parse(SetupCommand)
-    let userHome = process.env.HOME || process.env.USERPROFILE || process.env.HOMEPATH ;
-    kgridHome = path.join(process.cwd(), '.kgrid')
-    if(flags.global){
-      kgridHome =  process.env.KGRID_HOME || path.join(userHome, '.kgrid');
-    }
-    // Write user config
-    let configPath = path.join(userHome,'.config')
-    let userConfigFile = path.join(configPath, 'kgrid-cli-config.json')
-    if(!fs.pathExistsSync(userConfigFile)){
-      userConfig.devDefault.naan=os.userInfo().username;
-      fs.writeJsonSync(userConfigFile, userConfig, {spaces: 4})
-    }
-    this.log("Setting up kgrid at", kgridHome);
-    fs.ensureDirSync(kgridHome)
-    let manifestFile = path.join(kgridHome, 'manifest.json');
-    if(fs.pathExistsSync(manifestFile) && !flags.update){
-      downloadAssets(manifestFile)
-    }else {
-      download(kgridmanifest, kgridHome, "{'extract':true}").then(() => {
+    var kolist = list(process.cwd())
+    if(kolist!=null){
+      var manifest = {}
+      var kgridHome = ''
+      const {flags} = this.parse(SetupCommand)
+      let userHome = process.env.HOME || process.env.USERPROFILE || process.env.HOMEPATH ;
+      kgridHome = path.join(process.cwd(), '.kgrid')
+      if(flags.global){
+        kgridHome =  process.env.KGRID_HOME || path.join(userHome, '.kgrid');
+      }
+      // Write user config
+      let configPath = path.join(userHome,'.config')
+      let userConfigFile = path.join(configPath, 'kgrid-cli-config.json')
+      if(!fs.pathExistsSync(userConfigFile)){
+        userConfig.devDefault.naan=os.userInfo().username;
+        fs.writeJsonSync(userConfigFile, userConfig, {spaces: 4})
+      }
+      console.log("Setting up kgrid at", kgridHome);
+      fs.ensureDirSync(kgridHome)
+      let manifestFile = path.join(kgridHome, 'manifest.json');
+      if(fs.pathExistsSync(manifestFile) && !flags.update){
         downloadAssets(manifestFile)
-      })
+      }else {
+        download(kgridmanifest, kgridHome, "{'extract':true}").then(() => {
+          downloadAssets(manifestFile)
+        })
+      }
     }
   }
 }

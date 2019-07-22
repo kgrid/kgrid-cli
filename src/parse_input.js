@@ -156,15 +156,19 @@ function parseInput(cmd, ark, zip, src, newpath) {
   if(!pathFound){
       switch(cmd){
         case 'upload':
-          console.log('Can not find the zip file in the directory of '+pathtype.shelfpath+'\n\nPlease package the KO first and try again.')
+          if(koid.name==''){
+            console.log('Please specify the KO to be uploaded.\n\n  Example: kgrid upload ark:/99999/myko\n\nOr\n\n  Example: kgrid upload --file 99999-myko.zip')
+          }else {
+            console.log('Can not find the zip file in the directory of '+pathtype.shelfpath+'\n\nPlease package the KO first and try again.')
+          }
           return 1
         case 'package':
           console.log('Please provide a valid ark id or a directory of KO/implementation\n')
-          console.log('  Example: kgrid package ark:/hello/world\n\nOr\n  Example: kgrid package --source myko')
+          console.log('  Example: kgrid package ark:/hello/world\n\nOr\n\n  Example: kgrid package --source myko')
           return 1
         case 'create':
           console.log('Please provide a valid name for the KO/implementation\n')
-          console.log('  Example: kgrid create myko\n\nOr\n  Example: kgrid create myko -i impl')
+          console.log('  Example: kgrid create myko\n\nOr\n\n  Example: kgrid create myko -i impl')
           return 1
       }
   }

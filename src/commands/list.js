@@ -10,7 +10,6 @@ class ListCommand extends Command {
     let implOnly = flags.implementation
     let pathtype = checkPathKoioType()
     var kolist = list(pathtype.shelfpath)
-    console.log(kolist)
     if(kolist!=null){
       console.log("Shelf:  "+pathtype.shelfpath )
       console.log('----------------------------------------------------------')
@@ -26,6 +25,8 @@ class ListCommand extends Command {
         }
       })
       cli.table(displayArray,{id:{header:'ARK ID',minWidth:36}, path:{header:'FILE PATH',minWidth:30}})
+    } else {
+      console.log('Error. Operation not permitted.\n')
     }
   }
 }

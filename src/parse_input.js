@@ -7,10 +7,10 @@ function parseInput(cmd, ark, zip, src, newpath) {
   let pathtype = checkPathKoioType()
   let curArkid = pathtype.arkid.split('/')
   let kolist = list(pathtype.shelfpath)
-  if(kolist!=null){
+  let fullpath = ''
+  let koid = {naan:'',name:'',imp:''}
+  if(kolist!=null | cmd=='play'){
     let arkid = []
-    let fullpath = ''
-    let koid = {naan:'',name:'',imp:''}
     let pathFound = false
     let pathMatch = true
 
@@ -23,26 +23,28 @@ function parseInput(cmd, ark, zip, src, newpath) {
           arkid.unshift('ark:')
         }
       }
-      if(pathtype.type!='shelf'){
-        pathMatch = pathtype.type=='ko' ?  checkInputMatch('ko', arkid, curArkid) : checkInputMatch('imp', arkid, curArkid)
-        if(pathMatch){
-          fullpath = pathtype.kopath
-          pathFound =true
+      if(cmd!='play'){
+        if(pathtype.type!='shelf'){
+          pathMatch = pathtype.type=='ko' ?  checkInputMatch('ko', arkid, curArkid) : checkInputMatch('imp', arkid, curArkid)
+          if(pathMatch){
+            fullpath = pathtype.kopath
+            pathFound =true
+          } else {
+            console.log('Current directory is the knowledge object of '+pathtype.arkid+'.\n\nPlease change to the directory for the specified KO/Implmentation and try again.\n')
+            return 1
+          }
         } else {
-          console.log('Current directory is the knowledge object of '+pathtype.arkid+'.\n\nPlease change to the directory for the specified KO/Implmentation and try again.\n')
-          return 1
+          let idkey=arkid.join('/')
+          var idIndex = kolist.findIndex(function(e){  return e.id==idkey })
+          if(idIndex!=-1){
+            fullpath = path.join(pathtype.shelfpath, kolist[idIndex].path)
+            pathFound = true
+          }else {
+            console.log(ark+' not found.\n')
+            // return 1
+          }
+          fullpath = (arkid.length==4)?path.dirname(fullpath):fullpath
         }
-      } else {
-        let idkey=arkid.join('/')
-        var idIndex = kolist.findIndex(function(e){  return e.id==idkey })
-        if(idIndex!=-1){
-          fullpath = path.join(pathtype.shelfpath, kolist[idIndex].path)
-          pathFound = true
-        }else {
-          console.log(ark+' not found.\n')
-          // return 1
-        }
-        fullpath = (arkid.length==4)?path.dirname(fullpath):fullpath
       }
     }
 
@@ -175,7 +177,13 @@ function parseInput(cmd, ark, zip, src, newpath) {
     }
     return {koid : JSON.parse(JSON.stringify(koid)), fullpath : fullpath }
   } else {
-    return 1
+    if(cmd!='play'){
+      console.log('Error. Operation not permitted.\n')
+      return 1
+    } else {
+      return {koid : JSON.parse(JSON.stringify(koid)), fullpath : fullpath }
+    }
+
   }
 }
 

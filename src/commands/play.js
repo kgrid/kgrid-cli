@@ -85,7 +85,7 @@ class PlayCommand extends Command {
           }
           return 0
         } else {
-          console.log('No implementation with ark id of ark:/'+ koid.naan+'/'+koid.name+'/'+koid.imp+' has been activated.')
+          console.log('No implementation with ark id of ark:/'+ koid.naan+'/'+koid.name+'/'+koid.imp+' has been activated.\n')
         }
       })
       .catch(function(error){

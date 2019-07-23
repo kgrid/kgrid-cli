@@ -24,16 +24,6 @@ function getall(shelf){
       }
     })
   } catch (error) {
-    if(error.code){
-      switch(error.code){
-        case 'EPERM':
-          console.log('Error. Operation not permitted.\n')
-          break;
-        default:
-          console.log('Unknown Error.')
-          break;
-      }
-    }
     return null
   }
   return kolist

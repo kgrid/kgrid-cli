@@ -8,13 +8,13 @@ const kgridmanifest = 'https://demo.kgrid.org/kgrid/manifest.json'
 const documentations = require('../json/extradoc.json')
 var userConfig = require('../json/config.json')
 const list = require('../getall')
+var manifest = {}
+var kgridHome = ''
 
 class SetupCommand extends Command {
   async run() {
     var kolist = list(process.cwd())
     if(kolist!=null){
-      var manifest = {}
-      var kgridHome = ''
       const {flags} = this.parse(SetupCommand)
       let userHome = process.env.HOME || process.env.USERPROFILE || process.env.HOMEPATH ;
       kgridHome = path.join(process.cwd(), '.kgrid')

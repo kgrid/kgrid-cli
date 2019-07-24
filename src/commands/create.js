@@ -15,6 +15,10 @@ class CreateCommand extends Command {
     let template = flags.bundled ? 'bundled' : 'simple'
     template = flags.executive? 'executive' : template
     let inputPath = { ko : args.ko || '', imp : flags.implementation || ''}
+    if( args.ko.includes('-') | args.ko.includes('/') ){
+      console.log('Please provide a valid name for your knowledge object. \n\nAlphanumeric characters only.')
+      return 1
+    }
     var parsedInput = parseInput ('create', null, null, null, inputPath)
     if(parsedInput==1){
       return 1

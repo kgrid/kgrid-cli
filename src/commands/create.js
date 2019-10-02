@@ -2,7 +2,7 @@ const {Command, flags} = require('@oclif/command')
 const inquirer = require('inquirer')
 const path= require('path')
 const fs = require('fs-extra')
-const kometaObj = require('../template/kometadata.json')
+const kometaObj = require('../template/newkometadata.json')
 const createImplementation = require('../create_implementation')
 const documentations = require('../json/extradoc.json')
 const os = require('os')
@@ -34,7 +34,8 @@ class CreateCommand extends Command {
       }
     }
     if(fs.pathExistsSync(parsedInput.fullpath)){
-      console.log('====  Add an implementation  ==== \n')
+      console.log('Knowledge Object already exists. Please choose a different name for the new object. \n')
+      return 1
     } else {
       console.log('====  Create the Knowledge Object  ==== \n')
       fs.ensureDirSync(parsedInput.fullpath)

@@ -1,16 +1,16 @@
 {
   "name": "@kgrid/cli",
   "description": "Command-line tool for Knowledge Object Developers",
-  "version": "0.3.4",
+  "version": "0.4.0",
   "author": "kgrid",
   "bin": {
     "kgrid": "./bin/run"
   },
   "bugs": "https://github.com/kgrid/kgrid-cli/issues",
   "dependencies": {
-    "@oclif/command": "^1.5.16",
-    "@oclif/config": "^1.13.2",
-    "@oclif/plugin-help": "^2.2.0",
+    "@oclif/command": "^1.5.19",
+    "@oclif/config": "^1.13.3",
+    "@oclif/plugin-help": "^2.2.1",
     "archiver": "^3.0.0",
     "axios": "^0.19.0",
     "cli-ux": "^5.3.0",

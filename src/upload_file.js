@@ -2,9 +2,8 @@ const FormData = require('form-data');
 const fs = require('fs-extra')
 const axios = require('axios')
 
-function uploadFile(type, koid, fullpath, url){
-  let endpoint = (type=='library') ? '/shelf' : '/kos'
-  let targeturl= (type=='library') ?  url || 'http://localhost:8081/' : url || 'http://localhost:8080/'
+function uploadFile(koid, fullpath, targeturl){
+  let endpoint = '/kos'
   axios({
     method: 'get',
     url: targeturl + '/info'

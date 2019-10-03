@@ -2,7 +2,7 @@ const {Command, flags} = require('@oclif/command')
 const inquirer = require('inquirer')
 const path= require('path')
 const fs = require('fs-extra')
-const kometaObj = require('../template/newkometadata.json')
+const kometaObj = require('../template/kometadata.json')
 const addKOContent = require('../add_kocontent')
 const documentations = require('../json/extradoc.json')
 const os = require('os')
@@ -14,7 +14,7 @@ class CreateCommand extends Command {
     const {args, flags} = this.parse(CreateCommand)
     let template = flags.bundled ? 'bundled' : 'simple'
     template = flags.executive? 'executive' : template
-    let inputPath = { ko : args.ko || '', imp : flags.implementation || ''}
+    let inputPath = { ko : args.ko || '', xxx : ''}
     if(args.ko){
       if( args.ko.includes('-') | args.ko.includes('/') ){
         console.log('Please provide a valid name for your knowledge object. \n\nAlphanumeric characters only.')
@@ -25,8 +25,6 @@ class CreateCommand extends Command {
     if(parsedInput==1){
       return 1
     }
-    var topMeta = JSON.parse(JSON.stringify(kometaObj))
-
     if(parsedInput.koid.naan ==''){
       parsedInput.koid.naan  = os.userInfo().username
       const userConfigJson =  userConfig()
@@ -35,6 +33,7 @@ class CreateCommand extends Command {
       }
     }
 
+    var topMeta = JSON.parse(JSON.stringify(kometaObj))
     if(fs.pathExistsSync(parsedInput.fullpath)){
       console.log('Knowledge Object already exists. Please choose a different name for the new object. \n')
       return 1
@@ -50,11 +49,10 @@ class CreateCommand extends Command {
   }
 }
 
-CreateCommand.description = `Create Knowledge Object and initialize the implementation.
+CreateCommand.description = `Create Knowledge Object.
 ${documentations.create}
 `
 CreateCommand.flags = {
-  // implementation: flags.string({char: 'i', description:"the name for the implementation"}),
   simple: flags.boolean({default: true, exclusive:['bundled', 'executive'], description:"Using the simple template"}),
   bundled: flags.boolean({default: false, exclusive:['simple', 'executive'], description:"Using the template for bundled KO"}),
   executive: flags.boolean({default: false, exclusive:['simple','bundled'], description:"Using the template for executive KO"}),

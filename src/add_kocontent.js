@@ -9,18 +9,14 @@ async function addKOContent (fullpath, koid, template) {
   var topMeta = fs.readJsonSync(path.join(fullpath,'metadata.json'))
   const serviceObj = fs.readJsonSync(path.join(sourcePath,'service.json'))
   const packageObj = fs.readJsonSync(path.join(sourcePath,'package.json'))
-  var impleService = JSON.parse(JSON.stringify(serviceObj))
+  var koService = JSON.parse(JSON.stringify(serviceObj))
   var pkgJson = JSON.parse(JSON.stringify(packageObj))
 
   fs.writeJsonSync(path.join(fullpath,'metadata.json'), topMeta, {spaces: 4})
-  // Create the folder for implementation
-  fs.ensureDirSync(fullpath)
-
-  // Update Implementation Service Specification
-  impleService.info.version = koid.imp
-  impleService.servers[0].url = '/' + koid.naan + '/' + koid.name
+  // Update Service Specification
+  koService.servers[0].url = '/' + koid.naan + '/' + koid.name
   fs.writeFileSync(path.join(fullpath,'service.yaml'),
-    yaml.safeDump(impleService, {
+    yaml.safeDump(koService, {
       styles: { '!!null': 'canonical',}, // dump null as ~
       sortKeys: false,        // sort object keys
     })
@@ -33,7 +29,7 @@ async function addKOContent (fullpath, koid, template) {
   // Create test folder for js files
   fs.ensureDirSync(path.join(fullpath, 'test'))
   fs.copySync(path.join(sourcePath,'test'), path.join(fullpath, 'test'))
-  // Add webpack.config.js for bundled implementation
+  // Add webpack.config.js for bundled KO
   if(template=='bundled') {
     fs.copySync(path.join(sourcePath,'webpack.config.js'), path.join(fullpath,'webpack.config.js'))
   }

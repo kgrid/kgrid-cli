@@ -10,8 +10,7 @@ class ListCommand extends Command {
     if(pathtype.type=='shelf'){
       var kolist = list(pathtype.shelfpath)
       if(kolist!=null){
-        console.log("Shelf:  "+pathtype.shelfpath )
-        console.log('----------------------------------------------------------')
+        console.log("Shelf:  "+pathtype.shelfpath +'\n----------------------------------------------------------')
         cli.table(kolist,{id:{header:'ARK ID',minWidth:36}, path:{header:'FILE PATH',minWidth:30}})
       }
     }
@@ -24,5 +23,4 @@ class ListCommand extends Command {
 ListCommand.description = `List all Knowledge Objects on the shelf.
 ${documentations.list}
 `
-
 module.exports = ListCommand

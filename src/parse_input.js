@@ -25,7 +25,7 @@ function parseInput(cmd, ark, zip, src, newpath) {
       }
       if(cmd!='play'){
         if(pathtype.type!='shelf'){  // pathtype.type =='ko'
-          pathMatch = checkInputMatch('ko', arkid, curArkid)
+          pathMatch = checkInputMatch(arkid, curArkid)
           if(pathMatch){
             fullpath = pathtype.kopath
             pathFound =true
@@ -41,9 +41,7 @@ function parseInput(cmd, ark, zip, src, newpath) {
             pathFound = true
           }else {
             console.log(ark+' not found.\n')
-            // return 1
           }
-          // fullpath = (arkid.length==4)?path.dirname(fullpath):fullpath
         }
       }
     }
@@ -56,7 +54,7 @@ function parseInput(cmd, ark, zip, src, newpath) {
       if(dirIndex!=-1){
         arkid = kolist[dirIndex].id.split('/')
         if(pathtype.type!='shelf'){ //pathtype.type=='ko'
-          pathMatch =  checkInputMatch('ko', arkid, curArkid)
+          pathMatch =  checkInputMatch(arkid, curArkid)
           if(pathMatch){
             fullpath = pathtype.kopath
             pathFound =true
@@ -66,7 +64,6 @@ function parseInput(cmd, ark, zip, src, newpath) {
           }
         } else {
           fullpath = path.join(pathtype.shelfpath,kolist[dirIndex].path)
-          // fullpath = (arkid.length==4)?path.dirname(fullpath):fullpath
           pathFound =true
         }
       }else {
@@ -130,6 +127,7 @@ function parseInput(cmd, ark, zip, src, newpath) {
         pathFound=(curArkid.length>=2)
       }
     }
+
     if (cmd=='upload') {
       let fn = koid.naan+'-'+koid.name
       fullpath = path.join(pathtype.shelfpath, fn +'.zip')
@@ -139,23 +137,21 @@ function parseInput(cmd, ark, zip, src, newpath) {
     }
 
     if(!pathFound){
-        switch(cmd){
-          case 'upload':
-            if(koid.name==''){
-              console.log('Please specify the KO to be uploaded.\n\n  Example: kgrid upload ark:/99999/myko\n\nOr\n\n  Example: kgrid upload --file 99999-myko.zip\n')
-            }else {
-              console.log('Can not find the zip file in the directory of '+pathtype.shelfpath+'\n\nPlease package the KO first and try again.\n')
-            }
-            return 1
-          case 'package':
-            console.log('Please provide a valid ark id or a directory of KO\n')
-            console.log('  Example: kgrid package ark:/hello/world\n\nOr\n\n  Example: kgrid package --source myko\n')
-            return 1
-          case 'create':
-            console.log('Please provide a valid name for the KO\n')
-            console.log('  Example: kgrid create myko\n\nOr\n\n  Example: kgrid create myko\n')
-            return 1
-        }
+      switch(cmd){
+        case 'upload':
+          if(koid.name==''){
+            console.log('Please specify the KO to be uploaded.\n\n  Example: kgrid upload ark:/99999/myko\n\nOr\n\n  Example: kgrid upload --file 99999-myko.zip\n')
+          }else {
+            console.log('Can not find the zip file in the directory of '+pathtype.shelfpath+'\n\nPlease package the KO first and try again.\n')
+          }
+          return 1
+        case 'package':
+          console.log('Please provide a valid ark id or a directory of KO\n\n  Example: kgrid package ark:/hello/world\n\nOr\n\n  Example: kgrid package --source myko\n')
+          return 1
+        case 'create':
+          console.log('Please provide a valid name for the KO\n\n  Example: kgrid create myko')
+          return 1
+      }
     }
     return {koid : JSON.parse(JSON.stringify(koid)), fullpath : fullpath }
   } else {
@@ -165,16 +161,11 @@ function parseInput(cmd, ark, zip, src, newpath) {
     } else {
       return {koid : JSON.parse(JSON.stringify(koid)), fullpath : fullpath }
     }
-
   }
 }
 
-function checkInputMatch(type, arkid, curArkid){
-  let bool = (arkid.length>=2 && curArkid.length>=2)
-  if(bool){
-    bool = bool && (arkid[1]==curArkid[1]) && (arkid[2]==curArkid[2])
-  }
-  return bool
+function checkInputMatch(arkid, curArkid){
+  return (arkid.length>=2 && curArkid.length>=2) ? (arkid[1]==curArkid[1]) && (arkid[2]==curArkid[2]) : false
 }
 
 module.exports =  parseInput

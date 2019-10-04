@@ -18,16 +18,13 @@ async function addKOContent (fullpath, koid, template) {
   fs.writeFileSync(path.join(fullpath,'service.yaml'),
     yaml.safeDump(koService, {
       styles: { '!!null': 'canonical',}, // dump null as ~
-      sortKeys: false,        // sort object keys
+      sortKeys: false,                   // sort object keys
     })
   )
-  // Update package.JSON
-  fs.writeJsonSync(path.join(fullpath,'package.json'), pkgJson, {spaces: 4})
-  // Create src folder for js files
-  fs.ensureDirSync(path.join(fullpath, 'src'))
+  fs.writeJsonSync(path.join(fullpath,'package.json'), pkgJson, {spaces: 4})   // Update package.JSON
+  fs.ensureDirSync(path.join(fullpath, 'src'))    // Create src folder for js files
   fs.copySync(path.join(sourcePath,'src'), path.join(fullpath, 'src'))
-  // Create test folder for js files
-  fs.ensureDirSync(path.join(fullpath, 'test'))
+  fs.ensureDirSync(path.join(fullpath, 'test'))    // Create test folder for js files
   fs.copySync(path.join(sourcePath,'test'), path.join(fullpath, 'test'))
   // Add webpack.config.js for bundled KO
   if(template=='bundled') {

@@ -20,8 +20,7 @@ function runKgrid(cmd) {
   if(port!=''){
     cmdstring = cmdstring + ' --server.port='+port
   }
-  console.log(cmdstring)
-  console.log("Starting KGrid "+cmd.name+"...")
+  console.log(cmdstring+"\n\nStarting KGrid "+cmd.name+"...")
   shelljs.exec(cmdstring, {async:true})
 }
 

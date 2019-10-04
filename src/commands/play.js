@@ -23,57 +23,48 @@ class PlayCommand extends Command {
       let openurl = flags.open
       let targeturl='https://editor.swagger.io/'
       let ark = args.ark
-      let koid = {naan:'',name:'',imp:''}
+      let koid = {naan:'',name:''}
       var parsedinput = parseInput ('play', ark, null, null)
       if(parsedinput == 1){
         return 1
       }
       koid=JSON.parse(JSON.stringify(parsedinput.koid))
-      // Retrieve the implementation list for the KOs on the activator shelf
-      let imples = []
-      let targetimple =''
+      // Retrieve the activated KO list from the activator
+      let activatedkos = []
+      let targetko =''
       axios({
         method: 'get',
         url: url+'/kos/'
       })
       .then(async function (response) {
-        imples = []
+        activatedkos = []
         Object.keys(response.data).forEach(function(e){
-          let kometa = response.data[e]
-          kometa.hasImplementation.forEach(function(ie){
-            if(koid.imp!=''){
-              if(ie==(koid.naan+'-'+koid.name+'/'+koid.imp)){
-                imples.push('ark:/'+ie.replace('-','/'))
-              }
-            } else {
-              if(koid.name!=''){
-                if(ie.includes(koid.naan+'-'+koid.name)){
-                  imples.push('ark:/'+ie.replace('-','/'))
-                }
-              } else {
-                imples.push('ark:/'+ie.replace('-','/'))
-              }
+          if(koid.name!=''){
+            if(e.includes(koid.naan+'/'+koid.name)){
+              activatedkos.push(e)
             }
-          })
+          }else {
+            activatedkos.push(e)
+          }
         });
-        if(imples.length!=0){
-          if(koid.imp==''){
+        if(activatedkos.length!=0){
+          if(koid.name==''){
             let responses = await inquirer.prompt([
                 {
                   type: 'list',
-                  name: 'implementation',
-                  message: 'Please select an implementation: ',
+                  name: 'selectedko',
+                  message: 'Please select an KO: ',
                   default: 0,
                   scroll: false,
-                  choices: imples,
-                  pageSize: Math.min(15, imples.length)
+                  choices: activatedkos,
+                  pageSize: Math.min(15, activatedkos.length)
                 }
               ])
-            targetimple = responses.implementation.replace('ark:/','')
+            targetko = responses.selectedko.replace('ark:/','')
           } else {
-            targetimple= koid.naan+'/'+koid.name+'/'+koid.imp
+            targetko= koid.naan+'/'+koid.name
           }
-          targeturl = `https://editor.swagger.io/?url=${url}/kos/${targetimple}/service`
+          targeturl = `https://editor.swagger.io/?url=${url}/kos/${targetko}/service`
           console.log('\nOpen the URL in your browser:\n')
           console.log('    '+targeturl)
           if(openurl){
@@ -85,7 +76,7 @@ class PlayCommand extends Command {
           }
           return 0
         } else {
-          console.log('No implementation with ark id of ark:/'+ koid.naan+'/'+koid.name+'/'+koid.imp+' has been activated.\n')
+          console.log('No KO with ark id of ark:/'+ koid.naan+'/'+koid.name+' has been activated.\n')
         }
       })
       .catch(function(error){
@@ -94,7 +85,7 @@ class PlayCommand extends Command {
   }
 }
 
-PlayCommand.description = `Try out a Knowledge Object implementation using Swagger Editor.
+PlayCommand.description = `Try out a Knowledge Object using Swagger Editor.
 ${documentations.play}
 `
 PlayCommand.flags = {

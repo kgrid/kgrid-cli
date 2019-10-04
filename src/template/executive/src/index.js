@@ -1,6 +1,6 @@
 function process(inputs){
   var names = inputs.names;
-  var executor = context.getExecutor("99999-helloworld/implA/welcome")
+  var executor = context.getExecutor("99999-helloworld/welcome")
   var results = {}
   names.forEach(function(e){
     var obj = {}

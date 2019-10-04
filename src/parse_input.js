@@ -8,7 +8,7 @@ function parseInput(cmd, ark, zip, src, newpath) {
   let curArkid = pathtype.arkid.split('/')
   let kolist = list(pathtype.shelfpath)
   let fullpath = ''
-  let koid = {naan:'',name:'',imp:''}
+  let koid = {naan:'',name:''}
   if(kolist!=null | cmd=='play'){
     let arkid = []
     let pathFound = false
@@ -24,16 +24,16 @@ function parseInput(cmd, ark, zip, src, newpath) {
         }
       }
       if(cmd!='play'){
-        if(pathtype.type!='shelf'){
-          pathMatch = pathtype.type=='ko' ?  checkInputMatch('ko', arkid, curArkid) : checkInputMatch('imp', arkid, curArkid)
+        if(pathtype.type!='shelf'){  // pathtype.type =='ko'
+          pathMatch = checkInputMatch('ko', arkid, curArkid)
           if(pathMatch){
             fullpath = pathtype.kopath
             pathFound =true
           } else {
-            console.log('Current directory is the knowledge object of '+pathtype.arkid+'.\n\nPlease change to the directory for the specified KO/Implmentation and try again.\n')
+            console.log('Current directory is the knowledge object of '+pathtype.arkid+'.\n\nPlease change to the directory for the specified KO and try again.\n')
             return 1
           }
-        } else {
+        } else {  // pathtype.type =='shelf'
           let idkey=arkid.join('/')
           var idIndex = kolist.findIndex(function(e){  return e.id==idkey })
           if(idIndex!=-1){
@@ -43,7 +43,7 @@ function parseInput(cmd, ark, zip, src, newpath) {
             console.log(ark+' not found.\n')
             // return 1
           }
-          fullpath = (arkid.length==4)?path.dirname(fullpath):fullpath
+          // fullpath = (arkid.length==4)?path.dirname(fullpath):fullpath
         }
       }
     }
@@ -55,18 +55,18 @@ function parseInput(cmd, ark, zip, src, newpath) {
       var dirIndex = kolist.findIndex(function(e){ return path.join(pathtype.shelfpath, src)===path.join(pathtype.shelfpath,e.path)  })
       if(dirIndex!=-1){
         arkid = kolist[dirIndex].id.split('/')
-        if(pathtype.type!='shelf'){
-          pathMatch = pathtype.type=='ko' ?  checkInputMatch('ko', arkid, curArkid) : checkInputMatch('imp', arkid, curArkid)
+        if(pathtype.type!='shelf'){ //pathtype.type=='ko'
+          pathMatch =  checkInputMatch('ko', arkid, curArkid)
           if(pathMatch){
             fullpath = pathtype.kopath
             pathFound =true
           } else {
-            console.log('Current directory is the knowledge object of '+pathtype.arkid+'.\n\nPlease change to the directory for the specified KO/Implmentation and try again.\n')
+            console.log('Current directory is the knowledge object of '+pathtype.arkid+'.\n\nPlease change to the directory for the specified KO and try again.\n')
             return 1
           }
         } else {
           fullpath = path.join(pathtype.shelfpath,kolist[dirIndex].path)
-          fullpath = (arkid.length==4)?path.dirname(fullpath):fullpath
+          // fullpath = (arkid.length==4)?path.dirname(fullpath):fullpath
           pathFound =true
         }
       }else {
@@ -94,18 +94,10 @@ function parseInput(cmd, ark, zip, src, newpath) {
       }
     }
 
-    if(newpath) { // For create  new implementation
-      if(pathtype.type=='implementation'){
+    if(newpath) { // For create  new KO
+      if(pathtype.type=='ko') {
         console.log('Current directory is the knowledge object of '+pathtype.arkid+'.\n\nPlease change to the shelf level and try again.\n')
         return 1
-      }
-      if(pathtype.type=='ko') {
-        if(newpath.ko!=''){
-          if(path.join(pathtype.shelfpath, newpath.ko)!=pathtype.kopath) {
-            console.log('Current directory is the knowledge object of '+pathtype.arkid+'.\n\nPlease change to the shelf level and try again.\n')
-            return 1
-          }
-        }
       }
       arkid =[]
       fullpath = pathtype.kopath
@@ -119,13 +111,6 @@ function parseInput(cmd, ark, zip, src, newpath) {
           arkid.push(curArkid[2])
         }
       }
-      if(newpath.imp){
-        arkid.push(newpath.imp)
-        if(fs.pathExistsSync(path.join(fullpath, newpath.imp))) {
-          console.log('The implementation of '+arkid.join('/')+' already exists.\n\nTo add an implementation, please provide a different name for the implementation.\n')
-          return 1
-        }
-      }
       if(fullpath!=''){
         pathFound=true
       }
@@ -134,22 +119,19 @@ function parseInput(cmd, ark, zip, src, newpath) {
     if(arkid.length!=0){
       koid.naan=arkid[1] ||  ''
       koid.name=arkid[2] ||  ''
-      koid.imp=arkid[3] ||  ''
     } else {
       koid.naan=curArkid[1] || ''
       koid.name=curArkid[2] || ''
-      koid.imp=curArkid[3] || ''
       fullpath = pathtype.kopath
       pathMatch=true
       if(cmd=='create'){
-        pathFound=(curArkid.length>3)
+        pathFound=(curArkid.length>2)
       } else {
-        pathFound=(curArkid.length>=3)
+        pathFound=(curArkid.length>=2)
       }
     }
-    koid.imp = curArkid[3] || koid.imp
     if (cmd=='upload') {
-      let fn = (koid.imp!='') ? koid.naan+'-'+koid.name +'-'+koid.imp :koid.naan+'-'+koid.name
+      let fn = koid.naan+'-'+koid.name
       fullpath = path.join(pathtype.shelfpath, fn +'.zip')
       if(!fs.pathExistsSync(fullpath)){
       pathFound =false
@@ -166,12 +148,12 @@ function parseInput(cmd, ark, zip, src, newpath) {
             }
             return 1
           case 'package':
-            console.log('Please provide a valid ark id or a directory of KO/implementation\n')
+            console.log('Please provide a valid ark id or a directory of KO\n')
             console.log('  Example: kgrid package ark:/hello/world\n\nOr\n\n  Example: kgrid package --source myko\n')
             return 1
           case 'create':
-            console.log('Please provide a valid name for the KO/implementation\n')
-            console.log('  Example: kgrid create myko\n\nOr\n\n  Example: kgrid create myko -i impl\n')
+            console.log('Please provide a valid name for the KO\n')
+            console.log('  Example: kgrid create myko\n\nOr\n\n  Example: kgrid create myko\n')
             return 1
         }
     }
@@ -188,12 +170,9 @@ function parseInput(cmd, ark, zip, src, newpath) {
 }
 
 function checkInputMatch(type, arkid, curArkid){
-  let bool = (arkid.length>=3 && curArkid.length>=3)
+  let bool = (arkid.length>=2 && curArkid.length>=2)
   if(bool){
     bool = bool && (arkid[1]==curArkid[1]) && (arkid[2]==curArkid[2])
-  }
-  if(bool && type=='imp' && arkid.length==4){
-    bool = bool && (arkid[3]==curArkid[3])
   }
   return bool
 }

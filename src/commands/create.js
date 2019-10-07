@@ -12,7 +12,7 @@ const parseInput = require('../parse_input')
 class CreateCommand extends Command {
   async run() {
     const {args, flags} = this.parse(CreateCommand)
-    let template = flags.bundled ? 'bundled' : 'simple'
+    let template = flags.bundled ? 'bundled' : 'nodejs'
     template = flags.executive? 'executive' : template
     let inputPath = { ko : args.ko || '', xxx : ''}
     if(args.ko){

@@ -85,9 +85,7 @@ function parseInput(cmd, ark, zip, src, newpath) {
           arkid = path.basename(zip, '.zip').split('-')
           arkid.unshift('ark:')
           pathFound = true
-        } else {
-
-        }
+        } 
       }
     }
 

@@ -3,27 +3,22 @@ const path =require('path')
 
 function checkPathKoioType () {
   var pathtype = {
-    type: '',
-    shelfpath: '',
+    type: 'shelf',
+    shelfpath: process.cwd(),
     kopath: '',
     arkid: ''
   }
-  let koiotype = ''
   if (fs.existsSync('metadata.json')) {
     let meta = fs.readJsonSync('metadata.json')
     if(meta['@type']){
-      koiotype = meta['@type'].replace('koio:','').toLowerCase()
+      if(meta['@type'].replace('koio:','').toLowerCase()=='knowledgeobject') {
+        pathtype.kopath = process.cwd()
+        pathtype.shelfpath = path.dirname(pathtype.kopath)
+        pathtype.type = 'ko'
+      }
     }
     pathtype.arkid = meta.identifier
   }
-  if(koiotype=='knowledgeobject') {
-      pathtype.kopath = process.cwd()
-      pathtype.shelfpath = path.dirname(pathtype.kopath)
-      pathtype.type = 'ko'
-    } else {
-      pathtype.shelfpath = process.cwd()
-      pathtype.type = 'shelf'
-    }
   return pathtype
 }
 

@@ -21,7 +21,7 @@ async function addKOContent (fullpath, koid, template) {
       sortKeys: false,                   // sort object keys
     })
   )
-  pkgJson.name=koid.naan + '-' + koid.name
+  pkgJson.name='@kgrid/'+ koid.naan + '-' + koid.name
   fs.writeJsonSync(path.join(fullpath,'package.json'), pkgJson, {spaces: 4})   // Update package.JSON
   fs.ensureDirSync(path.join(fullpath, 'src'))    // Create src folder for js files
   fs.copySync(path.join(sourcePath,'src'), path.join(fullpath, 'src'))

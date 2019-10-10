@@ -48,10 +48,7 @@ USAGE
   $ kgrid create [KO]
 
 OPTIONS
-  -h, --help   show CLI help
-  --bundled    Using the template for bundled KO
-  --executive  Using the template for executive KO
-  --simple     Using the simple template
+  -h, --help  show CLI help
 
 DESCRIPTION
   The create command requires a name for the knowledge object.

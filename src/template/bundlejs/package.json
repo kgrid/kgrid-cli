@@ -1,8 +1,8 @@
 {
   "name": "score-calc",
-  "version": "0.3.0",
+  "version": "1.0",
   "description": "Ten-year Fatal Cardiovascular Risk Calculation",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
     "test": "jest",
     "build": "webpack --mode development --config webpack.config.js",

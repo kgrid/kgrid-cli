@@ -1,21 +1,21 @@
 {
-  "openapi": "3.0.2",
+  "openapi": "3.0.0",
   "info": {
-    "version": "0.1",
-    "title": "Hello, World",
-    "description": "hello world"
+    "version": "1.0",
+    "title": "SCORE risk calculation",
+    "description": "SCORE risk calculation"
   },
   "servers": [
     {
-      "url": "/hello/world/v0.1/",
-      "description": "Hello world"
+      "url": "/score/calc/v1.0",
+      "description": "SCORE risk calculation."
     }
   ],
   "paths": {
-    "/welcome": {
+    "/score": {
       "post": {
-        "description": "Welcome.",
-        "operationId": "welcome",
+        "description": "SCORE risk calculation.",
+        "operationId": "cvdriskscore",
         "requestBody": {
           "description": "inputs",
           "required": true,
@@ -52,7 +52,7 @@
         "x-kgrid-activation": {
           "artifact": "src/index.js",
           "adapter": "JAVASCRIPT",
-          "entry": "welcome"
+          "entry": "score"
         }
       }
     }
@@ -61,12 +61,45 @@
     "schemas": {
       "input": {
         "required": [
-          "name"
+          "age",
+          "gender",
+          "risk",
+          "sbp",
+          "cholesterol",
+          "smoker"
         ],
         "properties": {
-          "name": {
+          "age": {
+            "type": "number",
+            "example": 48
+          },
+          "gender": {
             "type": "string",
-            "example": "Bob"
+            "enum": [
+              "Male",
+              "Female"
+            ],
+            "example": "Female"
+          },
+          "risk": {
+            "type": "string",
+            "enum": [
+              "high",
+              "low"
+            ],
+            "example": "low"
+          },
+          "sbp": {
+            "type": "number",
+            "example": 120
+          },
+          "cholesterol": {
+            "type": "number",
+            "example": 8
+          },
+          "smoker": {
+            "type": "boolean",
+            "example": false
           }
         }
       },

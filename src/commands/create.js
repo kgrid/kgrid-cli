@@ -12,8 +12,8 @@ const parseInput = require('../parse_input')
 class CreateCommand extends Command {
   async run() {
     const {args, flags} = this.parse(CreateCommand)
-    let template = flags.bundled ? 'bundled' : 'nodejs'
-    template = flags.executive? 'executive' : template
+    let template = 'bundlejs'
+    let runtime = 'NodeJS'
     let inputPath = { ko : args.ko || '', xxx : ''}
     if(args.ko){
       if( args.ko.includes('-') | args.ko.includes('/') ){
@@ -38,14 +38,45 @@ class CreateCommand extends Command {
       console.log('Knowledge Object already exists. Please choose a different name for the new object. \n')
       return 1
     } else {
-      console.log('Creating the Knowledge Object ... \n')
+      let responses = await inquirer.prompt([
+          {
+            type: 'list',
+            name: 'selectedRuntime',
+            message: 'Please select the target runtime: ',
+            default: 0,
+            scroll: false,
+            choices: ['NodeJS','Nashorn','GraalVM']
+          }
+        ])
+      runtime = responses.selectedRuntime
+      if(runtime=='Nashorn' | runtime=='GraalVM'){
+        console.log()
+        responses = await inquirer.prompt([
+            {
+              type: 'list',
+              name: 'selectedTemplate',
+              message: 'Please select the template type: ',
+              default: 0,
+              scroll: false,
+              choices: ['Simple','Bundled']
+            }
+          ])
+        template = responses.selectedTemplate == 'Simple' ? 'simplejs':'bundlejs'
+      }
+      console.log()
+      process.stdout.write('Creating the Knowledge Object ...\r')
       fs.ensureDirSync(parsedInput.fullpath)
       topMeta.identifier = 'ark:/' + parsedInput.koid.naan + '/' + parsedInput.koid.name
       topMeta['@id'] = parsedInput.koid.naan  + '-' + parsedInput.koid.name
       fs.writeJsonSync(path.join(parsedInput.fullpath,'metadata.json'), topMeta, {spaces: 4})
     }
-    var arkid = await addKOContent(parsedInput.fullpath, parsedInput.koid, template)
-    console.log('\nThe knowledge object '+ arkid+' is ready.')
+    var arkid = await addKOContent(parsedInput.fullpath, parsedInput.koid, template, runtime)
+    process.stdout.write('The knowledge object '+ arkid+' has been created.\n')
+    if(template=='bundlejs'&&runtime!='NodeJS'){
+      console.log('\nPlease go to the folder by `cd '+args.ko+ '`.\n\nRun `npm install` and `npm run build` before deploying to the activator.')
+    }else {
+      console.log('\nPlease go to the folder by `cd '+args.ko+ '`.\n\nRun `npm install` before deploying to the activator.')
+    }
   }
 }
 
@@ -53,9 +84,9 @@ CreateCommand.description = `Create Knowledge Object.
 ${documentations.create}
 `
 CreateCommand.flags = {
-  simple: flags.boolean({default: true, exclusive:['bundled', 'executive'], description:"Using the simple template"}),
-  bundled: flags.boolean({default: false, exclusive:['simple', 'executive'], description:"Using the template for bundled KO"}),
-  executive: flags.boolean({default: false, exclusive:['simple','bundled'], description:"Using the template for executive KO"}),
+  // simple: flags.boolean({default: true, exclusive:['bundled', 'executive'], description:"Using the simple template"}),
+  // bundled: flags.boolean({default: false, exclusive:['simple', 'executive'], description:"Using the template for bundled KO"}),
+  // executive: flags.boolean({default: false, exclusive:['simple','bundled'], description:"Using the template for executive KO"}),
   help: flags.help({char:'h'})
 }
 CreateCommand.args = [

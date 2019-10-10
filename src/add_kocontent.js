@@ -1,9 +1,10 @@
 const fs = require('fs-extra')
 const yaml = require('js-yaml')
 const path =require('path')
+const jp = require('jsonpath')
 const source = require.resolve('../src/template/kometadata.json')
 
-async function addKOContent (fullpath, koid, template) {
+async function addKOContent (fullpath, koid, template, runtime) {
   let shelf = path.dirname(fullpath)
   var sourcePath = path.join(path.dirname(source), template)
   var topMeta = fs.readJsonSync(path.join(fullpath,'metadata.json'))
@@ -14,7 +15,13 @@ async function addKOContent (fullpath, koid, template) {
 
   fs.writeJsonSync(path.join(fullpath,'metadata.json'), topMeta, {spaces: 4})
   // Update Service Specification
+
   koService.servers[0].url = '/' + koid.naan + '/' + koid.name
+  if(template=='bundlejs'&&runtime!='NodeJS'){
+    let artifacts = jp.apply(koService,'$..artifact',function(value){
+      return 'dist/main.js'
+    })
+  }
   fs.writeFileSync(path.join(fullpath,'service.yaml'),
     yaml.safeDump(koService, {
       styles: { '!!null': 'canonical',}, // dump null as ~
@@ -28,8 +35,12 @@ async function addKOContent (fullpath, koid, template) {
   fs.ensureDirSync(path.join(fullpath, 'test'))    // Create test folder for js files
   fs.copySync(path.join(sourcePath,'test'), path.join(fullpath, 'test'))
   // Add webpack.config.js for bundled KO
-  if(template=='bundled') {
-    fs.copySync(path.join(sourcePath,'webpack.config.js'), path.join(fullpath,'webpack.config.js'))
+  if(runtime=='NodeJS') {
+    fs.copySync(path.join(sourcePath,'webpack.config.node'), path.join(fullpath,'webpack.config.js'))
+  } else {
+    if(template=='bundlejs'){
+      fs.copySync(path.join(sourcePath,'webpack.config.v8'), path.join(fullpath,'webpack.config.js'))
+    }
   }
   return koid.naan + '/' + koid.name
 }

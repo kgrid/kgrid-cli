@@ -60,13 +60,9 @@ DESCRIPTION
      A development ARK ID will be assigned {username}/{ko}.
      The ARK ID is unique for the KO.
 
-  KO TEMPLATE TYPE:
+  KO TEMPLATE:
      The KO will be initialized using one of the templates.
-     The template can be specified using the flags:
-       --simple    for the template with simple JAVASCRIPT file as payload
-       --bundled   for the template with JAVASCRIPT file(s); the payload will require bundling
-       --executive for the template with simple JAVASCRIPT file as payload calling other KOs
-     By default, the simple template will be used
+     The template is determined by the user's choice of the target runtime and template type.
 ```
 
 _See code: [src\commands\create.js](https://github.com/kgrid/kgrid-cli/blob/v0.4.0/src\commands\create.js)_

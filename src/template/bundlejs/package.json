@@ -1,6 +1,6 @@
 {
   "name": "score-calc",
-  "version": "1.0",
+  "version": "1.0.0",
   "description": "Ten-year Fatal Cardiovascular Risk Calculation",
   "main": "src/index.js",
   "scripts": {

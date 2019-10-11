@@ -58,10 +58,20 @@ class CreateCommand extends Command {
               message: 'Please select the template type: ',
               default: 0,
               scroll: false,
-              choices: ['Simple','Bundled']
+              choices: ['Simple','Bundled','Executive']
             }
           ])
-        template = responses.selectedTemplate == 'Simple' ? 'simplejs':'bundlejs'
+          switch(responses.selectedTemplate){
+            case 'Simple':
+              template = 'simplejs'
+              break
+            case 'Bundled':
+              template = 'bundlejs'
+              break
+            case 'Executive':
+              template = 'executive'
+              break
+          }
       }
       console.log()
       process.stdout.write('Creating the Knowledge Object ...\r')
@@ -84,9 +94,6 @@ CreateCommand.description = `Create Knowledge Object.
 ${documentations.create}
 `
 CreateCommand.flags = {
-  // simple: flags.boolean({default: true, exclusive:['bundled', 'executive'], description:"Using the simple template"}),
-  // bundled: flags.boolean({default: false, exclusive:['simple', 'executive'], description:"Using the template for bundled KO"}),
-  // executive: flags.boolean({default: false, exclusive:['simple','bundled'], description:"Using the template for executive KO"}),
   help: flags.help({char:'h'})
 }
 CreateCommand.args = [

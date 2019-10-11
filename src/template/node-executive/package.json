@@ -12,6 +12,7 @@
   "devDependencies": {
     "jest": "^24.9.0"
   },
-  "dependencies": {
-  }
+    "dependencies": {
+        "@kgrid/99999-helloworld": "file:lib/kgrid-99999-helloworld-1.0.0.tgz"
+    }
 }

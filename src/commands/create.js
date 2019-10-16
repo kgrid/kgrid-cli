@@ -45,7 +45,7 @@ class CreateCommand extends Command {
             message: 'Please select the target runtime: ',
             default: 0,
             scroll: false,
-            choices: ['NodeJS','Nashorn','GraalVM']
+            choices: ['Nashorn','GraalVM','NodeJS']
           }
         ])
       runtime = responses.selectedRuntime

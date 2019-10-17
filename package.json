@@ -53,7 +53,7 @@
     "oclif",
     "kgrid"
   ],
-  "license": "MIT",
+  "license": "GPL-3.0-or-later",
   "main": "src/index.js",
   "oclif": {
     "commands": "./src/commands",

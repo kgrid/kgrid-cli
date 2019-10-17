@@ -22,7 +22,7 @@ class PackageCommand extends Command {
     let arkId = topMeta["@id"];
     let ver = topMeta.version
     let destinationName = parsedInput.koid.naan + '-'+ parsedInput.koid.name+ '-'+ver+'.zip'
-    let tmpko = path.join(path.dirname(parsedInput.fullpath), 'tmp',arkId)
+    let tmpko = path.join(path.dirname(parsedInput.fullpath), 'tmp',parsedInput.koid.naan + '-'+ parsedInput.koid.name+ '-'+ver)
     fs.ensureDirSync(tmpko)
     if(dest) {
       fs.ensureDirSync(dest)

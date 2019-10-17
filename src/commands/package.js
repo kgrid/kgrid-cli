@@ -20,7 +20,8 @@ class PackageCommand extends Command {
     let checkSpec = false;
     let topMeta = fs.readJsonSync(path.join(parsedInput.fullpath,'metadata.json'));
     let arkId = topMeta["@id"];
-    let destinationName = parsedInput.koid.naan + '-'+ parsedInput.koid.name+'.zip'
+    let ver = topMeta.version
+    let destinationName = parsedInput.koid.naan + '-'+ parsedInput.koid.name+ '-'+ver+'.zip'
     let tmpko = path.join(path.dirname(parsedInput.fullpath), 'tmp',arkId)
     fs.ensureDirSync(tmpko)
     if(dest) {

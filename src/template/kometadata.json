@@ -9,6 +9,6 @@
   "keywords": ["knowledge", "object"],
   "hasServiceSpecification": "service.yaml",
   "hasDeploymentSpecification": "service.yaml",
-  "hasPayload": "src/index.js",
+  "hasPayload": [],
   "@context" : ["http://kgrid.org/koio/contexts/knowledgeobject.jsonld" ]
 }

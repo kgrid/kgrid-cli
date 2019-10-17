@@ -12,15 +12,18 @@ async function addKOContent (fullpath, koid, template, runtime) {
   const packageObj = fs.readJsonSync(path.join(sourcePath,'package.json'))
   var koService = JSON.parse(JSON.stringify(serviceObj))
   var pkgJson = JSON.parse(JSON.stringify(packageObj))
-
+  let artifact="src/index.js"
+  if(template=='bundlejs'&&runtime!='NodeJS'){
+    artifact="dist/main.js"
+  }
+  topMeta.hasPayload.push(artifact)
   fs.writeJsonSync(path.join(fullpath,'metadata.json'), topMeta, {spaces: 4})
   // Update Service Specification
-
+  let artifacts = jp.apply(koService,'$..artifact',function(value){
+    return artifact
+  })
   koService.servers[0].url = '/' + koid.naan + '/' + koid.name
   if(template=='bundlejs'&&runtime!='NodeJS'){
-    let artifacts = jp.apply(koService,'$..artifact',function(value){
-      return 'dist/main.js'
-    })
   }
   fs.writeFileSync(path.join(fullpath,'service.yaml'),
     yaml.safeDump(koService, {

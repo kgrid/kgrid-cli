@@ -12,8 +12,8 @@ const parseInput = require('../parse_input')
 class CreateCommand extends Command {
   async run() {
     const {args, flags} = this.parse(CreateCommand)
-    let template = 'bundlejs'
-    let runtime = 'NodeJS'
+    let template = 'simplejs'
+    let runtime = 'Nashorn'
     let inputPath = { ko : args.ko || '', xxx : ''}
     if(args.ko){
       if( args.ko.includes('-') | args.ko.includes('/') ){
@@ -22,12 +22,12 @@ class CreateCommand extends Command {
       }
     }
     var parsedInput = parseInput ('create', null, null, null, inputPath)
+    const userConfigJson =  userConfig()
     if(parsedInput==1){
       return 1
     }
     if(parsedInput.koid.naan ==''){
       parsedInput.koid.naan  = os.userInfo().username
-      const userConfigJson =  userConfig()
       if(userConfigJson){
         parsedInput.koid.naan  = userConfigJson.devDefault.naan
       }
@@ -38,19 +38,24 @@ class CreateCommand extends Command {
       console.log('Knowledge Object already exists. Please choose a different name for the new object. \n')
       return 1
     } else {
-      let responses = await inquirer.prompt([
-          {
-            type: 'list',
-            name: 'selectedRuntime',
-            message: 'Please select the target runtime: ',
-            default: 0,
-            scroll: false,
-            choices: ['Nashorn','GraalVM','NodeJS']
-          }
-        ])
-      runtime = responses.selectedRuntime
+      let responses
+      if(userConfigJson){
+        if(userConfigJson.multiRuntime){
+          responses = await inquirer.prompt([
+              {
+                type: 'list',
+                name: 'selectedRuntime',
+                message: 'Please select the target runtime: ',
+                default: 0,
+                scroll: false,
+                choices: ['Nashorn','GraalVM','NodeJS']
+              }
+            ])
+          runtime = responses.selectedRuntime
+          console.log()
+        }
+      }
       if(runtime=='Nashorn' | runtime=='GraalVM'){
-        console.log()
         responses = await inquirer.prompt([
             {
               type: 'list',
@@ -72,8 +77,10 @@ class CreateCommand extends Command {
               template = 'executive'
               break
           }
+          console.log()
+      } else {
+        template = 'bundlejs'
       }
-      console.log()
       process.stdout.write('Creating the Knowledge Object ...\r')
       fs.ensureDirSync(parsedInput.fullpath)
       topMeta.identifier = 'ark:/' + parsedInput.koid.naan + '/' + parsedInput.koid.name

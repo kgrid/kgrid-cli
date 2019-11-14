@@ -37,11 +37,21 @@ class PackageCommand extends Command {
         let specPath = path.join(parsedInput.fullpath, koMetadata.hasServiceSpecification);
         console.log('Adding '+specPath+' ...')
         fs.copySync(specPath, path.join(tmpko, koMetadata.hasServiceSpecification))
+        if(koMetadata.hasDeploymentSpecification){
+          let deployspecPath = path.join(parsedInput.fullpath, koMetadata.hasDeploymentSpecification);
+          console.log('Adding '+deployspecPath+' ...')
+          fs.copySync(deployspecPath, path.join(tmpko, koMetadata.hasDeploymentSpecification))
+        }
         let serviceSpec = yaml.safeLoad(fs.readFileSync(specPath));
         let endpoints = serviceSpec.paths;
         Object.keys(endpoints).forEach(endpoint => {
           let payloadPaths = jp.query(endpoints[endpoint],"$.*['x-kgrid-activation'].artifact");
-          payloadPaths.forEach(methodPath => {
+
+          payloadPaths.forEach(mPath => {
+            let methodPath = path.dirname(mPath)
+            if(methodPath=='.'){
+              methodPath=mPath
+            }
             let payloadPath = path.join(parsedInput.fullpath, methodPath);
             if(!fs.pathExistsSync(path.join(tmpko, methodPath))){
               console.log('Adding '+payloadPath+' ...')

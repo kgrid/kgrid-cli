@@ -13,7 +13,7 @@ class PackageCommand extends Command {
     let ko = flags.source
     let ark =  args.ark;
     let dest = flags.destination;
-    var parsedInput = parseInput ('package', args.ark, null, flags.source, null)
+    var parsedInput = await parseInput ('package', args.ark, null, flags.source, null)
     if(parsedInput==1){
       return 1
     }
@@ -37,16 +37,21 @@ class PackageCommand extends Command {
         let specPath = path.join(parsedInput.fullpath, koMetadata.hasServiceSpecification);
         console.log('Adding '+specPath+' ...')
         fs.copySync(specPath, path.join(tmpko, koMetadata.hasServiceSpecification))
+        let serviceSpec = yaml.safeLoad(fs.readFileSync(specPath));
         if(koMetadata.hasDeploymentSpecification){
           let deployspecPath = path.join(parsedInput.fullpath, koMetadata.hasDeploymentSpecification);
-          console.log('Adding '+deployspecPath+' ...')
-          fs.copySync(deployspecPath, path.join(tmpko, koMetadata.hasDeploymentSpecification))
+          if(!fs.pathExistsSync(path.join(tmpko, koMetadata.hasDeploymentSpecification))){
+            console.log('Adding '+deployspecPath+' ...')
+            fs.copySync(deployspecPath, path.join(tmpko, koMetadata.hasDeploymentSpecification))
+          }
+          serviceSpec = yaml.safeLoad(fs.readFileSync(deployspecPath))
         }
-        let serviceSpec = yaml.safeLoad(fs.readFileSync(specPath));
         let endpoints = serviceSpec.paths;
+        if(endpoints==null){
+          endpoints = serviceSpec.endpoints
+        }
         Object.keys(endpoints).forEach(endpoint => {
-          let payloadPaths = jp.query(endpoints[endpoint],"$.*['x-kgrid-activation'].artifact");
-
+          let payloadPaths = jp.query(endpoints[endpoint],"$..artifact");
           payloadPaths.forEach(mPath => {
             let methodPath = path.dirname(mPath)
             if(methodPath=='.'){
@@ -62,7 +67,7 @@ class PackageCommand extends Command {
         console.log('Adding '+koMetadataPath+' ...')
         fs.copySync(koMetadataPath, path.join(tmpko, 'metadata.json'))
       } else {
-        console.log("Cannot find the folder fo" + arkId);
+        console.log("Cannot find the folder for" + arkId);
       }
 
       let output = fs.createWriteStream(destinationName);
@@ -88,7 +93,6 @@ class PackageCommand extends Command {
       fs.removeSync(path.join(path.dirname(parsedInput.fullpath),'tmp'))
       console.log(e.message)
     }
-
   }
 }
 

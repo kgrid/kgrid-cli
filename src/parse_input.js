@@ -1,11 +1,13 @@
 const checkPathKoioType = require('./check_pathkoiotype')
 const path= require('path')
+const inquirer = require('inquirer')
 const fs = require('fs-extra')
 const list = require('./getall')
 
-function parseInput(cmd, ark, zip, src, newpath) {
+async function parseInput(cmd, ark, zip, src, newpath) {
   let pathtype = checkPathKoioType()
   let curArkid = pathtype.arkid.split('/')
+  // console.log(pathtype)
   let kolist = list(pathtype.shelfpath)
   let fullpath = ''
   let koid = {naan:'',name:''}
@@ -19,30 +21,84 @@ function parseInput(cmd, ark, zip, src, newpath) {
       if(arkid[0]==''){
         arkid[0]='ark:'
       } else {
-        if(arkid[0]!='ark:'){
-          arkid.unshift('ark:')
-        }
+          if(arkid[0]!='ark:'){
+            arkid.unshift('ark:')
+          }
       }
-      if(cmd!='play'){
-        if(pathtype.type!='shelf'){  // pathtype.type =='ko'
-          pathMatch = checkInputMatch(arkid, curArkid)
-          if(pathMatch){
-            fullpath = pathtype.kopath
-            pathFound =true
-          } else {
-            console.log('Current directory is the knowledge object of '+pathtype.arkid+'.\n\nPlease change to the directory for the specified KO and try again.\n')
-            return 1
+      let filteredkolist = []
+      if(arkid.length>3){
+        filteredkolist = kolist.filter(function(e){
+          return (e.version==arkid[3]) && (e.id==arkid[0]+'/'+arkid[1]+'/'+arkid[2])
+        })
+      } else {
+        filteredkolist = kolist.filter(function(e){
+          return e.id==arkid[0]+'/'+arkid[1]+'/'+arkid[2]
+        })
+      }
+      let pathCount = checkInputMatchCount(curArkid, filteredkolist)
+      switch(cmd){
+        case 'play':
+          break;
+        case 'package':
+          switch(pathCount){
+            case 0:
+              if(pathtype.type!='shelf'){  // pathtype.type =='ko'
+                console.log('Current directory is the knowledge object of '+pathtype.arkid+'.\n\nPlease change to the directory for the specified KO and try again.\n')
+              } else {
+                console.log('The specified object can not be found.\n')
+                console.log('Please provide a valid ark id or a directory of KO\n\n  Example: kgrid package ark:/hello/world\n\n  Example: kgrid package ark:/hello/world/v1.0\n\nOr\n\n  Example: kgrid package --source myko\n')
+              }
+              return 1;
+            case 1:
+              if(pathtype.type!='shelf'){  // pathtype.type =='ko'
+                fullpath = pathtype.kopath
+                pathFound =true
+              } else {
+                fullpath = path.join(pathtype.shelfpath, filteredkolist[0].path)
+                pathFound = true
+              }
+              break;
+            default: // more then 2 versions
+              let versions = filteredkolist.map(function(e){ return e.version})
+              let responses = await inquirer.prompt([
+                  {
+                    type: 'list',
+                    name: 'selectedversion',
+                    message: 'Please select a version: ',
+                    default: 0,
+                    // scroll: false,
+                    choices: versions,
+                    pageSize: Math.min(15, versions.length)
+                  }
+                ])
+              let selectedversionIndex = versions.indexOf(responses.selectedversion)
+              console.log()
+              fullpath = path.join(pathtype.shelfpath, filteredkolist[selectedversionIndex].path)
+              pathFound = true
+              break;
           }
-        } else {  // pathtype.type =='shelf'
-          let idkey=arkid.join('/')
-          var idIndex = kolist.findIndex(function(e){  return e.id==idkey })
-          if(idIndex!=-1){
-            fullpath = path.join(pathtype.shelfpath, kolist[idIndex].path)
-            pathFound = true
-          }else {
-            console.log(ark+' not found.\n')
+          break;
+        default:
+          if(pathtype.type!='shelf'){  // pathtype.type =='ko'
+            pathMatch = checkInputMatch(arkid, curArkid)
+            if(pathMatch){
+              fullpath = pathtype.kopath
+              pathFound =true
+            } else {
+              console.log('Current directory is the knowledge object of '+pathtype.arkid+'.\n\nPlease change to the directory for the specified KO and try again.\n')
+              return 1
+            }
+          } else {  // pathtype.type =='shelf'
+            let idkey=arkid.join('/')
+            var idIndex = kolist.findIndex(function(e){  return e.id==idkey })
+            if(idIndex!=-1){
+              fullpath = path.join(pathtype.shelfpath, kolist[idIndex].path)
+              pathFound = true
+            }else {
+              console.log(ark+' not found.\n')
+            }
           }
-        }
+          break;
       }
     }
 
@@ -85,7 +141,7 @@ function parseInput(cmd, ark, zip, src, newpath) {
           arkid = path.basename(zip, '.zip').split('-')
           arkid.unshift('ark:')
           pathFound = true
-        } 
+        }
       }
     }
 
@@ -166,4 +222,13 @@ function checkInputMatch(arkid, curArkid){
   return (arkid.length>=2 && curArkid.length>=2) ? (arkid[1]==curArkid[1]) && (arkid[2]==curArkid[2]) : false
 }
 
+function checkInputMatchCount(curArkid, list){
+  if(curArkid.length>3){
+    return list.filter(function(e){
+      return (e.version==curArkid[3]) && (e.id==curArkid[0]+'/'+curArkid[1]+'/'+curArkid[2])
+    }).length
+  } else {
+    return list.length
+  }
+}
 module.exports =  parseInput

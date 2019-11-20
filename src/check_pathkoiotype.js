@@ -17,7 +17,7 @@ function checkPathKoioType () {
         pathtype.type = 'ko'
       }
     }
-    pathtype.arkid = meta.identifier
+    pathtype.arkid = meta.identifier+'/'+meta.version
   }
   return pathtype
 }

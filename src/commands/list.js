@@ -10,8 +10,8 @@ class ListCommand extends Command {
     if(pathtype.type=='shelf'){
       var kolist = list(pathtype.shelfpath)
       if(kolist!=null){
-        console.log("Shelf:  "+pathtype.shelfpath +'\n----------------------------------------------------------')
-        cli.table(kolist,{id:{header:'ARK ID',minWidth:36}, path:{header:'FILE PATH',minWidth:30}})
+        console.log("Shelf:  "+pathtype.shelfpath +'\n---------------------------------------------------------------------------------')
+        cli.table(kolist,{id:{header:'ARK ID',minWidth:36},version:{header:'Version',minWidth:24}, path:{header:'FILE PATH',minWidth:30}})
       }
     }
     else {

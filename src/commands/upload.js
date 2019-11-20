@@ -7,7 +7,7 @@ class UploadCommand extends Command {
   async run() {
       const {args, flags} = this.parse(UploadCommand)
       var localurl = flags.port ? 'http://localhost:'+flags.port : flags.port
-      var parsedinput = parseInput ('upload', args.ark, flags.file, null)
+      var parsedinput = await parseInput ('upload', args.ark, flags.file, null)
       if (parsedinput != 1){
         let targeturl= (flags.library) ?  flags.url || localurl || 'http://localhost:8081/' : flags.url || localurl || 'http://localhost:8080/'
         uploadFile(parsedinput.koid, parsedinput.fullpath, targeturl )

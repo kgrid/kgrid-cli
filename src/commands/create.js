@@ -21,7 +21,7 @@ class CreateCommand extends Command {
         return 1
       }
     }
-    var parsedInput = parseInput ('create', null, null, null, inputPath)
+    var parsedInput = await parseInput ('create', null, null, null, inputPath)
     const userConfigJson =  userConfig()
     if(parsedInput==1){
       return 1

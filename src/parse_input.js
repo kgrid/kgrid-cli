@@ -5,13 +5,13 @@ const fs = require('fs-extra')
 const list = require('./getall')
 
 async function parseInput(cmd, ark, zip, src, newpath) {
+  let koid = {naan:'',name:'',version:''}
+  let fullpath = ''
   let pathtype = checkPathKoioType()
   let curArkid = pathtype.arkid.split('/')
-  // console.log(pathtype)
   let kolist = list(pathtype.shelfpath)
-  let fullpath = ''
-  let koid = {naan:'',name:''}
-  if(kolist!=null | cmd=='play'){
+
+  if(kolist!=null){
     let arkid = []
     let pathFound = false
     let pathMatch = true
@@ -20,9 +20,20 @@ async function parseInput(cmd, ark, zip, src, newpath) {
       if(ark){
         console.log('The input of ark id will be ignored since a source directory is specified to package.\n')
       }
-      var dirIndex = kolist.findIndex(function(e){ return path.join(pathtype.shelfpath, src)===path.join(pathtype.shelfpath,e.path)  })
+      var dirIndex = kolist.findIndex(function(e){
+        // console.log(src+'   <===>   '+e.path)
+        return path.join(pathtype.shelfpath, src)===path.join(pathtype.shelfpath,e.path)
+      })
       if(dirIndex!=-1){
         arkid = kolist[dirIndex].id.split('/')
+        if(arkid[0]==''){
+          arkid[0]='ark:'
+        } else {
+            if(arkid[0]!='ark:'){
+              arkid.unshift('ark:')
+            }
+        }
+        arkid.push(kolist[dirIndex].version)
         if(pathtype.type!='shelf'){ //pathtype.type=='ko'
           pathMatch =  checkInputMatch(arkid, curArkid)
           if(pathMatch){
@@ -62,50 +73,42 @@ async function parseInput(cmd, ark, zip, src, newpath) {
         })
       }
       let pathCount = checkInputMatchCount(curArkid, filteredkolist)
-      console.log(pathCount)
-      switch(cmd){
-        case 'play':
-          break;
-        default:
-          switch(pathCount){
-            case 0:
-              if(pathtype.type!='shelf'){  // pathtype.type =='ko'
-                console.log('Current directory is the knowledge object of '+pathtype.arkid+'.\n\nPlease change to the directory for the specified KO and try again.\n')
-              } else {
-                console.log('The specified object can not be found.\n')
-                console.log('Please provide a valid ark id or a directory of KO\n\n  Example: kgrid package ark:/hello/world\n\n  Example: kgrid package ark:/hello/world/v1.0\n\nOr\n\n  Example: kgrid package --source myko\n')
-              }
-              return 1;
-            case 1:
-              if(pathtype.type!='shelf'){  // pathtype.type =='ko'
-                fullpath = pathtype.kopath
-                pathFound =true
-              } else {
-                fullpath = path.join(pathtype.shelfpath, filteredkolist[0].path)
-                pathFound = true
-              }
-              break;
-            default: // more then 2 versions
-              let versions = filteredkolist.map(function(e){ return e.version})
-              let responses = await inquirer.prompt([
-                  {
-                    type: 'list',
-                    name: 'selectedversion',
-                    message: 'Please select a version: ',
-                    default: 0,
-                    // scroll: false,
-                    choices: versions,
-                    pageSize: Math.min(15, versions.length)
-                  }
-                ])
-              let selectedversionIndex = versions.indexOf(responses.selectedversion)
-              console.log()
-              fullpath = path.join(pathtype.shelfpath, filteredkolist[selectedversionIndex].path)
-              pathFound = true
-              break;
+      switch(pathCount){
+        case 0:
+          if(pathtype.type!='shelf'){  // pathtype.type =='ko'
+            console.log('Current directory is the knowledge object of '+pathtype.arkid+'.\n\nPlease change to the directory for the specified KO and try again.\n')
+          } else {
+            console.log('The specified object can not be found.\n')
+            console.log('Please provide a valid ark id or a directory of KO\n\n  Example: kgrid package ark:/hello/world\n\n  Example: kgrid package ark:/hello/world/v1.0\n\nOr\n\n  Example: kgrid package --source myko\n')
+          }
+          return 1;
+        case 1:
+          if(pathtype.type!='shelf'){  // pathtype.type =='ko'
+            fullpath = pathtype.kopath
+            pathFound =true
+          } else {
+            fullpath = path.join(pathtype.shelfpath, filteredkolist[0].path)
+            pathFound = true
           }
           break;
-
+        default: // more then 2 versions
+          let versions = filteredkolist.map(function(e){ return e.version})
+          let responses = await inquirer.prompt([
+              {
+                type: 'list',
+                name: 'selectedversion',
+                message: 'Please select a version: ',
+                default: 0,
+                // scroll: false,
+                choices: versions,
+                pageSize: Math.min(15, versions.length)
+              }
+            ])
+          let selectedversionIndex = versions.indexOf(responses.selectedversion)
+          console.log()
+          fullpath = path.join(pathtype.shelfpath, filteredkolist[selectedversionIndex].path)
+          pathFound = true
+          break;
       }
     }
 
@@ -138,10 +141,6 @@ async function parseInput(cmd, ark, zip, src, newpath) {
       if(newpath.ko!=''){
         arkid.push(newpath.ko)
         fullpath = path.join(pathtype.shelfpath, newpath.ko)
-      }else{
-        if(pathtype.type=='ko'){
-          arkid.push(curArkid[2])
-        }
       }
       if(fullpath!=''){
         pathFound=true
@@ -186,19 +185,13 @@ async function parseInput(cmd, ark, zip, src, newpath) {
         case 'package':
           console.log('Please provide a valid ark id or a directory of KO\n\n  Example: kgrid package ark:/hello/world\n\nOr\n\n  Example: kgrid package --source myko\n')
           return 1
-        case 'create':
-          console.log('Please provide a valid name for the KO\n\n  Example: kgrid create myko')
-          return 1
       }
-    }
-    return {koid : JSON.parse(JSON.stringify(koid)), fullpath : fullpath }
-  } else {
-    if(cmd!='play'){
-      console.log('Error. Operation not permitted.\n')
-      return 1
-    } else {
+    }else {
       return {koid : JSON.parse(JSON.stringify(koid)), fullpath : fullpath }
     }
+  } else {
+      console.log('Error. Operation not permitted.\n')
+      return 1
   }
 }
 

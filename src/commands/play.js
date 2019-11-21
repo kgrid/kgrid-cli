@@ -5,7 +5,6 @@ const axios = require('axios')
 const shelljs = require('shelljs')
 const documentations = require('../json/extradoc.json')
 const userConfig = require('../user_config')
-const parseInput = require('../parse_input')
 
 class PlayCommand extends Command {
   async run() {
@@ -22,14 +21,21 @@ class PlayCommand extends Command {
       let url = flags.url || localurl  || 'http://localhost:'+activator_port
       let openurl = flags.open
       let targeturl='https://editor.swagger.io/'
-      let ark = args.ark
-      let koid = {naan:'',name:''}
-      var parsedinput = await parseInput ('play', ark, null, null)
-      if(parsedinput == 1){
-        return 1
+      let arkid = []
+      if(args.ark){
+        arkid = args.ark.split('/')
+        if(arkid[0]==''){
+          arkid[0]='ark:'
+        } else {
+            if(arkid[0]!='ark:'){
+              arkid.unshift('ark:')
+            }
+        }
       }
-      koid=JSON.parse(JSON.stringify(parsedinput.koid))
-      // Retrieve the activated KO list from the activator
+      let koid = {naan:'',name:'',version:''}
+      koid.naan=arkid[1] ||  ''
+      koid.name=arkid[2] ||  ''
+      koid.version=arkid[3] || ''
       let activatedkos = []
       let targetko =''
       axios({
@@ -38,17 +44,21 @@ class PlayCommand extends Command {
       })
       .then(async function (response) {
         activatedkos = []
-        Object.keys(response.data).forEach(function(e){
+        response.data.forEach(function(e){
+          var entryIncluded = true
           if(koid.name!=''){
-            if(e.includes(koid.naan+'/'+koid.name)){
-              activatedkos.push(e)
+            if(koid.version==''){
+              entryIncluded =entryIncluded && e.identifier.includes(koid.naan+'/'+koid.name)
+            } else {
+              entryIncluded =entryIncluded && e.identifier.includes(koid.naan+'/'+koid.name) && e.version==koid.version
             }
-          }else {
-            activatedkos.push(e)
+          }
+          if(entryIncluded) {
+            activatedkos.push(e.identifier+'/'+e.version)
           }
         });
         if(activatedkos.length!=0){
-          if(koid.name==''){
+          if(activatedkos.length>1){
             let responses = await inquirer.prompt([
                 {
                   type: 'list',
@@ -62,7 +72,7 @@ class PlayCommand extends Command {
               ])
             targetko = responses.selectedko.replace('ark:/','')
           } else {
-            targetko= koid.naan+'/'+koid.name
+            targetko= activatedkos[0].replace('ark:/','')
           }
           targeturl = `https://editor.swagger.io/?url=${url}/kos/${targetko}/service`
           console.log('\nOpen the URL in your browser:\n')
@@ -76,10 +86,12 @@ class PlayCommand extends Command {
           }
           return 0
         } else {
-          console.log('No KO with ark id of ark:/'+ koid.naan+'/'+koid.name+' has been activated.\n')
+          var id = koid.version=='' ? koid.naan+'/'+koid.name : koid.naan+'/'+koid.name +'/'+koid.version
+          console.log('No KO with ark id of ark:/'+ id+' has been activated.\n')
         }
       })
       .catch(function(error){
+          console.log(error)
           console.log('Cannot connect to the activator at:  '+url+'\n\nPlease make sure the activator is running and the correct url and/or port is specified to connect.\n\n  Example:  kgrid play [ARK] -p [port]\n\nOr\n\n  Example:  kgrid play [ARK] -l [url]\n');
       });
   }

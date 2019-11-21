@@ -2,11 +2,12 @@ const FormData = require('form-data');
 const fs = require('fs-extra')
 const axios = require('axios')
 
-function uploadFile(koid, fullpath, targeturl){
-  let endpoint = '/kos'
+function uploadFile(koid, fullpath, url){
+  let targeturl = url.endsWith('/') ? url : url+'/'
+  let endpoint = 'kos'
   axios({
     method: 'get',
-    url: targeturl + '/info'
+    url: targeturl + 'info'
   })
   .then(function (response) {
     var formData = new FormData();
@@ -23,9 +24,6 @@ function uploadFile(koid, fullpath, targeturl){
     })
     .then(function (response) {
       console.log(koid.naan+'/'+koid.name+' has been successfully uploaded to '+targeturl+'\n')
-      if(type=='activator'){
-        console.log('To activate the KO, browse to '+targeturl+'/activate')
-      }
     })
     .catch(function(error){
       console.log('Error when uploading the file to '+targeturl+'\n\n');

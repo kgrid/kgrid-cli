@@ -16,6 +16,32 @@ async function parseInput(cmd, ark, zip, src, newpath) {
     let pathFound = false
     let pathMatch = true
 
+    if(src) { // For package KO from a source directory
+      if(ark){
+        console.log('The input of ark id will be ignored since a source directory is specified to package.\n')
+      }
+      var dirIndex = kolist.findIndex(function(e){ return path.join(pathtype.shelfpath, src)===path.join(pathtype.shelfpath,e.path)  })
+      if(dirIndex!=-1){
+        arkid = kolist[dirIndex].id.split('/')
+        if(pathtype.type!='shelf'){ //pathtype.type=='ko'
+          pathMatch =  checkInputMatch(arkid, curArkid)
+          if(pathMatch){
+            fullpath = pathtype.kopath
+            pathFound =true
+          } else {
+            console.log('Current directory is the knowledge object of '+pathtype.arkid+'.\n\nPlease change to the directory for the specified KO and try again.\n')
+            return 1
+          }
+        } else {
+          fullpath = path.join(pathtype.shelfpath,kolist[dirIndex].path)
+          pathFound =true
+        }
+      }else {
+        console.log('Source directory not found.')
+        return 1
+      }
+    }
+
     if(ark) {  // For Specify KO ark id
       arkid = ark.split('/')
       if(arkid[0]==''){
@@ -36,10 +62,11 @@ async function parseInput(cmd, ark, zip, src, newpath) {
         })
       }
       let pathCount = checkInputMatchCount(curArkid, filteredkolist)
+      console.log(pathCount)
       switch(cmd){
         case 'play':
           break;
-        case 'package':
+        default:
           switch(pathCount){
             case 0:
               if(pathtype.type!='shelf'){  // pathtype.type =='ko'
@@ -78,53 +105,7 @@ async function parseInput(cmd, ark, zip, src, newpath) {
               break;
           }
           break;
-        default:
-          if(pathtype.type!='shelf'){  // pathtype.type =='ko'
-            pathMatch = checkInputMatch(arkid, curArkid)
-            if(pathMatch){
-              fullpath = pathtype.kopath
-              pathFound =true
-            } else {
-              console.log('Current directory is the knowledge object of '+pathtype.arkid+'.\n\nPlease change to the directory for the specified KO and try again.\n')
-              return 1
-            }
-          } else {  // pathtype.type =='shelf'
-            let idkey=arkid.join('/')
-            var idIndex = kolist.findIndex(function(e){  return e.id==idkey })
-            if(idIndex!=-1){
-              fullpath = path.join(pathtype.shelfpath, kolist[idIndex].path)
-              pathFound = true
-            }else {
-              console.log(ark+' not found.\n')
-            }
-          }
-          break;
-      }
-    }
 
-    if(src) { // For package KO from a source directory
-      if(ark){
-        console.log('The input of ark id will be ignored since a source directory is specified to package.\n')
-      }
-      var dirIndex = kolist.findIndex(function(e){ return path.join(pathtype.shelfpath, src)===path.join(pathtype.shelfpath,e.path)  })
-      if(dirIndex!=-1){
-        arkid = kolist[dirIndex].id.split('/')
-        if(pathtype.type!='shelf'){ //pathtype.type=='ko'
-          pathMatch =  checkInputMatch(arkid, curArkid)
-          if(pathMatch){
-            fullpath = pathtype.kopath
-            pathFound =true
-          } else {
-            console.log('Current directory is the knowledge object of '+pathtype.arkid+'.\n\nPlease change to the directory for the specified KO and try again.\n')
-            return 1
-          }
-        } else {
-          fullpath = path.join(pathtype.shelfpath,kolist[dirIndex].path)
-          pathFound =true
-        }
-      }else {
-        console.log('Source directory not found.')
-        return 1
       }
     }
 
@@ -170,6 +151,7 @@ async function parseInput(cmd, ark, zip, src, newpath) {
     if(arkid.length!=0){
       koid.naan=arkid[1] ||  ''
       koid.name=arkid[2] ||  ''
+      koid.version=arkid[3] || ''
     } else {
       koid.naan=curArkid[1] || ''
       koid.name=curArkid[2] || ''
@@ -183,10 +165,12 @@ async function parseInput(cmd, ark, zip, src, newpath) {
     }
 
     if (cmd=='upload') {
-      let fn = koid.naan+'-'+koid.name
+      let fn = koid.naan+'-'+koid.name+'-'+koid.version
       fullpath = path.join(pathtype.shelfpath, fn +'.zip')
       if(!fs.pathExistsSync(fullpath)){
-      pathFound =false
+        pathFound =false
+      }else {
+        pathFound =true
       }
     }
 

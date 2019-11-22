@@ -115,7 +115,11 @@ async function parseInput(cmd, ark, zip, src, newpath) {
               console.log('Current directory is the knowledge object of '+pathtype.arkid+'.\n\nPlease change to the directory for the specified KO and try again.\n')
             } else {
               console.log('The specified object can not be found.\n')
-              console.log('Please provide a valid ark id or a directory of KO\n\n  Example: kgrid package ark:/hello/world\n\n  Example: kgrid package ark:/hello/world/v1.0\n\nOr\n\n  Example: kgrid package --source myko\n')
+              if(cmd=='package'){
+                console.log('Please provide a valid ark id or a directory of KO\n\n  Example: kgrid package ark:/hello/world\n\n  Example: kgrid package ark:/hello/world/v1.0\n\nOr\n\n  Example: kgrid package --source myko\n')
+              } else {
+                console.log('Please provide a valid ark id or a filename of the packaged KO\n\n  Example: kgrid upload ark:/hello/world\n\n  Example: kgrid upload ark:/hello/world/v1.0\n\nOr\n\n  Example: kgrid upload --file hello-wporld-v1.0.zip\n')
+              }
             }
             return 1;
           case 1:

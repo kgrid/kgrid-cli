@@ -1,4 +1,4 @@
-const find = require('lodash/find');
+const find = require('lodash.find');
 const chdRiskCoefficients = require('./coefficients.json');
 const betaCoefficients = require('./beta.json')
 

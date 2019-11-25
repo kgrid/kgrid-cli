@@ -3,6 +3,7 @@ const path = require('path');
 const fs = require('fs-extra');
 const shell = require('shelljs');
 const tmp = require('tmp');
+const inquirer = require('inquirer')
 
 const testDirectory = tmp.dirSync();
 
@@ -13,37 +14,43 @@ beforeEach(function () {
 
 describe('test happy day create ', () => {
 
+  let backup;
+  before(() => {
+    backup = inquirer.prompt;
+    inquirer.prompt = (questions) => Promise.resolve(0)
+  })
+
   test
   .stdout()
-  .command(['create', 'testko', '-i', 'koversion'])
-  .it('runs create with testko name and koversion implementation', output => {
+  .command(['create', 'testko'])
+  .it('runs create with testko name', output => {
 
-    expect(output.stdout).to.include('ready');
+    expect(output.stdout).to.include('created');
 
     expect(fs.existsSync(path.join(
       testDirectory.name, "testko", "metadata.json"))).to.be.true;
 
     expect(fs.existsSync(path.join(
-      testDirectory.name, "testko", "koversion", "metadata.json")),
-      "find metadata.json file").to.be.true;
-
-    expect(fs.existsSync(path.join(
-      testDirectory.name, "testko", "koversion", "package.json")),
+      testDirectory.name, "testko", "package.json")),
       "find package.json file").to.be.true;
 
     expect(fs.existsSync(path.join(
-      testDirectory.name, "testko", "koversion", "service.yaml")),
+      testDirectory.name, "testko", "service.yaml")),
       "find service.yaml file").to.be.true;
 
     expect(fs.existsSync(path.join(
-      testDirectory.name, "testko", "koversion", "src", "index.js")),
-      "find index.js file").to.be.true;
+      testDirectory.name, "testko", "src")),
+      "find src folder").to.be.true;
+
 
     expect(fs.existsSync(path.join(
-      testDirectory.name, "testko", "koversion", "test", "welcome.test.js")),
-      "find welcome.test.js file").to.be.true;
+      testDirectory.name, "testko", "test")),
+      "find test folder").to.be.true;
 
   });
+  after(() => {
+    inquirer.prompt = backup
+  })
 
 });
 
@@ -55,26 +62,6 @@ describe('test not happy day create ', () => {
   .it('runs create with no ko name', output => {
     expect(output.stdout).to.include(
       'Please provide')
-  });
-
-  test
-  .stdout()
-  .command(['create', 'testko', '-i', 'koversion'])
-  .it('runs create with existing ko name and implementation', output => {
-
-    expect(output.stdout).to.include(
-      'exist');
-
-  });
-
-  test
-  .stdout()
-  .command(['create', 'testko', '-i', 'anotherversion'])
-  .it('runs create with existing ko name and new implementation', output => {
-
-    expect(output.stdout).to.include(
-      'ready');
-
   });
 
 });

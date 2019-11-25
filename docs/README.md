@@ -19,7 +19,7 @@ $ npm install -g @kgrid/cli
 $ kgrid COMMAND
 running command...
 $ kgrid (-v|--version|version)
-@kgrid/cli/0.3.4 linux-x64 node-v10.15.3
+@kgrid/cli/0.4.0a win32-x64 node-v10.16.3
 $ kgrid --help [COMMAND]
 USAGE
   $ kgrid COMMAND
@@ -38,50 +38,34 @@ USAGE
 * [`kgrid start:activator`](#kgrid-startactivator)
 * [`kgrid start:library`](#kgrid-startlibrary)
 * [`kgrid upload [ARK]`](#kgrid-upload-ark)
-* [`kgrid upload:library [ARK]`](#kgrid-uploadlibrary-ark)
 
 ## `kgrid create [KO]`
 
-Create Knowledge Object and initialize the implementation.
+Create Knowledge Object.
 
 ```
 USAGE
   $ kgrid create [KO]
 
 OPTIONS
-  -h, --help                           show CLI help
-  -i, --implementation=implementation  the name for the implementation
-  --bundled                            Using the template for bundled KO
-  --executive                          Using the template for executive KO
-  --simple                             Using the simple template
+  -h, --help  show CLI help
 
 DESCRIPTION
   The create command requires a name for the knowledge object.
   It can only run at the shelf level or the KO level.
 
   A folder for the knowledge object will be created.
-  An implementation will be created and initialized in the folder of [ko].
-
-  If the specified KO exists, an implementation will be added to the KO.
-
-  IMPLEMENTATION NAME:
-     The user will be prompted to enter a name;
-     Or, the name can be specified on the command line using the flag -i.
 
   ARK ID:
-     A development ARK ID will be assigned {username}/{ko}/{implementation}.
-     The ARK ID is unique by having different implementation names in the same KO.
+     A development ARK ID will be assigned {username}/{ko}.
+     The ARK ID is unique for the KO.
 
-  IMPLEMENTATION TEMPLATE TYPE:
-     The implementation will be initialized using one of the templates.
-     The template can be specified using the flags:
-       --simple    for the template with simple JAVASCRIPT file as payload
-       --bundled   for the template with JAVASCRIPT file(s); the payload will require bundling
-       --executive for the template with simple JAVASCRIPT file as payload calling other KOs
-     By default, the simple template will be used
+  KO TEMPLATE:
+     The KO will be initialized using one of the templates.
+     The template is determined by the user's choice of the target runtime and template type.
 ```
 
-_See code: [src/commands/create.js](https://github.com/kgrid/kgrid-cli/blob/v0.3.4/src/commands/create.js)_
+_See code: [src\commands\create.js](https://github.com/kgrid/kgrid-cli/blob/v0.4.0a/src\commands\create.js)_
 
 ## `kgrid help [COMMAND]`
 
@@ -98,24 +82,21 @@ OPTIONS
   --all  see all commands in CLI
 ```
 
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.2.1/src/commands/help.ts)_
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.2.1/src\commands\help.ts)_
 
 ## `kgrid list`
 
-List all implementations for the Knowledge Objects on the shelf.
+List all Knowledge Objects on the shelf.
 
 ```
 USAGE
   $ kgrid list
 
-OPTIONS
-  -i, --implementation  List the implementations only
-
 DESCRIPTION
-  The list command will provide a list of the implementations for all Knowledge Objects on the shelf.
+  The list command will provide a list of the Knowledge Objects on the shelf.
 ```
 
-_See code: [src/commands/list.js](https://github.com/kgrid/kgrid-cli/blob/v0.3.4/src/commands/list.js)_
+_See code: [src\commands\list.js](https://github.com/kgrid/kgrid-cli/blob/v0.4.0a/src\commands\list.js)_
 
 ## `kgrid package [ARK]`
 
@@ -139,21 +120,18 @@ DESCRIPTION
 
   If running at the KO level and a different KO is provided at the command line, the command line input will be ignored.
 
-  If running at the implementation level, the current implementation will be packaged. Any command line inputs will be 
-  ignored.
-
-     Example: kgrid package ark:/hello/world/v1
+     Example: kgrid package ark:/hello/world
 
        Or
 
-     Example: kgrid package --source hello-world/v1
+     Example: kgrid package --source hello-world
 ```
 
-_See code: [src/commands/package.js](https://github.com/kgrid/kgrid-cli/blob/v0.3.4/src/commands/package.js)_
+_See code: [src\commands\package.js](https://github.com/kgrid/kgrid-cli/blob/v0.4.0a/src\commands\package.js)_
 
 ## `kgrid play [ARK]`
 
-Try out a Knowledge Object implementation using Swagger Editor.
+Try out a Knowledge Object using Swagger Editor.
 
 ```
 USAGE
@@ -166,21 +144,20 @@ OPTIONS
   -p, --port=port  Specify the port for KGRID Activator
 
 DESCRIPTION
-  The play command will let the user to select and interact with an activated KO implementation using the online Swagger 
-  Editor.
+  The play command will let the user to select and interact with an activated KO using the online Swagger Editor.
 
-  The implementation can be specified using the argument [ARK].
+  The KO can be specified using the argument [ARK].
 
-     Example: kgrid play hello/world/v1
+     Example: kgrid play ark:/hello/world
 
-  Or it can be selected from a list of the activated implementations.
+  Or it can be selected from a list of the activated KOs.
 
   A local KGRID activator needs to be running to use the play command.
 
   If the activator is not running at the default port, use the option of '-p' to specify the port.
 ```
 
-_See code: [src/commands/play.js](https://github.com/kgrid/kgrid-cli/blob/v0.3.4/src/commands/play.js)_
+_See code: [src\commands\play.js](https://github.com/kgrid/kgrid-cli/blob/v0.4.0a/src\commands\play.js)_
 
 ## `kgrid setup`
 
@@ -206,7 +183,7 @@ DESCRIPTION
   IF KGRID_HOME is not defined, the user home will be used.
 ```
 
-_See code: [src/commands/setup.js](https://github.com/kgrid/kgrid-cli/blob/v0.3.4/src/commands/setup.js)_
+_See code: [src\commands\setup.js](https://github.com/kgrid/kgrid-cli/blob/v0.4.0a/src\commands\setup.js)_
 
 ## `kgrid start`
 
@@ -231,7 +208,7 @@ DESCRIPTION
   See the commands listed below.
 ```
 
-_See code: [src/commands/start/index.js](https://github.com/kgrid/kgrid-cli/blob/v0.3.4/src/commands/start/index.js)_
+_See code: [src\commands\start\index.js](https://github.com/kgrid/kgrid-cli/blob/v0.4.0a/src\commands\start\index.js)_
 
 ## `kgrid start:activator`
 
@@ -255,7 +232,7 @@ DESCRIPTION
   The current directory will be used as the default shelf unless specified using the flag -s.
 ```
 
-_See code: [src/commands/start/activator.js](https://github.com/kgrid/kgrid-cli/blob/v0.3.4/src/commands/start/activator.js)_
+_See code: [src\commands\start\activator.js](https://github.com/kgrid/kgrid-cli/blob/v0.4.0a/src\commands\start\activator.js)_
 
 ## `kgrid start:library`
 
@@ -279,7 +256,7 @@ DESCRIPTION
   The current directory will be used as the default shelf unless specified using the flag -s.
 ```
 
-_See code: [src/commands/start/library.js](https://github.com/kgrid/kgrid-cli/blob/v0.3.4/src/commands/start/library.js)_
+_See code: [src\commands\start\library.js](https://github.com/kgrid/kgrid-cli/blob/v0.4.0a/src\commands\start\library.js)_
 
 ## `kgrid upload [ARK]`
 
@@ -294,33 +271,12 @@ OPTIONS
   -h, --help       show CLI help
   -l, --url=url    The URL of the activator or library to upload the packaged KO
   -p, --port=port  Specify the port for KGRID Activator
+  --activator      Specify the activator as the target for uploading,
+  --library        Specify the library as the target for uploading,
 
 DESCRIPTION
   The upload command will send the packaged KO to a specified activator.
-
-ALIASES
-  $ kgrid upload:activator
 ```
 
-_See code: [src/commands/upload/index.js](https://github.com/kgrid/kgrid-cli/blob/v0.3.4/src/commands/upload/index.js)_
-
-## `kgrid upload:library [ARK]`
-
-Upload a packaged Knowledge Object to a KGRID library.
-
-```
-USAGE
-  $ kgrid upload:library [ARK]
-
-OPTIONS
-  -f, --file=file  The filename of the packaged KO to be uploaded
-  -h, --help       show CLI help
-  -p, --port=port  Specify the port for KGRID Activator
-  --url=url        The URL of the library tp upload the packaged KO
-
-DESCRIPTION
-  The upload command will send the packaged KO to a specified library.
-```
-
-_See code: [src/commands/upload/library.js](https://github.com/kgrid/kgrid-cli/blob/v0.3.4/src/commands/upload/library.js)_
+_See code: [src\commands\upload.js](https://github.com/kgrid/kgrid-cli/blob/v0.4.0a/src\commands\upload.js)_
 <!-- commandsstop -->

@@ -3,5 +3,6 @@
     "naan":"99999",
     "activator_port":"",
     "library_port":""
-  }
+  },
+  "multiRuntime":false
 }

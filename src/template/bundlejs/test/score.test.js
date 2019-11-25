@@ -1,6 +1,5 @@
 const scoreFunction = require('../src/index')
 
-
 test('Female non-smoker 65', () => {
     let inputs = {
         age: 65,
@@ -19,11 +18,9 @@ test('Female non-smoker 65', () => {
         }
     }
 
-    expect(scoreFunction(inputs).cvdrisk)
-      .toEqual(outputs.cvdrisk);
+    expect(scoreFunction(inputs).cvdrisk).toEqual(outputs.cvdrisk);
 
 });
-
 
 test('Male smoker 40', () => {
     let inputs = {

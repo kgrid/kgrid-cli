@@ -1,12 +1,15 @@
+const welcome = require("@kgrid/99999-helloworld")
+
 function process(inputs){
   var names = inputs.names;
-  var executor = context.getExecutor("99999-helloworld/welcome")
   var results = {}
   names.forEach(function(e){
     var obj = {}
     obj.name = e
-    var result = executor.execute(obj)
+    var result = welcome(obj)
     results[e]=result
   })
   return results;
 }
+
+module.exports = process

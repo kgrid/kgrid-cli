@@ -9,13 +9,14 @@ const filterFn = item => {
 function getall(shelf){
   var kolist = []
   try {
-    const paths = klawSync(shelf, {nofile: true, depthLimit: 2, filter: filterFn})
+    const paths = klawSync(shelf, {nofile: true, depthLimit: 1, filter: filterFn})
     paths.forEach(function(p){
       if(fs.pathExistsSync(path.join(p.path,'metadata.json'))) {
         var meta = fs.readJsonSync(path.join(p.path,'metadata.json'))
         if((!meta['@type'])||(meta['@type'].includes('koio'))) {
           var obj={
             id : meta.identifier,
+            version: meta.version,
             path : p.path.replace(shelf,''),
             type : meta['@type']
           }

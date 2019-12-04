@@ -27,7 +27,11 @@ class SetupCommand extends Command {
       let userConfigFile = path.join(configPath, 'kgrid-cli-config.json')
       if(!fs.pathExistsSync(userConfigFile)){
         userConfig.devDefault.naan=os.userInfo().username;
-        fs.writeJsonSync(userConfigFile, userConfig, {spaces: 4})
+        try {
+          fs.writeJsonSync(userConfigFile, userConfig, {spaces: 4})
+        } catch (e) {
+          console.log("Writing config.json is not allowed. Skipped the process.")
+        }
       }
       console.log("Setting up kgrid at", kgridHome);
       fs.ensureDirSync(kgridHome)

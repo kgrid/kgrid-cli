@@ -16,13 +16,14 @@ class SetupCommand extends Command {
     var kolist = list(process.cwd())
     if(kolist!=null){
       const {flags} = this.parse(SetupCommand)
-      let userHome = process.env.HOME || process.env.USERPROFILE || process.env.HOMEPATH ;
+      let userHome = process.env.USERPROFILE || process.env.HOME || process.env.HOMEPATH ;
       kgridHome = path.join(process.cwd(), '.kgrid')
       if(flags.global){
         kgridHome =  process.env.KGRID_HOME || path.join(userHome, '.kgrid');
       }
       // Write user config
       let configPath = path.join(userHome,'.config')
+      fs.ensureDirSync(configPath)
       let userConfigFile = path.join(configPath, 'kgrid-cli-config.json')
       if(!fs.pathExistsSync(userConfigFile)){
         userConfig.devDefault.naan=os.userInfo().username;

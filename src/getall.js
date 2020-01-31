@@ -25,6 +25,7 @@ function getall(shelf){
       }
     })
   } catch (error) {
+    console.log(error)
     return null
   }
   return kolist

@@ -15,12 +15,16 @@ class LibraryCommand extends Command {
       if(userConfigJson){
         library_port  = userConfigJson.devDefault.library_port
       }
-      let cmdObj = {name:'library',component: '', shelf: '', port: '', khome:khome}
-      cmdObj.shelf = flags.shelf || ''
-      cmdObj.port = flags.port || library_port
-      cmdObj.jar = flags.jarfile || ''
+      let cmdObj = {
+        name:'library',
+        component: flags.jarfile || '',
+        shelf: flags.shelf || '',
+        port: flags.port || library_port,
+        manifest:flags.manifest || '',
+        khome:khome
+      }
       runKgrid(cmdObj)
-    } 
+    }
   }
 }
 
@@ -30,6 +34,7 @@ ${documentations.startlibrary}
 LibraryCommand.flags = {
   shelf: flags.string({char: 's', description:'Specify an absolute path to use as the shelf containing KOs'}),
   port: flags.string({char:'p', description:'Specify the port for KGRID Library'}),
-  jarfile: flags.string({char: 'j', description:'Specify the library JAR file to use other than the installed one'})
+  jarfile: flags.string({char: 'j', description:'Specify the library JAR file to use other than the installed one'}),
+  manifest: flags.string({char: 'm', description:'Specify a URI for the manifest file to retrieving the packaged KOs'})
 }
 module.exports = LibraryCommand

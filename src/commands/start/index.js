@@ -19,12 +19,12 @@ class StartCommand extends Command {
         }
         activator_port  = userConfigJson.devDefault.activator_port
       }
-      let shelf = flags.shelf || ''
-      let libraryObj = {name:'library', component:'', shelf: shelf, port: library_port, khome:khome}
-      let activatorObj = {name:'activator', component:'', shelf: shelf, port: activator_port, khome:khome}
+
+      let libraryObj = {name:'library', component:'', shelf: flags.shelf || '', manifest:flags.manifest || '', port: library_port, khome:khome}
+      let activatorObj = {name:'activator', component:'', shelf: flags.shelf || '', manifest:flags.manifest || '', port: activator_port, khome:khome}
       runKgrid(libraryObj)
       runKgrid(activatorObj)
-    } 
+    }
   }
 }
 
@@ -33,5 +33,6 @@ ${documentations.start}
 `
 StartCommand.flags = {
   shelf: flags.string({char: 's', description:'Specify an absolute path to use as the shelf containing KOs'}),
+  manifest: flags.string({char: 'm', description:'Specify a URI for the manifest file to retrieving the packaged KOs'})
 }
 module.exports = StartCommand

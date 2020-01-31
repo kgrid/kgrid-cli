@@ -15,12 +15,16 @@ class ActivatorCommand extends Command {
       if(userConfigJson){
           activator_port  = userConfigJson.devDefault.activator_port
       }
-      let cmdObj = {name:'activator',component: '', shelf: '', port: '', khome:khome}
-      cmdObj.shelf = flags.shelf || ''
-      cmdObj.port = flags.port || activator_port
-      cmdObj.jar = flags.jarfile || ''
+      let cmdObj = {
+        name:'activator',
+        component: flags.jarfile || '',
+        shelf: flags.shelf || '',
+        port: flags.port || activator_port,
+        manifest:flags.manifest || '',
+        khome:khome
+      }
       runKgrid(cmdObj)
-    } 
+    }
   }
 }
 
@@ -31,5 +35,6 @@ ActivatorCommand.flags = {
   shelf: flags.string({char: 's', description:'Specify an absolute path to use as the shelf containing KOs'}),
   port: flags.string({char: 'p', description:'Specify the port for KGRID Activator'}),
   jarfile: flags.string({char: 'j', description:'Specify the activator JAR file to use other than the installed one'}),
+  manifest: flags.string({char: 'm', description:'Specify a URI for the manifest file to retrieving the packaged KOs'})
 }
 module.exports = ActivatorCommand

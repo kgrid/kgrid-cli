@@ -2,6 +2,7 @@
 version: 2
 jobs:
   build:
+    context: kgrid
     docker:
     # specify the version you desire here
     - image: circleci/openjdk:8-jdk-node
@@ -61,5 +62,3 @@ jobs:
         command: |
               npm run oclif-readme
               chmod 775 .circleci/vuepress_deploy.sh && .circleci/vuepress_deploy.sh
-
-

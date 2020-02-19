@@ -113,10 +113,10 @@ OPTIONS
   -s, --source=source            The folder holding the ko as the source directory
 
 DESCRIPTION
-  The package command will package the specified KO into a ZIP file, ready for depositing into a KGrid Library or 
+  The package command will package the specified KO into a ZIP file, ready for depositing into a KGrid Library or
   deploying to a KGrid Activator.
 
-  If running at the shelf level, it requires the ark id for the knowledge object. Or, the flag --source can be used to 
+  If running at the shelf level, it requires the ark id for the knowledge object. Or, the flag --source can be used to
   specify the directory for the knowledge object you'd like to package.
 
   If running at the KO level and a different KO is provided at the command line, the command line input will be ignored.

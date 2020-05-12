@@ -34,7 +34,7 @@ function getall(shelf) {
 }
 
 function formatDescription(description) {
-  if (description.length > DESCRIPTION_CHARACTER_LIMIT) {
+  if (description && description.length > DESCRIPTION_CHARACTER_LIMIT) {
     return description.substring(0, DESCRIPTION_CHARACTER_LIMIT) + '...'
   }
   return description;

@@ -4,21 +4,21 @@ const jp = require('jsonpath');
 const fs = require('fs-extra');
 const path = require('path');
 
-async function packageko(source, dest) {
+async function packageko(source, destination) {
 
   let topMeta = fs.readJsonSync(path.join(source, 'metadata.json'));
   let arkId = topMeta["@id"];
-  let ver = topMeta.version;
+  let version = topMeta.version;
   let arkParts = arkId.split("-");
   let naan = arkParts[0];
   let name = arkParts[1];
-  let tempName = "tmp-" + naan + name + ver;
-  let destinationName = naan + '-' + name + '-' + ver + '.zip';
-  let temporaryFolder = path.join(path.dirname(source), tempName, naan + '-' + name + '-' + ver);
+  let tempName = "tmp-" + naan + name + version;
+  let destinationName = naan + '-' + name + '-' + version + '.zip';
+  let temporaryFolder = path.join(path.dirname(source), tempName, naan + '-' + name + '-' + version);
   fs.ensureDirSync(temporaryFolder);
-  if (dest) {
-    fs.ensureDirSync(dest);
-    destinationName = path.join(dest, destinationName)
+  if (destination) {
+    fs.ensureDirSync(destination);
+    destinationName = path.join(destination, destinationName)
   } else {
     destinationName = path.join(path.dirname(source), destinationName)
   }
@@ -35,22 +35,22 @@ async function packageko(source, dest) {
       copyFile('metadata.json')
 
     } else {
-      console.log("Cannot find the folder for" + arkId);
+      console.log(`Cannot find the folder for ${arkId}`);
     }
 
     writePackageToZip();
 
   } catch (e) {
+    console.log(`Can't package ko with ark ${arkId}-${version} error: ${e.message}`);
     fs.removeSync(path.join(path.dirname(source), tempName))
-    console.log("Can't package ko with ark " + arkId + "-" + ver + " error: " + e.message);
   }
 
   function writePackageToZip() {
     let output = fs.createWriteStream(destinationName);
     let archive = archiver('zip', { zlib: { level: 9 } });
     output.on('close', () => {
+      console.log(`\nCreated package:\n\n${destinationName}      (Total bytes: ${archive.pointer()})`);
       fs.removeSync(path.join(path.dirname(source), tempName));
-      console.log('\nCreated package:  \n\n    ' + destinationName + '      (Total bytes: ' + archive.pointer() + ')');
     });
     archive.pipe(output);
     archive.on('warning', function (err) {
@@ -69,20 +69,24 @@ async function packageko(source, dest) {
   }
 
   function copyPayloads(serviceSpec, deploymentSpec) {
-    let endpointObjects = serviceSpec.paths;
-    if (endpointObjects == null) {
-      endpointObjects = deploymentSpec.endpoints;
-    }
-    Object.keys(endpointObjects).forEach(eo => {
-      let payloadPaths = jp.query(endpointObjects[eo], "$..artifact")[0];
-      if (typeof (payloadPaths) === 'String') {
-        copyFile(payloadPaths);
-      } else {
-        payloadPaths.forEach(payloadPath => {
-          copyFile(payloadPath);
-        });
+    try {
+      let endpointObjects = serviceSpec.paths;
+      if (endpointObjects == null) {
+        endpointObjects = deploymentSpec.endpoints;
       }
-    });
+      Object.keys(endpointObjects).forEach(eo => {
+        let payloadPaths = jp.query(endpointObjects[eo], "$..artifact")[0];
+        if (typeof (payloadPaths) === 'String') {
+          copyFile(payloadPaths);
+        } else {
+          payloadPaths.forEach(payloadPath => {
+            copyFile(payloadPath);
+          });
+        }
+      });
+    } catch (e) {
+      console.log(`Could not copy package artifacts, check that service.yaml is correct.`)
+    }
   }
 
   function copyAndLoadYamlFile(filename) {
@@ -91,7 +95,7 @@ async function packageko(source, dest) {
       return yaml.safeLoad(fs.readFileSync(specPath));
     }
     else {
-      console.log(filename + " does not exist. Cannot package KO.")
+      console.log(`${filename} does not exist. Cannot package KO.`)
     }
   }
 

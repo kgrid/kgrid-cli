@@ -63,4 +63,4 @@ function writeManifest(sourceDir, manifestName) {
   fs.writeJsonSync(manifestLoc, manifest, {spaces: 2});
 }
 
-module.exports = {GenerateManifest, promptAndCreateManifest};
+module.exports = GenerateManifest;

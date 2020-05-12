@@ -1,5 +1,5 @@
-const {Command} = require('@oclif/command')
-const {cli}= require('cli-ux')
+const { Command } = require('@oclif/command')
+const { cli } = require('cli-ux')
 const checkPathKoioType = require('../check_pathkoiotype')
 const documentations = require('../json/extradoc.json')
 const list = require('../getall')
@@ -7,11 +7,17 @@ const list = require('../getall')
 class ListCommand extends Command {
   async run() {
     let pathtype = checkPathKoioType()
-    if(pathtype.type=='shelf'){
+    if (pathtype.type == 'shelf') {
       var kolist = list(pathtype.shelfpath)
-      if(kolist!=null){
-        console.log("Shelf:  "+pathtype.shelfpath +'\n---------------------------------------------------------------------------------')
-        cli.table(kolist,{id:{header:'ARK ID',minWidth:36},version:{header:'Version',minWidth:24}, path:{header:'FILE PATH',minWidth:30}})
+      if (kolist != null) {
+        console.log("Shelf:  " + pathtype.shelfpath + '\n---------------------------------------------------------------------------------')
+        cli.table(kolist,
+          {
+            id: { header: 'ARK ID', minWidth: 36 },
+            version: { header: 'VERSION', minWidth: 24 },
+            path: { header: 'FILE PATH', minWidth: 30 },
+            description: { header: 'DESCRIPTION', minWidth: 27 }
+          })
       }
     }
     else {

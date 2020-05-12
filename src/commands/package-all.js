@@ -1,32 +1,27 @@
 const {Command, flags} = require('@oclif/command');
+const inquirer = require('inquirer');
 const packageKO = require('../package_ko');
 const documentations = require('../json/extradoc.json');
 const getall = require('../getall');
-const {writeManifest} = require('./create-manifest');
 
 class PackageallCommand extends Command {
   async run() {
     const {args, flags} = this.parse(PackageallCommand);
     let sourceDir = flags.source || process.cwd();
     let destDir = flags.destination || process.cwd();
-    let generateManifest = flags.manifest;
-    console.log("Packaging kos in folder " + sourceDir + " and depositing in " + destDir);
     let kos = getall(sourceDir);
 
+    console.log("Packaging kos in folder " + sourceDir + " and depositing in " + destDir);
     this.packageAllKO(kos, sourceDir, destDir);
-
-    if(generateManifest) {
-      writeManifest(destDir, "manifest.json");
-    }
   }
 
-  packageAllKO(kos, sourceDir, destDir) {
+packageAllKO(kos, sourceDir, destDir) {
 
-    kos.forEach((koMetadata) => {
-      try {
-        let koPath = sourceDir + koMetadata.path;
-        console.log("Packaging " + koMetadata.id + "-" + koMetadata.version + " at path " + koPath);
-        packageKO(koPath, destDir || koPath.substring(0, koPath.lastIndexOf(path.delimiter)));
+  kos.forEach((koMetadata) => {
+    try {
+      let koPath = sourceDir + koMetadata.path;
+      console.log("Packaging " + koMetadata.id + "-" + koMetadata.version + " at path " + koPath);
+      packageKO(koPath, destDir || koPath.substring(0, koPath.lastIndexOf(path.delimiter)));
 
       } catch (e) {
         console.log("Couldn't package " + koMetadata.id + "-" + koMetadata.version + " ");
@@ -43,7 +38,6 @@ PackageallCommand.flags = {
   help: flags.help({char:'h'}),
   source: flags.string({char:'s', description:'The folder holding the kos as the source directory'}),
   destination: flags.string({char:'d', description:"The directory for the packaged files"}),
-  manifest: flags.boolean({char:'m',  default: false, description:"Generate a manifest after packaging"})
 };
 
 module.exports = PackageallCommand;

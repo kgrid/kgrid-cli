@@ -10,22 +10,9 @@ class GenerateManifest extends Command {
     const {args, flags} = this.parse(GenerateManifest);
     const sourceDir = flags.source || process.cwd();
     const manifestName = flags.name || "manifest.json";
-    const manifestLoc = path.join(sourceDir, manifestName);
+    const forceDefaults = flags.force;
 
-    if(fs.pathExistsSync(manifestLoc)) {
-      inquirer.prompt([{
-        type: 'confirm',
-        name: 'replace',
-        message: 'Manifest already exists, do you want to replace it?',
-
-      }]).then((answers) => {
-        if (answers.replace) {
-          writeManifest(sourceDir, manifestName);
-        }
-      })
-    } else {
-      writeManifest(sourceDir, manifestName);
-    }
+    promptAndCreateManifest(sourceDir, manifestName, forceDefaults);
   }
 }
 
@@ -36,8 +23,28 @@ ${documentations.generatemanifest}
 GenerateManifest.flags = {
   help: flags.help({char:'h'}),
   source: flags.string({char:'s', description:'The folder holding the kos as the source directory'}),
-  name: flags.string({char:'n', description:'The name of the manifest file'})
+  name: flags.string({char:'n', description:'The name of the manifest file'}),
+  force: flags.boolean({char:'f',  default: false, description:"Use default values for all prompted choices"})
 };
+
+function promptAndCreateManifest(sourceDir, manifestName, force) {
+  const manifestLoc = path.join(sourceDir, manifestName);
+
+  if (fs.pathExistsSync(manifestLoc) && force === false) {
+    inquirer.prompt([{
+      type: 'confirm',
+      name: 'replace',
+      message: 'Manifest already exists, do you want to replace it?',
+
+    }]).then((answers) => {
+      if (answers.replace) {
+        writeManifest(sourceDir, manifestName);
+      }
+    })
+  } else {
+    writeManifest(sourceDir, manifestName);
+  }
+}
 
 function writeManifest(sourceDir, manifestName) {
   const manifestLoc = path.join(sourceDir, manifestName);
@@ -56,4 +63,4 @@ function writeManifest(sourceDir, manifestName) {
   fs.writeJsonSync(manifestLoc, manifest, {spaces: 2});
 }
 
-module.exports = {GenerateManifest, writeManifest};
+module.exports = GenerateManifest;

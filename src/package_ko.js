@@ -4,7 +4,7 @@ const jp = require('jsonpath');
 const fs = require('fs-extra');
 const path = require('path');
 
-async function packageko(source, destination) {
+async function packageko(source, destination, verbose) {
 
   let topMeta = fs.readJsonSync(path.join(source, 'metadata.json'));
   let arkId = topMeta["@id"];
@@ -29,10 +29,10 @@ async function packageko(source, destination) {
       const serviceSpecName = koMetadata.hasDeploymentSpecification;
       const deploymentSpecName = koMetadata.hasDeploymentSpecification;
 
-      const serviceSpec = copyAndLoadYamlFile(serviceSpecName);
-      const deploymentSpec = copyAndLoadYamlFile(deploymentSpecName)
-      copyPayloads(serviceSpec, deploymentSpec);
-      copyFile('metadata.json')
+      const serviceSpec = copyAndLoadYamlFile(serviceSpecName, verbose);
+      const deploymentSpec = copyAndLoadYamlFile(deploymentSpecName, verbose)
+      copyPayloads(serviceSpec, deploymentSpec, verbose);
+      copyFile('metadata.json', verbose)
 
     } else {
       console.log(`Cannot find the folder for ${arkId}`);
@@ -68,7 +68,7 @@ async function packageko(source, destination) {
     archive.finalize();
   }
 
-  function copyPayloads(serviceSpec, deploymentSpec) {
+  function copyPayloads(serviceSpec, deploymentSpec, verbose) {
     try {
       let endpointObjects = serviceSpec.paths;
       if (endpointObjects == null) {
@@ -76,11 +76,11 @@ async function packageko(source, destination) {
       }
       Object.keys(endpointObjects).forEach(eo => {
         let payloadPaths = jp.query(endpointObjects[eo], "$..artifact")[0];
-        if (typeof (payloadPaths) === 'String') {
-          copyFile(payloadPaths);
+        if (typeof (payloadPaths) === 'string') {
+          copyFile(payloadPaths, verbose);
         } else {
           payloadPaths.forEach(payloadPath => {
-            copyFile(payloadPath);
+            copyFile(payloadPath, verbose);
           });
         }
       });
@@ -89,9 +89,9 @@ async function packageko(source, destination) {
     }
   }
 
-  function copyAndLoadYamlFile(filename) {
+  function copyAndLoadYamlFile(filename, verbose) {
     if (filename) {
-      let specPath = copyFile(filename);
+      let specPath = copyFile(filename, verbose);
       return yaml.safeLoad(fs.readFileSync(specPath));
     }
     else {
@@ -99,10 +99,12 @@ async function packageko(source, destination) {
     }
   }
 
-  function copyFile(filename) {
+  function copyFile(filename, verbose) {
     const sourceFile = path.join(source, filename);
     const destinationFile = path.join(temporaryFolder, filename);
-    console.log(`Adding ${sourceFile} to package...`);
+    if(verbose) {
+      console.log(`Adding ${sourceFile} to package...`);
+    }
     fs.copySync(sourceFile, destinationFile);
     return sourceFile;
   }

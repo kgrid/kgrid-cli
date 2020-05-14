@@ -18,7 +18,7 @@ class PackageCommand extends Command {
     if(parsedInput==1){
       return 1
     }
-    packageKO(parsedInput.fullpath, dest);
+    packageKO(parsedInput.fullpath, dest, true);
   }
 }
 

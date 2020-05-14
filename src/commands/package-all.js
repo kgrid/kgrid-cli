@@ -9,19 +9,20 @@ class PackageallCommand extends Command {
     const {args, flags} = this.parse(PackageallCommand);
     let sourceDir = flags.source || process.cwd();
     let destDir = flags.destination || process.cwd();
+    let verbose = flags.verbose;
     let kos = getall(sourceDir);
 
     console.log("Packaging kos in folder " + sourceDir + " and depositing in " + destDir);
-    this.packageAllKO(kos, sourceDir, destDir);
+    this.packageAllKO(kos, sourceDir, destDir, verbose);
   }
 
-packageAllKO(kos, sourceDir, destDir) {
+packageAllKO(kos, sourceDir, destDir, verbose) {
 
   kos.forEach((koMetadata) => {
     try {
       let koPath = sourceDir + koMetadata.path;
       console.log("Packaging " + koMetadata.id + "-" + koMetadata.version + " at path " + koPath);
-      packageKO(koPath, destDir || koPath.substring(0, koPath.lastIndexOf(path.delimiter)));
+      packageKO(koPath, destDir || koPath.substring(0, koPath.lastIndexOf(path.delimiter)), verbose);
 
       } catch (e) {
         console.log("Couldn't package " + koMetadata.id + "-" + koMetadata.version + " ");
@@ -38,6 +39,7 @@ PackageallCommand.flags = {
   help: flags.help({char:'h'}),
   source: flags.string({char:'s', description:'The folder holding the kos as the source directory'}),
   destination: flags.string({char:'d', description:"The directory for the packaged files"}),
+  verbose: flags.boolean({char:'v', description:"Display the packaged files while added to the package"})
 };
 
 module.exports = PackageallCommand;

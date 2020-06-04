@@ -26,7 +26,7 @@ async function packageko(source, destination, verbose) {
     let koMetadataPath = path.join(source, 'metadata.json');
     if (fs.pathExistsSync(koMetadataPath)) {
       let koMetadata = fs.readJsonSync(koMetadataPath);
-      const serviceSpecName = koMetadata.hasDeploymentSpecification;
+      const serviceSpecName = koMetadata.hasServiceSpecification;
       const deploymentSpecName = koMetadata.hasDeploymentSpecification;
 
       const serviceSpec = copyAndLoadYamlFile(serviceSpecName, verbose);

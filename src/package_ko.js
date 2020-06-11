@@ -47,7 +47,7 @@ async function packageko(source, destination, verbose) {
 
   function writePackageToZip() {
     let output = fs.createWriteStream(destinationName);
-    let archive = archiver('zip', { zlib: { level: 9 } });
+    let archive = archiver('zip', {zlib: {level: 9}});
     output.on('close', () => {
       console.log(`\nCreated package:\n\n${destinationName}      (Total bytes: ${archive.pointer()})`);
       fs.removeSync(path.join(path.dirname(source), tempName));
@@ -56,8 +56,7 @@ async function packageko(source, destination, verbose) {
     archive.on('warning', function (err) {
       if (err.code === 'ENOENT') {
         console.log(err);
-      }
-      else {
+      } else {
         throw err;
       }
     });
@@ -71,11 +70,13 @@ async function packageko(source, destination, verbose) {
   function copyPayloads(serviceSpec, deploymentSpec, verbose) {
     try {
       let endpointObjects = serviceSpec.paths;
-      if (endpointObjects == null) {
+      let artifactQuery = "$..artifact";
+      if (!endpointObjects || jp.query(endpointObjects, "$..*..['x-kgrid-activation']").length < 1) {
         endpointObjects = deploymentSpec.endpoints;
+        artifactQuery = "$.artifact";
       }
       Object.keys(endpointObjects).forEach(eo => {
-        let payloadPaths = jp.query(endpointObjects[eo], "$..artifact")[0];
+        let payloadPaths = jp.query(endpointObjects[eo], artifactQuery)[0];
         if (typeof (payloadPaths) === 'string') {
           copyFile(payloadPaths, verbose);
         } else {
@@ -85,7 +86,7 @@ async function packageko(source, destination, verbose) {
         }
       });
     } catch (e) {
-      console.log(`Could not copy package artifacts, check that service.yaml is correct.`)
+      console.log(`Could not copy package artifacts, check that service.yaml is correct.`, e.message)
     }
   }
 
@@ -93,8 +94,7 @@ async function packageko(source, destination, verbose) {
     if (filename) {
       let specPath = copyFile(filename, verbose);
       return yaml.safeLoad(fs.readFileSync(specPath));
-    }
-    else {
+    } else {
       console.log(`${filename} does not exist. Cannot package KO.`)
     }
   }
@@ -102,7 +102,7 @@ async function packageko(source, destination, verbose) {
   function copyFile(filename, verbose) {
     const sourceFile = path.join(source, filename);
     const destinationFile = path.join(temporaryFolder, filename);
-    if(verbose) {
+    if (verbose) {
       console.log(`Adding ${sourceFile} to package...`);
     }
     fs.copySync(sourceFile, destinationFile);

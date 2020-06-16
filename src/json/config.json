@@ -4,5 +4,5 @@
     "activator_port":"",
     "library_port":""
   },
-  "multiRuntime":false
+  "multiRuntime": true
 }

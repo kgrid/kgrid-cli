@@ -8,7 +8,7 @@
   "description": "Knowledge Object Description",
   "keywords": ["knowledge", "object"],
   "hasServiceSpecification": "service.yaml",
-  "hasDeploymentSpecification": "service.yaml",
+  "hasDeploymentSpecification": "deployment.yaml",
   "hasPayload": [],
   "@context" : ["http://kgrid.org/koio/contexts/knowledgeobject.jsonld" ]
 }

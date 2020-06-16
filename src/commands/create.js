@@ -35,7 +35,6 @@ class CreateCommand extends Command {
       var topMeta = JSON.parse(JSON.stringify(kometaObj))
       let responses
       if(userConfigJson){
-        if(userConfigJson.multiRuntime){
           responses = await inquirer.prompt([
               {
                 type: 'list',
@@ -43,12 +42,11 @@ class CreateCommand extends Command {
                 message: 'Please select the target runtime: ',
                 default: 0,
                 scroll: false,
-                choices: ['Nashorn','GraalVM','NodeJS']
+                choices: ['Nashorn','NodeJS']
               }
             ])
           runtime = responses.selectedRuntime
-          console.log()
-        }
+          console.log()  
       }
       if(runtime=='Nashorn' | runtime=='GraalVM'){
         responses = await inquirer.prompt([
@@ -74,7 +72,7 @@ class CreateCommand extends Command {
           }
           console.log()
       } else {
-        template = 'bundlejs'
+        template = 'simpleproxy'
       }
       process.stdout.write('Creating the Knowledge Object ...\r')
       fs.ensureDirSync(parsedInput.fullpath)

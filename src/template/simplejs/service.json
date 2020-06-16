@@ -48,11 +48,6 @@
               }
             }
           }
-        },
-        "x-kgrid-activation": {
-          "artifact": "src/index.js",
-          "adapter": "JAVASCRIPT",
-          "entry": "welcome"
         }
       }
     }

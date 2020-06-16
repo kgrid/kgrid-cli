@@ -1,21 +1,21 @@
 {
   "openapi": "3.0.2",
   "info": {
-    "version": "1.0.0",
-    "title": "Executive Object Example",
-    "description": "An example object demonstrating the capability of calling other objects"
+    "version": "0.1",
+    "title": "Hello, Proxy",
+    "description": "hello proxy"
   },
   "servers": [
     {
-      "url": "/hello/world/v0.1/",
-      "description": "Executive Object Example"
+      "url": "/hello/proxy",
+      "description": "Hello proxy"
     }
   ],
   "paths": {
-    "/process": {
+    "/welcome": {
       "post": {
-        "description": "executive object",
-        "operationId": "process",
+        "description": "Welcome.",
+        "operationId": "welcome",
         "requestBody": {
           "description": "inputs",
           "required": true,
@@ -56,15 +56,12 @@
     "schemas": {
       "input": {
         "required": [
-          "names"
+          "name"
         ],
         "properties": {
-          "names": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "example": ["Sponge", "Bob", "the Builder"]
+          "name": {
+            "type": "string",
+            "example": "Bob"
           }
         }
       },

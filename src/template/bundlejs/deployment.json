@@ -1,0 +1,9 @@
+{
+  "endpoints":{
+    "/score": {
+      "artifact": "dist/main.js",
+      "adapter": "JAVASCRIPT",
+      "entry": "score"
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "endpoints":{
+    "/welcome": {
+      "artifact": [ "src/index.js"],
+      "adapter": "PROXY",
+      "engine": "node",
+      "entry": "src/index.js",
+      "function": "welcome"
+    }
+  }
+}

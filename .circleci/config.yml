@@ -1,7 +1,13 @@
 version: 2.1
+
+workflows:
+  build-deploy:
+    jobs:
+      - build:
+          context: kgrid
+
 jobs:
   build:
-    context: kgrid
     docker:
     # specify the version you desire here
     - image: circleci/openjdk:8-jdk-node

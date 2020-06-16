@@ -34,20 +34,18 @@ class CreateCommand extends Command {
       }
       var topMeta = JSON.parse(JSON.stringify(kometaObj))
       let responses
-      if(userConfigJson){
-          responses = await inquirer.prompt([
-              {
-                type: 'list',
-                name: 'selectedRuntime',
-                message: 'Please select the target runtime: ',
-                default: 0,
-                scroll: false,
-                choices: ['Nashorn','NodeJS']
-              }
-            ])
-          runtime = responses.selectedRuntime
-          console.log()  
-      }
+      responses = await inquirer.prompt([
+          {
+            type: 'list',
+            name: 'selectedRuntime',
+            message: 'Please select the target runtime: ',
+            default: 0,
+            scroll: false,
+            choices: ['Nashorn','NodeJS']
+          }
+        ])
+      runtime = responses.selectedRuntime
+      console.log()
       if(runtime=='Nashorn' | runtime=='GraalVM'){
         responses = await inquirer.prompt([
             {

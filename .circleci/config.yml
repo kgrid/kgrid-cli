@@ -1,5 +1,4 @@
-
-version: 2
+version: 2.1
 jobs:
   build:
     context: kgrid
@@ -58,6 +57,7 @@ jobs:
              fi
 
     - run:
+        context: kgrid
         name: Deploy VuePress GitHub Pages
         command: |
               npm run oclif-readme

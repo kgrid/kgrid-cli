@@ -3,7 +3,7 @@
     "/welcome": {
       "artifact": "src/index.js",
       "adapter": "JAVASCRIPT",
-      "entry": "process"
+      "function": "process"
     }
   }
 }

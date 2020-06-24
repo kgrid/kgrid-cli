@@ -3,7 +3,7 @@
     "/score": {
       "artifact": "dist/main.js",
       "adapter": "JAVASCRIPT",
-      "entry": "score"
+      "function": "score"
     }
   }
 }

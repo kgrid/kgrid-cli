@@ -14,10 +14,8 @@ function runKgrid(cmd) {
     kgridcomponent = manifest.kitAssets[key].filename
   }
   cmdstring = cmdstring + path.join(cmd.khome, kgridcomponent)
-  if(shelf == ''){
-    shelf = process.cwd()
-  }
-  cmdstring = cmdstring + ' --kgrid.shelf.cdostore.url=filesystem:file:///' + shelf.split(path.sep).join('/')
+  var basePath = process.cwd()
+  cmdstring = cmdstring + ' --kgrid.shelf.cdostore.url=filesystem:file:///' + path.resolve(basePath, shelf).split(path.sep).join('/')
   if(port!=''){
     cmdstring = cmdstring + ' --server.port='+port
   }

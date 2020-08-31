@@ -56,7 +56,7 @@ function writeManifest(sourceDir, manifestName) {
   };
   koZips.forEach((koZip, index) => {
     if(koZip.path.endsWith(".zip")) {
-      manifest.manifest.push("file:" + koZip.path.substring(sourceDir.length + 1));
+      manifest.manifest.push(koZip.path.substring(sourceDir.length + 1));
     }
   });
 

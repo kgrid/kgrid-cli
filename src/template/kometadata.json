@@ -1,7 +1,7 @@
 {
-  "@id": "naan-name",
+  "@id": "naan/name/version",
   "@type":"koio:KnowledgeObject",
-  "identifier":"ark:/naan/name",
+  "identifier":"ark:/naan/name/version",
   "version":"1.0.0",
   "title":"Knowledge Object Title",
   "contributors": "Kgrid Team",

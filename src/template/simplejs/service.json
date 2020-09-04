@@ -1,13 +1,13 @@
 {
   "openapi": "3.0.2",
   "info": {
-    "version": "0.1",
+    "version": "1.0.0",
     "title": "Hello, World",
     "description": "hello world"
   },
   "servers": [
     {
-      "url": "/hello/world/v0.1/",
+      "url": "/hello/world/1.0.0/",
       "description": "Hello world"
     }
   ],

@@ -7,7 +7,7 @@
   },
   "servers": [
     {
-      "url": "/hello/world/v0.1/",
+      "url": "/hello/world/1.0.0/",
       "description": "Executive Object Example"
     }
   ],

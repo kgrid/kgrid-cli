@@ -1,13 +1,13 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "version": "1.0",
+    "version": "1.0.0",
     "title": "SCORE risk calculation",
     "description": "SCORE risk calculation"
   },
   "servers": [
     {
-      "url": "/score/calc/v1.0",
+      "url": "/score/calc/1.0.0",
       "description": "SCORE risk calculation."
     }
   ],

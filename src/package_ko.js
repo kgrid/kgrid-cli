@@ -4,14 +4,14 @@ const jp = require('jsonpath');
 const fs = require('fs-extra');
 const path = require('path');
 
-async function packageko(source, destination, verbose) {
+async function packageKo(source, destination, verbose) {
 
   let topMeta = fs.readJsonSync(path.join(source, 'metadata.json'));
   let arkId = topMeta["@id"];
-  let version = topMeta.version;
-  let arkParts = arkId.split("-");
+  let arkParts = arkId.split("/");
   let naan = arkParts[0];
   let name = arkParts[1];
+  let version = topMeta.version;
   let tempName = "tmp-" + naan + name + version;
   let destinationName = naan + '-' + name + '-' + version + '.zip';
   let temporaryFolder = path.join(path.dirname(source), tempName, naan + '-' + name + '-' + version);
@@ -41,7 +41,7 @@ async function packageko(source, destination, verbose) {
     writePackageToZip();
 
   } catch (e) {
-    console.log(`Can't package ko with ark ${arkId}-${version} error: ${e.message}`);
+    console.log(`Can't package ko with ark ${arkId} error: ${e.message}`);
     fs.removeSync(path.join(path.dirname(source), tempName))
   }
 
@@ -110,4 +110,4 @@ async function packageko(source, destination, verbose) {
   }
 }
 
-module.exports = packageko;
+module.exports = packageKo;

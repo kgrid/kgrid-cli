@@ -4,11 +4,12 @@ const klawSync = require('klaw-sync');
 const fs = require('fs-extra');
 const path = require('path');
 const inquirer = require('inquirer');
+const currentDirectory = process.cwd();
 
 class GenerateManifest extends Command {
   async run() {
     const {args, flags} = this.parse(GenerateManifest);
-    const sourceDir = flags.source || process.cwd();
+    const sourceDir = flags.source || currentDirectory;
     const manifestName = flags.name || "manifest.json";
     const forceDefaults = flags.force;
 
@@ -21,10 +22,10 @@ ${documentations.generatemanifest}
 `;
 
 GenerateManifest.flags = {
-  help: flags.help({char:'h'}),
-  source: flags.string({char:'s', description:'The folder holding the kos as the source directory'}),
-  name: flags.string({char:'n', description:'The name of the manifest file'}),
-  force: flags.boolean({char:'f',  default: false, description:"Use default values for all prompted choices"})
+  help: flags.help({char: 'h'}),
+  source: flags.string({char: 's', description: 'The folder holding the kos as the source directory'}),
+  name: flags.string({char: 'n', description: 'The name of the manifest file'}),
+  force: flags.boolean({char: 'f', default: false, description: "Use default values for all prompted choices"})
 };
 
 function promptAndCreateManifest(sourceDir, manifestName, force) {
@@ -47,20 +48,34 @@ function promptAndCreateManifest(sourceDir, manifestName, force) {
 }
 
 function writeManifest(sourceDir, manifestName) {
-  const manifestLoc = path.join(sourceDir, manifestName);
+  const manifestLoc = path.join(currentDirectory, manifestName);
   console.log("Creating manifest for zipped kos in folder " + sourceDir + " and writing to " + manifestName);
 
-  let koZips = klawSync(sourceDir, {nodir:true, depthLimit: 0});
-  let manifest = {
+  let koZips = klawSync(sourceDir, {nodir: true, depthLimit: 0});
+  let topLevelNode = {
     manifest: []
   };
-  koZips.forEach((koZip, index) => {
-    if(koZip.path.endsWith(".zip")) {
-      manifest.manifest.push(koZip.path.substring(sourceDir.length + 1));
+  koZips.forEach((koZip) => {
+    const pathToWrite = getPathForManifestEntry(sourceDir, koZip);
+    if (pathToWrite.endsWith(".zip")) {
+      topLevelNode.manifest.push(pathToWrite);
     }
   });
 
-  fs.writeJsonSync(manifestLoc, manifest, {spaces: 2});
+  fs.writeJsonSync(manifestLoc, topLevelNode, {spaces: 2});
+}
+
+function getPathForManifestEntry(sourceDir, zip) {
+  if (sourceDir !== currentDirectory) {
+    return path.join(sourceDir, getFilenameFromZip(zip));
+  } else {
+    return zip.path.substring(sourceDir.length + 1)
+  }
+}
+
+function getFilenameFromZip(zip){
+  let lastSlash = zip.path.lastIndexOf('/');
+  return zip.path.substring(lastSlash);
 }
 
 module.exports = GenerateManifest;

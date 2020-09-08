@@ -6,6 +6,7 @@ const path = require('path');
 const inquirer = require('inquirer');
 const currentDirectory = process.cwd();
 let manifestLocation;
+
 class GenerateManifest extends Command {
   async run() {
     const {args, flags} = this.parse(GenerateManifest);
@@ -55,8 +56,8 @@ function writeManifest(sourceDir, manifestName) {
     manifest: []
   };
   koZips.forEach((koZip) => {
-    const pathToWrite = getPathForManifestEntry(sourceDir, koZip);
-    if (pathToWrite.endsWith(".zip")) {
+    if (koZip.path.endsWith(".zip")) {
+      const pathToWrite = getPathForManifestEntry(sourceDir, koZip);
       topLevelNode.manifest.push(pathToWrite);
     }
   });
@@ -66,15 +67,16 @@ function writeManifest(sourceDir, manifestName) {
 
 function getPathForManifestEntry(sourceDir, zip) {
   if (sourceDir !== currentDirectory) {
-    return path.join(sourceDir, getFilenameFromZip(zip));
+    return sourceDir + getFilenameFromZip(zip);
   } else {
     return zip.path.substring(sourceDir.length + 1)
   }
 }
 
 function getFilenameFromZip(zip) {
-  let lastSlash = zip.path.lastIndexOf('/');
-  return zip.path.substring(lastSlash);
+  let lastSlash = zip.path.lastIndexOf(path.sep);
+  let filePath = zip.path.substring(lastSlash);
+  return  filePath.replace(/\\/g, "/");
 }
 
 module.exports = GenerateManifest;

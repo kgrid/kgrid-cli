@@ -5,7 +5,7 @@ const fs = require('fs-extra');
 const path = require('path');
 const inquirer = require('inquirer');
 const currentDirectory = process.cwd();
-
+let manifestLocation;
 class GenerateManifest extends Command {
   async run() {
     const {args, flags} = this.parse(GenerateManifest);
@@ -29,9 +29,9 @@ GenerateManifest.flags = {
 };
 
 function promptAndCreateManifest(sourceDir, manifestName, force) {
-  const manifestLoc = path.join(sourceDir, manifestName);
+  manifestLocation = path.join(currentDirectory, manifestName);
 
-  if (fs.pathExistsSync(manifestLoc) && force === false) {
+  if (fs.pathExistsSync(manifestLocation) && force === false) {
     inquirer.prompt([{
       type: 'confirm',
       name: 'replace',
@@ -48,7 +48,6 @@ function promptAndCreateManifest(sourceDir, manifestName, force) {
 }
 
 function writeManifest(sourceDir, manifestName) {
-  const manifestLoc = path.join(currentDirectory, manifestName);
   console.log("Creating manifest for zipped kos in folder " + sourceDir + " and writing to " + manifestName);
 
   let koZips = klawSync(sourceDir, {nodir: true, depthLimit: 0});
@@ -62,7 +61,7 @@ function writeManifest(sourceDir, manifestName) {
     }
   });
 
-  fs.writeJsonSync(manifestLoc, topLevelNode, {spaces: 2});
+  fs.writeJsonSync(manifestLocation, topLevelNode, {spaces: 2});
 }
 
 function getPathForManifestEntry(sourceDir, zip) {
@@ -73,7 +72,7 @@ function getPathForManifestEntry(sourceDir, zip) {
   }
 }
 
-function getFilenameFromZip(zip){
+function getFilenameFromZip(zip) {
   let lastSlash = zip.path.lastIndexOf('/');
   return zip.path.substring(lastSlash);
 }

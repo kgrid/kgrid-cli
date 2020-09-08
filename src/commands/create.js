@@ -77,7 +77,7 @@ class CreateCommand extends Command {
       }
       process.stdout.write('Creating the Knowledge Object ...\r')
       fs.ensureDirSync(parsedInput.fullpath)
-      topMeta.identifier = 'ark:/' + parsedInput.koid.naan + '/' + parsedInput.koid.name + '/' + DEFAULT_VERSION
+      topMeta.identifier = 'ark:/' + parsedInput.koid.naan + '/' + parsedInput.koid.name;
       topMeta['@id'] = parsedInput.koid.naan + '/' + parsedInput.koid.name + '/' + DEFAULT_VERSION
       fs.writeJsonSync(path.join(parsedInput.fullpath, 'metadata.json'), topMeta, {spaces: 4})
 

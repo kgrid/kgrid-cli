@@ -7,10 +7,10 @@ const path = require('path');
 async function packageKo(source, destination, verbose) {
 
   let topMeta = fs.readJsonSync(path.join(source, 'metadata.json'));
-  let arkId = topMeta["@id"];
+  let arkId = topMeta["identifier"];
   let arkParts = arkId.split("/");
-  let naan = arkParts[0];
-  let name = arkParts[1];
+  let naan = arkParts[1];
+  let name = arkParts[2];
   let version = topMeta.version;
   let tempName = "tmp-" + naan + name + version;
   let destinationName = naan + '-' + name + '-' + version + '.zip';

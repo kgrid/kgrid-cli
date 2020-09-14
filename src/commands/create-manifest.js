@@ -5,16 +5,16 @@ const fs = require('fs-extra');
 const path = require('path');
 const inquirer = require('inquirer');
 const currentDirectory = process.cwd();
-let manifestLocation;
+let manifestDestination;
 
 class GenerateManifest extends Command {
   async run() {
     const {args, flags} = this.parse(GenerateManifest);
-    const sourceDir = flags.source || currentDirectory;
-    const manifestName = flags.name || "manifest.json";
+    const sourceDirectory = flags.source || currentDirectory;
+    const targetDirectory = flags.target || "manifest.json";
     const forceDefaults = flags.force;
 
-    promptAndCreateManifest(sourceDir, manifestName, forceDefaults);
+    promptAndCreateManifest(sourceDirectory, targetDirectory, forceDefaults);
   }
 }
 
@@ -25,14 +25,14 @@ ${documentations.generatemanifest}
 GenerateManifest.flags = {
   help: flags.help({char: 'h'}),
   source: flags.string({char: 's', description: 'The folder holding the kos as the source directory'}),
-  name: flags.string({char: 'n', description: 'The name of the manifest file'}),
+  target: flags.string({char: 'n', description: 'The target path and name of the manifest file'}),
   force: flags.boolean({char: 'f', default: false, description: "Use default values for all prompted choices"})
 };
 
-function promptAndCreateManifest(sourceDir, manifestName, force) {
-  manifestLocation = path.join(currentDirectory, manifestName);
+function promptAndCreateManifest(sourceDirectory, targetDirectory, force) {
+  manifestDestination = path.join(currentDirectory, targetDirectory);
 
-  if (fs.pathExistsSync(manifestLocation) && force === false) {
+  if (fs.pathExistsSync(manifestDestination) && force === false) {
     inquirer.prompt([{
       type: 'confirm',
       name: 'replace',
@@ -40,43 +40,40 @@ function promptAndCreateManifest(sourceDir, manifestName, force) {
 
     }]).then((answers) => {
       if (answers.replace) {
-        writeManifest(sourceDir, manifestName);
+        writeManifest(sourceDirectory, targetDirectory);
       }
     })
   } else {
-    writeManifest(sourceDir, manifestName);
+    writeManifest(sourceDirectory, targetDirectory);
   }
 }
 
-function writeManifest(sourceDir, manifestName) {
-  console.log("Creating manifest for zipped kos in folder " + sourceDir + " and writing to " + manifestName);
+function writeManifest(sourceDirectory, targetDirectory) {
+  console.log("Creating manifest for zipped kos in folder " + sourceDirectory + " and writing to " + targetDirectory);
 
-  let koZips = klawSync(sourceDir, {nodir: true, depthLimit: 0});
+  let koZips = klawSync(sourceDirectory, {nodir: true, depthLimit: 0});
   let topLevelNode = {
     manifest: []
   };
   koZips.forEach((koZip) => {
     if (koZip.path.endsWith(".zip")) {
-      const pathToWrite = getPathForManifestEntry(sourceDir, koZip);
+      const pathToWrite = getPathForManifestEntry(sourceDirectory, targetDirectory, koZip);
       topLevelNode.manifest.push(pathToWrite);
     }
   });
-
-  fs.writeJsonSync(manifestLocation, topLevelNode, {spaces: 2});
+console.log("**********************************WRITING STUFF TO: " + manifestDestination)
+  fs.writeJsonSync(manifestDestination, topLevelNode, {spaces: 2});
 }
 
-function getPathForManifestEntry(sourceDir, zip) {
-  if (sourceDir !== currentDirectory) {
-    return sourceDir + getFilenameFromZip(zip);
-  } else {
-    return zip.path.substring(sourceDir.length + 1)
-  }
+function getPathForManifestEntry(sourceDirectory, targetDirectory, zip) {
+  let manifestDirectory = targetDirectory.substring(0, targetDirectory.lastIndexOf("/"));
+  return path.join(path.relative(manifestDirectory, sourceDirectory), getFilenameFromZip(zip));
 }
 
 function getFilenameFromZip(zip) {
   let lastSlash = zip.path.lastIndexOf(path.sep);
   let filePath = zip.path.substring(lastSlash);
-  return  filePath.replace(/\\/g, "/");
+  return filePath.replace(/\\/g, "/");
 }
 
 module.exports = GenerateManifest;

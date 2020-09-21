@@ -25,7 +25,7 @@ ${documentations.generatemanifest}
 GenerateManifest.flags = {
   help: flags.help({char: 'h'}),
   source: flags.string({char: 's', description: 'The folder holding the kos as the source directory'}),
-  target: flags.string({char: 'n', description: 'The target path and name of the manifest file'}),
+  target: flags.string({char: 't', description: 'The target path and name of the manifest file'}),
   force: flags.boolean({char: 'f', default: false, description: "Use default values for all prompted choices"})
 };
 
@@ -57,7 +57,8 @@ function writeManifest(sourceDirectory, targetDirectory) {
   };
   koZips.forEach((koZip) => {
     if (koZip.path.endsWith(".zip")) {
-      const pathToWrite = getPathForManifestEntry(sourceDirectory, targetDirectory, koZip);
+      let pathToWrite = getPathForManifestEntry(sourceDirectory, targetDirectory, koZip);
+      pathToWrite = pathToWrite.replace(/\\/g, "/");
       topLevelNode.manifest.push(pathToWrite);
     }
   });
@@ -72,8 +73,8 @@ function getPathForManifestEntry(sourceDirectory, targetDirectory, zip) {
 
 function getFilenameFromZip(zip) {
   let lastSlash = zip.path.lastIndexOf(path.sep);
-  let filePath = zip.path.substring(lastSlash);
-  return filePath.replace(/\\/g, "/");
+  let filePath = zip.path.substring(lastSlash + 1);
+  return filePath;
 }
 
 module.exports = GenerateManifest;

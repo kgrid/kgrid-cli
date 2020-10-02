@@ -62,7 +62,7 @@ function writeManifest(sourceDirectory, targetDirectory) {
       topLevelNode.manifest.push(pathToWrite);
     }
   });
-console.log("**********************************WRITING STUFF TO: " + manifestDestination)
+  console.log("Writing manifest to: " + manifestDestination)
   fs.writeJsonSync(manifestDestination, topLevelNode, {spaces: 2});
 }
 

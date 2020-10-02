@@ -26,12 +26,9 @@ async function packageKo(source, destination, verbose) {
     let koMetadataPath = path.join(source, 'metadata.json');
     if (fs.pathExistsSync(koMetadataPath)) {
       let koMetadata = fs.readJsonSync(koMetadataPath);
-      const serviceSpecName = koMetadata.hasServiceSpecification;
       const deploymentSpecName = koMetadata.hasDeploymentSpecification;
-
-      const serviceSpec = copyAndLoadYamlFile(serviceSpecName, verbose);
       const deploymentSpec = copyAndLoadYamlFile(deploymentSpecName, verbose)
-      copyPayloads(serviceSpec, deploymentSpec, verbose);
+      copyPayloads(deploymentSpec, verbose);
       copyFile('metadata.json', verbose)
 
     } else {
@@ -67,16 +64,11 @@ async function packageKo(source, destination, verbose) {
     archive.finalize();
   }
 
-  function copyPayloads(serviceSpec, deploymentSpec, verbose) {
+  function copyPayloads(deploymentSpec, verbose) {
     try {
-      let endpointObjects = serviceSpec.paths;
       let artifactQuery = "$..artifact";
-      if (!endpointObjects || jp.query(endpointObjects, "$..*..['x-kgrid-activation']").length < 1) {
-        endpointObjects = deploymentSpec.endpoints;
-        artifactQuery = "$.artifact";
-      }
-      Object.keys(endpointObjects).forEach(eo => {
-        let payloadPaths = jp.query(endpointObjects[eo], artifactQuery)[0];
+      Object.keys(deploymentSpec).forEach(eo => {
+        let payloadPaths = jp.query(deploymentSpec[eo], artifactQuery)[0];
         if (typeof (payloadPaths) === 'string') {
           copyFile(payloadPaths, verbose);
         } else {

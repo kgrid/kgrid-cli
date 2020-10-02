@@ -1,7 +1,7 @@
 {
   "name": "@kgrid/cli",
   "description": "Command-line tool for Knowledge Object Developers (Note: Compatible with the latest KO structure)",
-  "version": "0.5.4",
+  "version": "0.5.5",
   "author": "kgrid",
   "bin": {
     "kgrid": "./bin/run"

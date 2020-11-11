@@ -3,6 +3,7 @@ const yaml = require('js-yaml');
 const jp = require('jsonpath');
 const fs = require('fs-extra');
 const path = require('path');
+const { hashElement } = require('folder-hash');
 
 async function packageKo(source, destination, verbose) {
 
@@ -26,18 +27,24 @@ async function packageKo(source, destination, verbose) {
     let koMetadataPath = path.join(source, 'metadata.json');
     if (fs.pathExistsSync(koMetadataPath)) {
       let koMetadata = fs.readJsonSync(koMetadataPath);
+
       const serviceSpecName = koMetadata.hasServiceSpecification;
       const deploymentSpecName = koMetadata.hasDeploymentSpecification;
       copyAndLoadYamlFile(serviceSpecName, verbose);
-      const deploymentSpec = copyAndLoadYamlFile(deploymentSpecName, verbose)
+      const deploymentSpec = yaml.safeLoad(fs.readFileSync(path.join(source, deploymentSpecName)));
       copyPayloads(deploymentSpec, verbose);
-      copyFile('metadata.json', verbose)
-
+      hashElement(temporaryFolder, {exclude: '.*'}).then( hash => {
+        console.log("Writing hash " + hash.hash + " to deployment spec for object " + arkId);
+        Object.keys(deploymentSpec).forEach(endpoint => {deploymentSpec[endpoint].post.checksum = hash.hash});
+        fs.writeFileSync(path.join(temporaryFolder, deploymentSpecName), yaml.safeDump(deploymentSpec));
+        copyFile('metadata.json', verbose)
+        writePackageToZip();
+      }).catch(error =>{
+        console.log("Hashing object " + arkId + " failed: " + error);
+      });
     } else {
       console.log(`Cannot find the folder for ${arkId}`);
     }
-
-    writePackageToZip();
 
   } catch (e) {
     console.log(`Can't package ko with ark ${arkId} error: ${e.message}`);

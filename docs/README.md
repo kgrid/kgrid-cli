@@ -22,7 +22,7 @@ $ npm install -g @kgrid/cli
 $ kgrid COMMAND
 running command...
 $ kgrid (-v|--version|version)
-@kgrid/cli/0.5.3 win32-x64 node-v12.18.3
+@kgrid/cli/0.5.6 win32-x64 node-v12.18.3
 $ kgrid --help [COMMAND]
 USAGE
   $ kgrid COMMAND
@@ -82,7 +82,7 @@ DESCRIPTION
      The template is determined by the user's choice of the target runtime and template type.
 ```
 
-_See code: [src\commands\create.js](https://github.com/kgrid/kgrid-cli/blob/v0.5.3/src\commands\create.js)_
+_See code: [src\commands\create.js](https://github.com/kgrid/kgrid-cli/blob/v0.5.4/src\commands\create.js)_
 
 ## `kgrid create-manifest`
 
@@ -95,14 +95,14 @@ USAGE
 OPTIONS
   -f, --force          Use default values for all prompted choices
   -h, --help           show CLI help
-  -n, --target=target  The target path and name of the manifest file
   -s, --source=source  The folder holding the kos as the source directory
+  -t, --target=target  The target path and name of the manifest file
 
 DESCRIPTION
   Generate a manifest for all the objects in a directory
 ```
 
-_See code: [src\commands\create-manifest.js](https://github.com/kgrid/kgrid-cli/blob/v0.5.3/src\commands\create-manifest.js)_
+_See code: [src\commands\create-manifest.js](https://github.com/kgrid/kgrid-cli/blob/v0.5.4/src\commands\create-manifest.js)_
 
 ## `kgrid help [COMMAND]`
 
@@ -133,7 +133,7 @@ DESCRIPTION
   The list command will provide a list of the Knowledge Objects on the shelf.
 ```
 
-_See code: [src\commands\list.js](https://github.com/kgrid/kgrid-cli/blob/v0.5.3/src\commands\list.js)_
+_See code: [src\commands\list.js](https://github.com/kgrid/kgrid-cli/blob/v0.5.4/src\commands\list.js)_
 
 ## `kgrid package [ARK]`
 
@@ -164,7 +164,7 @@ DESCRIPTION
      Example: kgrid package --source hello-world
 ```
 
-_See code: [src\commands\package.js](https://github.com/kgrid/kgrid-cli/blob/v0.5.3/src\commands\package.js)_
+_See code: [src\commands\package.js](https://github.com/kgrid/kgrid-cli/blob/v0.5.4/src\commands\package.js)_
 
 ## `kgrid package-all`
 
@@ -184,7 +184,7 @@ DESCRIPTION
   Package every knowledge object in a directory
 ```
 
-_See code: [src\commands\package-all.js](https://github.com/kgrid/kgrid-cli/blob/v0.5.3/src\commands\package-all.js)_
+_See code: [src\commands\package-all.js](https://github.com/kgrid/kgrid-cli/blob/v0.5.4/src\commands\package-all.js)_
 
 ## `kgrid play [ARK]`
 
@@ -214,7 +214,7 @@ DESCRIPTION
   If the activator is not running at the default port, use the option of '-p' to specify the port.
 ```
 
-_See code: [src\commands\play.js](https://github.com/kgrid/kgrid-cli/blob/v0.5.3/src\commands\play.js)_
+_See code: [src\commands\play.js](https://github.com/kgrid/kgrid-cli/blob/v0.5.4/src\commands\play.js)_
 
 ## `kgrid setup`
 
@@ -240,7 +240,7 @@ DESCRIPTION
   IF KGRID_HOME is not defined, the user home will be used.
 ```
 
-_See code: [src\commands\setup.js](https://github.com/kgrid/kgrid-cli/blob/v0.5.3/src\commands\setup.js)_
+_See code: [src\commands\setup.js](https://github.com/kgrid/kgrid-cli/blob/v0.5.4/src\commands\setup.js)_
 
 ## `kgrid start`
 
@@ -266,7 +266,7 @@ DESCRIPTION
   See the commands listed below.
 ```
 
-_See code: [src\commands\start\index.js](https://github.com/kgrid/kgrid-cli/blob/v0.5.3/src\commands\start\index.js)_
+_See code: [src\commands\start\index.js](https://github.com/kgrid/kgrid-cli/blob/v0.5.4/src\commands\start\index.js)_
 
 ## `kgrid start:activator`
 
@@ -291,7 +291,7 @@ DESCRIPTION
   The current directory will be used as the default shelf unless specified using the flag -s.
 ```
 
-_See code: [src\commands\start\activator.js](https://github.com/kgrid/kgrid-cli/blob/v0.5.3/src\commands\start\activator.js)_
+_See code: [src\commands\start\activator.js](https://github.com/kgrid/kgrid-cli/blob/v0.5.4/src\commands\start\activator.js)_
 
 ## `kgrid start:library`
 
@@ -316,7 +316,7 @@ DESCRIPTION
   The current directory will be used as the default shelf unless specified using the flag -s.
 ```
 
-_See code: [src\commands\start\library.js](https://github.com/kgrid/kgrid-cli/blob/v0.5.3/src\commands\start\library.js)_
+_See code: [src\commands\start\library.js](https://github.com/kgrid/kgrid-cli/blob/v0.5.4/src\commands\start\library.js)_
 
 ## `kgrid upload [ARK]`
 
@@ -338,7 +338,7 @@ DESCRIPTION
   The upload command will send the packaged KO to a specified activator.
 ```
 
-_See code: [src\commands\upload.js](https://github.com/kgrid/kgrid-cli/blob/v0.5.3/src\commands\upload.js)_
+_See code: [src\commands\upload.js](https://github.com/kgrid/kgrid-cli/blob/v0.5.4/src\commands\upload.js)_
 <!-- commandsstop -->
 * [`kgrid create [KO]`](#kgrid-create-ko)
 * [`kgrid create-manifest`](#kgrid-create-manifest)

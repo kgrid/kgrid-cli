@@ -3,7 +3,7 @@ const yaml = require('js-yaml');
 const jp = require('jsonpath');
 const fs = require('fs-extra');
 const path = require('path');
-const { hashElement } = require('folder-hash');
+const {hashElement} = require('folder-hash');
 
 async function packageKo(source, destination, verbose) {
 
@@ -30,16 +30,21 @@ async function packageKo(source, destination, verbose) {
 
       const serviceSpecName = koMetadata.hasServiceSpecification;
       const deploymentSpecName = koMetadata.hasDeploymentSpecification;
-      copyAndLoadYamlFile(serviceSpecName, verbose);
+
       const deploymentSpec = yaml.safeLoad(fs.readFileSync(path.join(source, deploymentSpecName)));
       copyPayloads(deploymentSpec, verbose);
-      hashElement(temporaryFolder, {exclude: '.*'}).then( hash => {
+      hashElement(temporaryFolder, {exclude: '.*'}).then(hash => {
         console.log("Writing hash " + hash.hash + " to deployment spec for object " + arkId);
-        Object.keys(deploymentSpec).forEach(endpoint => {deploymentSpec[endpoint].post.checksum = hash.hash});
+        Object.keys(deploymentSpec).forEach(endpoint => {
+          Object.values(deploymentSpec[endpoint]).forEach(methodType => {
+            methodType.checksum = hash.hash
+          });
+        });
         fs.writeFileSync(path.join(temporaryFolder, deploymentSpecName), yaml.safeDump(deploymentSpec));
+        copyAndLoadYamlFile(serviceSpecName, verbose);
         copyFile('metadata.json', verbose)
         writePackageToZip();
-      }).catch(error =>{
+      }).catch(error => {
         console.log("Hashing object " + arkId + " failed: " + error);
       });
     } else {

@@ -27,11 +27,15 @@ async function packageKo(source, destination, verbose) {
     let koMetadataPath = path.join(source, 'metadata.json');
     if (fs.pathExistsSync(koMetadataPath)) {
       let koMetadata = fs.readJsonSync(koMetadataPath);
-
+      let idPattern = new RegExp('^[a-zA-Z0-9.]+\/[a-zA-Z0-9.]+\/[a-zA-Z0-9.]+$');
+      if(!idPattern.test(koMetadata['@id'])) {
+        console.log(`Warning!! @id ${koMetadata['@id']} does not match the ark id/version spec.\n`)
+      }
       const serviceSpecName = koMetadata.hasServiceSpecification;
       const deploymentSpecName = koMetadata.hasDeploymentSpecification;
 
-      const deploymentSpec = yaml.safeLoad(fs.readFileSync(path.join(source, deploymentSpecName)));
+      let deploymentPath = path.join(source, deploymentSpecName);
+      const deploymentSpec = yaml.safeLoad(fs.readFileSync(deploymentPath));
       copyPayloads(deploymentSpec, verbose);
       hashElement(temporaryFolder, {exclude: '.*'}).then(hash => {
         console.log("Writing hash " + hash.hash + " to deployment spec for object " + arkId);

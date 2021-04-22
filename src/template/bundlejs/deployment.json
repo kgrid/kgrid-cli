@@ -1,8 +1,8 @@
 {
-  "endpoints":{
-    "/score": {
+  "/score": {
+    "post":{
       "artifact": "dist/main.js",
-      "adapter": "JAVASCRIPT",
+      "engine": "javascript",
       "function": "score"
     }
   }

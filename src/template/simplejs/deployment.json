@@ -1,8 +1,8 @@
 {
-  "endpoints":{
-    "/welcome": {
+  "/welcome": {
+    "post": {
       "artifact":  "src/index.js",
-      "adapter": "JAVASCRIPT",
+      "engine": "javascript",
       "function":  "welcome"
     }
   }

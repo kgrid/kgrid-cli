@@ -1,13 +1,13 @@
 {
   "openapi": "3.0.2",
   "info": {
-    "version": "1.0.0",
+    "version": "1.0",
     "title": "Hello, Proxy",
     "description": "hello proxy"
   },
   "servers": [
     {
-      "url": "/hello/proxy/1.0.0",
+      "url": "/hello/proxy",
       "description": "Hello proxy"
     }
   ],
@@ -33,7 +33,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/output"
+                  "$ref": "https://demo.kgrid.org/schemas/openapischemas.yaml#/components/schemas/genericresponse"
                 }
               }
             }
@@ -43,7 +43,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "https://demo.kgrid.org/schemas/basicerror.yaml"
+                  "$ref": "https://demo.kgrid.org/schemas/openapischemas.yaml#/components/schemas/genericerror"
                 }
               }
             }
@@ -62,16 +62,6 @@
           "name": {
             "type": "string",
             "example": "Bob"
-          }
-        }
-      },
-      "output": {
-        "required": [
-          "result"
-        ],
-        "properties": {
-          "result": {
-            "type": "object"
           }
         }
       }

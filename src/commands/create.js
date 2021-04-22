@@ -9,7 +9,7 @@ const documentations = require('../json/extradoc.json')
 const os = require('os')
 const userConfig = require('../user_config')
 const parseInput = require('../parse_input')
-const DEFAULT_VERSION = "1.0.0";
+const DEFAULT_VERSION = "v1.0";
 
 class CreateCommand extends Command {
   async run() {
@@ -77,8 +77,9 @@ class CreateCommand extends Command {
       }
       process.stdout.write('Creating the Knowledge Object ...\r')
       fs.ensureDirSync(parsedInput.fullpath)
-      topMeta.identifier = 'ark:/' + parsedInput.koid.naan + '/' + parsedInput.koid.name;
+      topMeta.identifier = 'ark:/' + parsedInput.koid.naan + '/' + parsedInput.koid.name+ '/' + DEFAULT_VERSION;
       topMeta['@id'] = parsedInput.koid.naan + '/' + parsedInput.koid.name + '/' + DEFAULT_VERSION
+      topMeta.version=DEFAULT_VERSION;
       fs.writeJsonSync(path.join(parsedInput.fullpath, 'metadata.json'), topMeta, {spaces: 4})
 
       var arkid = await addKOContent(parsedInput.fullpath, parsedInput.koid, template, runtime)

@@ -1,13 +1,13 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "version": "1.0.0",
+    "version": "1.0",
     "title": "SCORE risk calculation",
     "description": "SCORE risk calculation"
   },
   "servers": [
     {
-      "url": "/score/calc/1.0.0",
+      "url": "/score/calc",
       "description": "SCORE risk calculation."
     }
   ],
@@ -33,7 +33,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/output"
+                  "$ref": "https://demo.kgrid.org/schemas/openapischemas.yaml#/components/schemas/genericresponse"
                 }
               }
             }
@@ -43,7 +43,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "https://demo.kgrid.org/schemas/basicerror.yaml"
+                  "$ref": "https://demo.kgrid.org/schemas/openapischemas.yaml#/components/schemas/genericerror"
                 }
               }
             }
@@ -95,16 +95,6 @@
           "smoker": {
             "type": "boolean",
             "example": false
-          }
-        }
-      },
-      "output": {
-        "required": [
-          "result"
-        ],
-        "properties": {
-          "result": {
-            "type": "object"
           }
         }
       }

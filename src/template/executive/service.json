@@ -1,13 +1,13 @@
 {
   "openapi": "3.0.2",
   "info": {
-    "version": "1.0.0",
+    "version": "1.0",
     "title": "Executive Object Example",
     "description": "An example object demonstrating the capability of calling other objects"
   },
   "servers": [
     {
-      "url": "/hello/world/1.0.0/",
+      "url": "/hello/world",
       "description": "Executive Object Example"
     }
   ],
@@ -33,7 +33,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/output"
+                  "$ref": "https://demo.kgrid.org/schemas/openapischemas.yaml#/components/schemas/genericresponse"
                 }
               }
             }
@@ -43,7 +43,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "https://demo.kgrid.org/schemas/basicerror.yaml"
+                  "$ref": "https://demo.kgrid.org/schemas/openapischemas.yaml#/components/schemas/genericerror"
                 }
               }
             }
@@ -59,22 +59,9 @@
           "names"
         ],
         "properties": {
-          "names": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "example": ["Sponge", "Bob", "the Builder"]
-          }
-        }
-      },
-      "output": {
-        "required": [
-          "result"
-        ],
-        "properties": {
-          "result": {
-            "type": "object"
+          "name": {
+            "type": "string",
+            "example": "Steve"
           }
         }
       }

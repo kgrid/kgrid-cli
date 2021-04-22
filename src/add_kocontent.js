@@ -2,7 +2,7 @@ const fs = require('fs-extra')
 const yaml = require('js-yaml')
 const path = require('path')
 const source = require.resolve('../src/template/kometadata.json')
-const DEFAULT_VERSION = '1.0.0';
+
 
 async function addKOContent(fullpath, koid, template, runtime) {
   let sourcePath = path.join(path.dirname(source), template);
@@ -21,7 +21,7 @@ async function addKOContent(fullpath, koid, template, runtime) {
   topMeta.hasPayload.push(artifact)
   fs.writeJsonSync(path.join(fullpath, 'metadata.json'), topMeta, {spaces: 4})
 
-  koService.servers[0].url = '/' + koid.naan + '/' + koid.name + '/' + DEFAULT_VERSION;
+  koService.servers[0].url = '/' + koid.naan + '/' + koid.name ;
   fs.writeFileSync(path.join(fullpath, 'service.yaml'),
     yaml.safeDump(koService, {
       styles: {'!!null': 'canonical',}, // dump null as ~

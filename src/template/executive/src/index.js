@@ -1,12 +1,10 @@
 function process(inputs){
-  var names = inputs.names;
-  var executor = context.getExecutor("99999-helloworld/welcome")
-  var results = {}
-  names.forEach(function(e){
-    var obj = {}
-    obj.name = e
-    var result = executor.execute(obj)
-    results[e]=result
-  })
-  return results;
+  var executor = context.getExecutor("js/simple/1.0/welcome");
+  if (executor != null) {
+     inputs = JSON.stringify(inputs)
+     return executor.execute(inputs, "application/json");
+  } else {
+     throw new Error("Cannot find simple js hello world ko.")
+  }
+
 }

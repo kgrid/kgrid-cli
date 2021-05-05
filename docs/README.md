@@ -31,7 +31,7 @@ USAGE
  <!-- commands -->
 * [`kgrid create [KO]`](#kgrid-create-ko)
 * [`kgrid create-manifest`](#kgrid-create-manifest)
-* [`kgrid download [MANIFEST]`](#kgrid-download-manifest)
+* [`kgrid download`](#kgrid-download)
 * [`kgrid help [COMMAND]`](#kgrid-help-command)
 * [`kgrid list`](#kgrid-list)
 * [`kgrid package [ARK]`](#kgrid-package-ark)
@@ -110,26 +110,28 @@ DESCRIPTION
 
 _See code: [src/commands/create-manifest.js](https://github.com/kgrid/kgrid-cli/blob/v0.6.0/src/commands/create-manifest.js)_
 
-## `kgrid download [MANIFEST]`
+## `kgrid download`
 
 Download a collection of Knowledge Object to the current directory.
 
 ```
 Download a collection of Knowledge Object to the current directory.
-The download command will download KOs to the current directory
+The download command will download KOs to the current directory by default or the directory specified by '-d'. The KO to be downloaded can be specified by either the filename, a manifest or a list of manifest files.
 
 
 USAGE
-  $ kgrid download [MANIFEST]
+  $ kgrid download
 
 OPTIONS
-  -d, --destination=destination  The directory to store the downloaded KOs.
+  -d, --destination=destination  The directory to store the downloaded KO(s)
   -f, --file=file                The filename of the packaged KO to be downloaded
   -h, --help                     show CLI help
-  -l, --list=list                The list of the manifest files to be downloaded
+  -l, --list=list                The list of the manifest files listing KOs to be downloaded
+  -m, --manifest=manifest        The manifest file listing the KOs to be downloaded
 
 DESCRIPTION
-  The download command will download KOs to the current directory
+  The download command will download KOs to the current directory by default or the directory specified by '-d'. The KO 
+  to be downloaded can be specified by either the filename, a manifest or a list of manifest files.
 ```
 
 _See code: [src/commands/download.js](https://github.com/kgrid/kgrid-cli/blob/v0.6.0/src/commands/download.js)_

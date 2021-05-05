@@ -12,19 +12,14 @@ class DownloadCommand extends Command {
       const {args, flags} = this.parse(DownloadCommand)
       var manifest = flags.manifest
       var file = flags.file
-      var list = flags.list
       var destination = flags.destination || process.cwd()
 
       var koList ={"remoteList":[],"localList":[]}
       let success = false
+      fs.ensureDirSync(destination)
       console.log("The downloaded KOs will be stored in "+destination+".\n");
 
-      // "-m" Specified mainfest
-      if (manifest!=null) {
-          let processedManifest = processManifest(manifest)
-          processedManifest.remoteList.forEach(e=>{koList.remoteList.push(e)})
-          processedManifest.localList.forEach(e=>{koList.localList.push(e)})
-      }
+
 
       // "-f" Specified file
       if(file!=null){
@@ -35,9 +30,9 @@ class DownloadCommand extends Command {
         }
       }
 
-      // "-l" Specified a list of manifest files
-      if(list){
-        let manifestList=list.split(',')
+      // "-m" Specified mainfest file(s)
+      if(manifest){
+        let manifestList=manifest.split(',')
         manifestList.forEach(e=>{
           let entry=e.trim()
           let processedManifest = processManifest(entry)
@@ -79,7 +74,6 @@ ${documentations.download}
 
 DownloadCommand.flags = {
   file: flags.string({char: 'f', description:'The filename of the packaged KO to be downloaded',exclusive: ['manifest']}),
-  list: flags.string({char: 'l', description:'The list of the manifest files listing KOs to be downloaded',exclusive: ['manifest']}),
   manifest: flags.string({char: 'm', description:'The manifest file listing the KOs to be downloaded'}),
   help: flags.help({char:'h'}),
   destination: flags.string({ char:'d',description:'The directory to store the downloaded KO(s)'})

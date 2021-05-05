@@ -126,7 +126,6 @@ OPTIONS
   -d, --destination=destination  The directory to store the downloaded KO(s)
   -f, --file=file                The filename of the packaged KO to be downloaded
   -h, --help                     show CLI help
-  -l, --list=list                The list of the manifest files listing KOs to be downloaded
   -m, --manifest=manifest        The manifest file listing the KOs to be downloaded
 
 DESCRIPTION

@@ -27,7 +27,11 @@ class CreateCommand extends Command {
     }
     if (args.ko) {
       if (args.ko.includes('-') || args.ko.includes('/')) {
-        console.log('Please provide a valid name for your knowledge object. \n\nAlphanumeric characters only.')
+        this.error("Invalid Name", {
+  //        code: "KGRID_ERR",
+          ref: "https://kgrid.org/kgrid-cli/#kgrid-create-ko",
+          suggestions: ["Please provide a valid name for your knowledge object. (Alphanumeric characters only.)"],
+        })
         return 1
       }
       let parsedInput = await parseInput('create', null, null, null, inputPath);
@@ -90,7 +94,11 @@ class CreateCommand extends Command {
         console.log('\nPlease go to the folder by `cd ' + args.ko + '`.\n\nRun `npm install` before deploying to the activator.')
       }
     } else {
-      console.log('Please provide a valid name for the Knowledge Object\n\n  Example: kgrid create myko')
+      this.error("Missing Parameter: Name", {
+//        code: "KGRID_ERR",
+        ref: "https://kgrid.org/kgrid-cli/#kgrid-create-ko",
+        suggestions: ["Please provide a valid name for your knowledge object.","Example: kgrid create myko"],
+      })
       return 1
     }
   }

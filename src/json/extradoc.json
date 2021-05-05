@@ -8,6 +8,7 @@
   "play":"The play command will let the user to select and interact with an activated KO using the online Swagger Editor.\n\nThe KO can be specified using the argument [ARK].\n\n  Example: kgrid play ark:/hello/world\n\nOr it can be selected from a list of the activated KOs.\n\nA local KGRID activator needs to be running to use the play command.\n\nIf the activator is not running at the default port, use the option of '-p' to specify the port.",
   "list":"The list command will provide a list of the Knowledge Objects on the shelf.",
   "upload":"The upload command will send the packaged KO to a specified activator.",
+  "download":"The download command will download KOs to the current directory",
   "packageall": "Package every knowledge object in a directory",
   "generatemanifest": "Generate a manifest for all the objects in a directory"
 }

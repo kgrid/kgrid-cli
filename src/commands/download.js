@@ -1,6 +1,6 @@
 const {Command, flags} = require('@oclif/command')
+const {cli} = require('cli-ux');
 const documentations = require('../json/extradoc.json')
-const parseInput = require('../parse_input')
 const fs = require('fs-extra')
 const path = require('path')
 const os = require('os')
@@ -13,58 +13,63 @@ class DownloadCommand extends Command {
       var manifest = flags.manifest
       var file = flags.file
       var destination = flags.destination || process.cwd()
-
+      var tmp = path.join(destination, 'tmp')
       var koList ={"remoteList":[],"localList":[]}
       let success = false
       fs.ensureDirSync(destination)
+      fs.ensureDirSync(tmp)
       console.log("The downloaded KOs will be stored in "+destination+".\n");
-
-
 
       // "-f" Specified file
       if(file!=null){
         if(file.startsWith('https://') | file.startsWith('http://')){
-          console.log("Under development. Will download the zip file ... ")
+          koList.remoteList.push(file)
+          downloadAssets(koList.remoteList, destination)
         } else {
           koList.localList.push(file)
+          extractAssets(koList.localList, destination)
         }
       }
 
       // "-m" Specified mainfest file(s)
       if(manifest){
         let manifestList=manifest.split(',')
+        let requests = [];
         manifestList.forEach(e=>{
           let entry=e.trim()
-          let processedManifest = processManifest(entry)
-          processedManifest.remoteList.forEach(e=>{koList.remoteList.push(e)})
-          processedManifest.localList.forEach(e=>{koList.localList.push(e)})
+          requests.push(processManifestPromise(e,tmp));
         })
-      }
+        Promise.all(requests).then(values => {
+          values.forEach(m=>{
+            m.forEach(ko=>{
+              if(ko.startsWith('https://') | ko.startsWith('http://')){
+                koList.remoteList.push(ko)
+              }
+              else {
+               koList.localList.push(ko)
+              }
+            })
+          })
 
-      //Download and extract from the list of remote KOs
-
-      // Extract KOs from the list of local KOs
-      if(process.env.DEBUG) console.log(localKoList)
-      koList.localList.forEach(ko=>{
-        if(fs.pathExistsSync(ko)){
-          try {
-            let zip = new AdmZip(ko)
-            zip.extractAllTo(destination)
-            if(process.env.DEBUG) console.log(`Extraction of ${ko} completed`)
-            success = true
-          } catch (err) {
-            console.log(`Extraction of ${ko} error`)
+          if(process.env.DEBUG){
+            console.log('Kos to be downloaded\n====================')
+            console.log(koList.remoteList.concat(koList.localList))
           }
-        } else {
-          console.log(`File not found: ${ko}`);
-        }
-      })
-      if(success) console.log("KOs extracted to "+destination);
-      // this.error("Under developement...", {
-      //       // code: "OCLIF_ERR",
-      //       ref: "https://kgrid.org/kgrid-cli/#kgrid-download-manifest",
-      //       suggestions: ["Please try this command later"],
-      //     })
+          // Extract KOs from the list of local KOs
+          if(koList.localList.length>0){
+            extractAssets(koList.localList, destination)
+          }
+          //Download and extract from the list of remote KOs
+          if(koList.remoteList.length>0){
+            downloadAssets(koList.remoteList, destination)
+          }
+        })
+        .catch(reject => {
+          console.error(reject+'\n');
+        }).finally(()=>{
+          fs.rmdirSync(tmp, { recursive: true })
+        });
+      }
   }
 }
 
@@ -81,33 +86,77 @@ DownloadCommand.flags = {
 
 DownloadCommand.args = []
 
-function processManifest(manifest){
-  let list = {"remoteList":[],"localList":[]}
-  if(manifest.startsWith('https://') | manifest.startsWith('http://')){
-    console.log(`Under development. Will download the manifest file: ${manifest}\n`)
-  } else {
-    try {
-      let kos = readlocalmanifest(manifest)
-      kos.forEach(ko => { list.localList.push(ko) })
-    } catch {
-      console.log(`Error reading ${manifest}`)
+function processManifestPromise(manifest, tmp){
+  return new Promise((resolve, reject) => {
+    let kos=[]
+    if(manifest.startsWith('https://') | manifest.startsWith('http://')){
+      download(manifest, path.join(tmp), {'extract':true})
+      .then(() => {
+        kos = readRemoteManifest(manifest, tmp)
+        resolve(kos);
+      })
+      .catch(()=>{
+        reject(manifest);
+      });
+    } else {
+      try{
+        kos = readLocalManifest(manifest)
+        resolve(kos)
+      }catch(error){
+        reject(error.message)
+      }
     }
-  }
-  return list
+  })
 }
 
-function readlocalmanifest(manifest){
+function readLocalManifest(manifest){
   let kos = []
   console.log(`Reading Manifest from ${manifest}\n`)
   let sourcePath = path.dirname(manifest) || process.cwd()
   let manifestJson = fs.readJsonSync(manifest)
-  if(process.env.DEBUG) console.log(manifestJson)
+  if(process.env.DEBUG) {
+    console.log(`From ${manifest}:\n `)
+    console.log(manifestJson.manifest)
+  }
   manifestJson.manifest.forEach(ko=>{
     kos.push(path.join(sourcePath, ko))
   })
   return kos
 }
 
+function readRemoteManifest(manifest, tmp){
+  let kos = []
+  console.log(`Reading Manifest from ${manifest}\n`)
+  let manifestStringArray = manifest.split('/')
+  let manifestName = manifestStringArray[manifestStringArray.length-1]
+  let baseUrl = manifest.replace(manifestName, '')
+  let manifestJson = fs.readJsonSync(path.join(tmp,manifestName))
+  if(process.env.DEBUG) {
+    console.log(`From ${manifest}:\n `)
+    console.log(manifestJson.manifest)
+  }
+  manifestJson.manifest.forEach(ko=>{
+    kos.push(baseUrl+ko)
+  })
+  return kos
+}
+
+function extractAssets(manifest, targetDir){
+  if(manifest.length>0){
+    manifest.forEach(ko=>{
+      if(fs.pathExistsSync(ko)){
+        try {
+          let zip = new AdmZip(ko)
+          zip.extractAllTo(targetDir)
+        } catch (err) {
+          console.log(`Extraction of ${ko} error`)
+        }
+      } else {
+        console.log(`File not found: ${ko}`);
+      }
+    })
+  }
+}
 
 function downloadAssets (manifest, targetDir) {
   let requests = [];
@@ -115,11 +164,8 @@ function downloadAssets (manifest, targetDir) {
     requests.push(downloadPromise(zippedKo,targetDir));
   })
   cli.action.start('Downloading KO ...');
-  Promise.all(requests).then(function (artifacts) {
-
-  }).then(values => {
+  Promise.all(requests).then(values => {
     cli.action.stop('done');
-    console.log('KOs downloaded');
   })
   .catch(error => {
     console.log(error.message);
@@ -128,8 +174,9 @@ function downloadAssets (manifest, targetDir) {
 
 function downloadPromise (asset, basePath) {
   return new Promise((resolve, reject) => {
-    download(asset, path.join(basePath), "{'extract':true}")
+    download(asset, path.join(basePath), {'extract':true})
       .then(() => {
+          if(process.env.DEBUG) console.log(`Downloading ${asset} .... completed`)
           resolve(asset);
         })
       .catch(()=>{

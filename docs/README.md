@@ -116,7 +116,7 @@ Download a collection of Knowledge Object to the current directory.
 
 ```
 Download a collection of Knowledge Object to the current directory.
-The download command will download KOs to the current directory by default or the directory specified by '-d'. The KO to be downloaded can be specified by either the filename, a manifest or a list of manifest files.
+The download command will download KOs to the current directory by default or the directory specified by '-d'. The KO to be downloaded can be specified by either the filename (a local ZIP file or a URL), or a manifest file or a comma-delimited list of manifest files (could be a mix of local files and URLs).
 
 
 USAGE
@@ -130,7 +130,8 @@ OPTIONS
 
 DESCRIPTION
   The download command will download KOs to the current directory by default or the directory specified by '-d'. The KO 
-  to be downloaded can be specified by either the filename, a manifest or a list of manifest files.
+  to be downloaded can be specified by either the filename (a local ZIP file or a URL), or a manifest file or a 
+  comma-delimited list of manifest files (could be a mix of local files and URLs).
 ```
 
 _See code: [src/commands/download.js](https://github.com/kgrid/kgrid-cli/blob/v0.6.0/src/commands/download.js)_

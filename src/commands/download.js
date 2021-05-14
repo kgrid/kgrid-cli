@@ -15,61 +15,67 @@ class DownloadCommand extends Command {
       var destination = flags.destination || process.cwd()
       var tmp = path.join(destination, 'tmp')
       var koList ={"remoteList":[],"localList":[]}
-      let success = false
-      fs.ensureDirSync(destination)
-      fs.ensureDirSync(tmp)
-      console.log("The downloaded KOs will be stored in "+destination+".\n");
+      if(manifest==null && file==null){
+        console.log("Please specify the file or the manifest for downloading.\n")
+        console.log("See more help with --help")
+        return 1
+      } else {
 
-      // "-f" Specified file
-      if(file!=null){
-        if(file.startsWith('https://') | file.startsWith('http://')){
-          koList.remoteList.push(file)
-          downloadAssets(koList.remoteList, destination)
-        } else {
-          koList.localList.push(file)
-          extractAssets(koList.localList, destination)
-        }
-      }
+        fs.ensureDirSync(destination)
+        fs.ensureDirSync(tmp)
+        console.log("The downloaded KOs will be stored in "+destination+".\n");
 
-      // "-m" Specified mainfest file(s)
-      if(manifest){
-        let manifestList=manifest.split(',')
-        let requests = [];
-        manifestList.forEach(e=>{
-          let entry=e.trim()
-          requests.push(processManifestPromise(e,tmp));
-        })
-        Promise.all(requests).then(values => {
-          values.forEach(m=>{
-            m.forEach(ko=>{
-              if(ko.startsWith('https://') | ko.startsWith('http://')){
-                koList.remoteList.push(ko)
-              }
-              else {
-               koList.localList.push(ko)
-              }
-            })
-          })
-
-          if(process.env.DEBUG){
-            console.log('Kos to be downloaded\n====================')
-            console.log(koList.remoteList.concat(koList.localList))
-          }
-          // Extract KOs from the list of local KOs
-          if(koList.localList.length>0){
+        // "-f" Specified file
+        if(file!=null){
+          if(file.startsWith('https://') | file.startsWith('http://')){
+            koList.remoteList.push(file)
+            downloadAssets(koList.remoteList, destination)
+          } else {
+            koList.localList.push(file)
             extractAssets(koList.localList, destination)
           }
-          //Download and extract from the list of remote KOs
-          if(koList.remoteList.length>0){
-            downloadAssets(koList.remoteList, destination)
-          }
-        })
-        .catch(reject => {
-          console.error(reject+'\n');
-        }).finally(()=>{
-          fs.rmdirSync(tmp, { recursive: true })
-        });
-      }
+        }
+
+        // "-m" Specified mainfest file(s)
+        if(manifest){
+          let manifestList=manifest.split(',')
+          let requests = [];
+          manifestList.forEach(e=>{
+            let entry=e.trim()
+            requests.push(processManifestPromise(e,tmp));
+          })
+          Promise.all(requests).then(values => {
+            values.forEach(m=>{
+              m.forEach(ko=>{
+                if(ko.startsWith('https://') | ko.startsWith('http://')){
+                  koList.remoteList.push(ko)
+                }
+                else {
+                 koList.localList.push(ko)
+                }
+              })
+            })
+
+            if(process.env.DEBUG){
+              console.log('Kos to be downloaded\n====================')
+              console.log(koList.remoteList.concat(koList.localList))
+            }
+            // Extract KOs from the list of local KOs
+            if(koList.localList.length>0){
+              extractAssets(koList.localList, destination)
+            }
+            //Download and extract from the list of remote KOs
+            if(koList.remoteList.length>0){
+              downloadAssets(koList.remoteList, destination)
+            }
+          })
+          .catch(reject => {
+            console.error(reject+'\n');
+          }).finally(()=>{
+            fs.rmdirSync(tmp, { recursive: true })
+          });
+        }
+    }
   }
 }
 
@@ -90,7 +96,7 @@ function processManifestPromise(manifest, tmp){
   return new Promise((resolve, reject) => {
     let kos=[]
     if(manifest.startsWith('https://') | manifest.startsWith('http://')){
-      download(manifest, path.join(tmp), {'extract':true})
+      download(manifest, tmp)
       .then(() => {
         kos = readRemoteManifest(manifest, tmp)
         resolve(kos);
@@ -130,14 +136,19 @@ function readRemoteManifest(manifest, tmp){
   let manifestStringArray = manifest.split('/')
   let manifestName = manifestStringArray[manifestStringArray.length-1]
   let baseUrl = manifest.replace(manifestName, '')
-  let manifestJson = fs.readJsonSync(path.join(tmp,manifestName))
-  if(process.env.DEBUG) {
-    console.log(`From ${manifest}:\n `)
-    console.log(manifestJson.manifest)
+  try {
+    let manifestJson = fs.readJsonSync(path.join(tmp,manifestName))
+    if(process.env.DEBUG) {
+      console.log(`From ${manifest}:\n `)
+      console.log(manifestJson.manifest)
+    }
+    manifestJson.manifest.forEach(ko=>{
+      kos.push(baseUrl+ko)
+    })
+  } catch(error) {
+    console.log(error.message)
+    console.log()
   }
-  manifestJson.manifest.forEach(ko=>{
-    kos.push(baseUrl+ko)
-  })
   return kos
 }
 

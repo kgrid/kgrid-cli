@@ -1,7 +1,7 @@
 {
   "name": "@kgrid/cli",
   "description": "Command-line tool for Knowledge Object Developers (Note: Compatible with the latest KO structure)",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "author": "kgrid",
   "bin": {
     "kgrid": "./bin/run"
@@ -27,7 +27,8 @@
     "klaw-sync": "^6.0.0",
     "listr": "^0.14.3",
     "request": "^2.88.2",
-    "shelljs": "^0.8.3"
+    "shelljs": "^0.8.3",
+    "uri-js": "^4.4.1"
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1.22.0",

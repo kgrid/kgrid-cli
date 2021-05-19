@@ -32,17 +32,42 @@ class DownloadCommand extends Command {
 
         // "-f" Specified file
         if(file!=null){
-          if(file.startsWith('https://') | file.startsWith('http://')){
-            koList.remoteList.push(file)
-            downloadAssets(koList.remoteList, destination, extract)
-          } else {
-            koList.localList.push(file)
+          let fileList = file.split(',')
+          console.log(fileList)
+          fileList.forEach(e=>{
+            if(e.startsWith('https://') | e.startsWith('http://')){
+              koList.remoteList.push(e)
+            }else if(e.startsWith('file://')) {
+              koList.localList.push(e)
+            }else {
+              const baseUri = new URL(`file://${tmp}`);
+                console.log(baseUri)
+              let uriCheck = URI.resolve(baseUri.href,e)
+              console.log(uriCheck)
+              if(fs.existsSync(url.fileURLToPath(uriCheck))) {
+                koList.localList.push(uriCheck)
+              }
+            }
+          })
+          if(koList.localList.length>0){
+            koList.localList.forEach(e=>{
+              finalManifest.manifest.push(e)
+            })
             extractAssets(koList.localList, destination, extract)
           }
+          if(koList.remoteList.length>0){
+            koList.remoteList.forEach(e=>{
+              finalManifest.manifest.push(e)
+            })
+            downloadAssets(koList.remoteList, destination, extract)
+          }
+          fs.writeJsonSync(path.join(destination, 'manifest.json'), finalManifest, {spaces: 4})
+          fs.rmdirSync(tmp, { recursive: true })
         }
 
         // "-m" Specified mainfest file(s)
         if(manifest){
+
           let manifestList=manifest.split(',')
           let requests = [];
           manifestList.forEach(e=>{
@@ -65,19 +90,20 @@ class DownloadCommand extends Command {
               console.log('Kos to be loaded\n====================')
               console.log(koList.remoteList.concat(koList.localList))
             }
+            let l = []
             // Extract KOs from the list of local KOs
             if(koList.localList.length>0){
-              koList.localList.forEach(e=>{
+              l = extractAssets(koList.localList, destination, extract)
+              l.forEach(e=>{
                 finalManifest.manifest.push(e)
               })
-              extractAssets(koList.localList, destination, extract)
             }
             //Download and extract from the list of remote KOs
             if(koList.remoteList.length>0){
-              koList.remoteList.forEach(e=>{
+              l = downloadAssets(koList.remoteList, destination, extract)
+              l.forEach(e=>{
                 finalManifest.manifest.push(e)
               })
-              downloadAssets(koList.remoteList, destination, extract)
             }
           })
           .catch(reject => {
@@ -167,6 +193,7 @@ function readRemoteManifest(manifest, tmp){
 }
 
 function extractAssets(manifest, targetDir, extract){
+  let downloadedKoList = []
   if(manifest.length>0){
     manifest.forEach(uri=>{
       let ko = url.fileURLToPath(uri)
@@ -181,32 +208,40 @@ function extractAssets(manifest, targetDir, extract){
         } else {
           fs.copySync(ko, path.join(targetDir, path.basename(ko)))
         }
+        downloadedKoList.push(uri)
+        console.log(`Retrieving ${ko} ...... fulfilled`)
       } else {
-        console.log(`File not found: ${ko}`);
+        console.log(`Retrieving ${ko} ...... failed`)
       }
     })
   }
+  return downloadedKoList
 }
 
 function downloadAssets (manifest, targetDir, extract) {
   let requests = [];
+  let downloadedKoList = []
   manifest.forEach(zippedKo=> {
     requests.push(downloadPromise(zippedKo,targetDir, extract));
   })
-  cli.action.start('Downloading KO ...');
-  Promise.all(requests).then(values => {
-    cli.action.stop('done');
+  Promise.allSettled(requests).then(values => {
+    values.forEach(v=>{
+      console.log(`Downloading ${v.value||v.reason} ...... ${v.status}`)
+      if(v.value){
+        downloadedKoList.push(v.value)
+      }
+    })
   })
   .catch(error => {
-    console.log(error.message);
+    if(process.env.DEBUG) console.log(error.message);
   });
+  return downloadedKoList
 }
 
 function downloadPromise (asset, basePath, extract) {
   return new Promise((resolve, reject) => {
     download(asset, path.join(basePath), {'extract':extract})
       .then(() => {
-          if(process.env.DEBUG) console.log(`Downloading ${asset} .... completed`)
           resolve(asset);
         })
       .catch(()=>{

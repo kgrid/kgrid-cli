@@ -50,16 +50,24 @@ class DownloadCommand extends Command {
             }
           })
           if(koList.localList.length>0){
-            koList.localList.forEach(e=>{
+            l = extractAssets(koList.localList, destination, extract)
+            l.forEach(e=>{
               finalManifest.manifest.push(e)
             })
-            extractAssets(koList.localList, destination, extract)
           }
           if(koList.remoteList.length>0){
-            koList.remoteList.forEach(e=>{
-              finalManifest.manifest.push(e)
-            })
             downloadAssets(koList.remoteList, destination, extract)
+            .then(values => {
+                values.forEach(v=>{
+                  console.log(`Downloading ${v.value||v.reason} ...... ${v.status}`)
+                  if(v.value){
+                    finalManifest.manifest.push(v.value)
+                  }
+                })
+              })
+              .catch(error => {
+                if(process.env.DEBUG) console.log(error.message);
+              });
           }
           fs.writeJsonSync(path.join(destination, 'manifest.json'), finalManifest, {spaces: 4})
           fs.rmdirSync(tmp, { recursive: true })
@@ -74,9 +82,9 @@ class DownloadCommand extends Command {
             let entry=e.trim()
             requests.push(processManifestPromise(e,tmp));
           })
-          Promise.all(requests).then(values => {
+          Promise.allSettled(requests).then(values => {
             values.forEach(m=>{
-              m.forEach(ko=>{
+              m.value.forEach(ko=>{
                 if(ko.startsWith('https://') | ko.startsWith('http://')){
                   koList.remoteList.push(ko)
                 }
@@ -100,18 +108,24 @@ class DownloadCommand extends Command {
             }
             //Download and extract from the list of remote KOs
             if(koList.remoteList.length>0){
-              l = downloadAssets(koList.remoteList, destination, extract)
-              l.forEach(e=>{
-                finalManifest.manifest.push(e)
-              })
+              downloadAssets(koList.remoteList, destination, extract)
+              .then(values => {
+                  values.forEach(v=>{
+                    console.log(v.status)
+                    if(v.status!=='rejected'){
+                      console.log(v.value)
+                      finalManifest.manifest.push(v.value)
+                    }
+                    console.log(`Downloading ${v.value||v.reason} ...... ${v.status}`)
+                  })
+                })
+                .finally(()=>{
+                  console.log(finalManifest)
+                  fs.writeJsonSync(path.join(destination, 'manifest.json'), finalManifest, {spaces: 4})
+                  fs.rmdirSync(tmp, { recursive: true })
+                });
             }
           })
-          .catch(reject => {
-            console.error(reject+'\n');
-          }).finally(()=>{
-            fs.writeJsonSync(path.join(destination, 'manifest.json'), finalManifest, {spaces: 4})
-            fs.rmdirSync(tmp, { recursive: true })
-          });
         }
     }
   }
@@ -224,18 +238,7 @@ function downloadAssets (manifest, targetDir, extract) {
   manifest.forEach(zippedKo=> {
     requests.push(downloadPromise(zippedKo,targetDir, extract));
   })
-  Promise.allSettled(requests).then(values => {
-    values.forEach(v=>{
-      console.log(`Downloading ${v.value||v.reason} ...... ${v.status}`)
-      if(v.value){
-        downloadedKoList.push(v.value)
-      }
-    })
-  })
-  .catch(error => {
-    if(process.env.DEBUG) console.log(error.message);
-  });
-  return downloadedKoList
+  return Promise.allSettled(requests)
 }
 
 function downloadPromise (asset, basePath, extract) {

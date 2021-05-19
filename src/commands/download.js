@@ -111,16 +111,14 @@ class DownloadCommand extends Command {
               downloadAssets(koList.remoteList, destination, extract)
               .then(values => {
                   values.forEach(v=>{
-                    console.log(v.status)
                     if(v.status!=='rejected'){
-                      console.log(v.value)
                       finalManifest.manifest.push(v.value)
                     }
                     console.log(`Downloading ${v.value||v.reason} ...... ${v.status}`)
                   })
                 })
                 .finally(()=>{
-                  console.log(finalManifest)
+                  if(process.env.DEBUG) console.log(finalManifest)
                   fs.writeJsonSync(path.join(destination, 'manifest.json'), finalManifest, {spaces: 4})
                   fs.rmdirSync(tmp, { recursive: true })
                 });

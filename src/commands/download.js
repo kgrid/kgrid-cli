@@ -32,8 +32,9 @@ class DownloadCommand extends Command {
 
         // "-f" Specified file
         if(file!=null){
+          let l = []
           let fileList = file.split(',')
-          console.log(fileList)
+          // console.log(fileList)
           fileList.forEach(e=>{
             if(e.startsWith('https://') | e.startsWith('http://')){
               koList.remoteList.push(e)
@@ -54,6 +55,9 @@ class DownloadCommand extends Command {
             l.forEach(e=>{
               finalManifest.manifest.push(e)
             })
+            if(koList.remoteList.length==0) {
+              cleanup(finalManifest, destination, tmp)
+            }
           }
           if(koList.remoteList.length>0){
             downloadAssets(koList.remoteList, destination, extract)
@@ -64,13 +68,12 @@ class DownloadCommand extends Command {
                     finalManifest.manifest.push(v.value)
                   }
                 })
+                cleanup(finalManifest, destination, tmp)
               })
               .catch(error => {
                 if(process.env.DEBUG) console.log(error.message);
               });
           }
-          fs.writeJsonSync(path.join(destination, 'manifest.json'), finalManifest, {spaces: 4})
-          fs.rmdirSync(tmp, { recursive: true })
         }
 
         // "-m" Specified mainfest file(s)
@@ -83,6 +86,7 @@ class DownloadCommand extends Command {
             requests.push(processManifestPromise(e,tmp));
           })
           Promise.allSettled(requests).then(values => {
+            // console.log(values)
             values.forEach(m=>{
               m.value.forEach(ko=>{
                 if(ko.startsWith('https://') | ko.startsWith('http://')){
@@ -105,6 +109,9 @@ class DownloadCommand extends Command {
               l.forEach(e=>{
                 finalManifest.manifest.push(e)
               })
+              if(koList.remoteList.length==0) {
+                cleanup(finalManifest, destination, tmp)
+              }
             }
             //Download and extract from the list of remote KOs
             if(koList.remoteList.length>0){
@@ -118,12 +125,12 @@ class DownloadCommand extends Command {
                   })
                 })
                 .finally(()=>{
-                  if(process.env.DEBUG) console.log(finalManifest)
-                  fs.writeJsonSync(path.join(destination, 'manifest.json'), finalManifest, {spaces: 4})
-                  fs.rmdirSync(tmp, { recursive: true })
+                  cleanup(finalManifest, destination, tmp)
                 });
             }
-          })
+          }).finally(()=>{
+            fs.rmdirSync(tmp, { recursive: true })
+          });
         }
     }
   }
@@ -143,6 +150,23 @@ DownloadCommand.flags = {
 
 DownloadCommand.args = []
 
+function cleanup(finalManifest, destination, tmp) {
+  let manifestJSON = { manifest:[] }
+  if(process.env.DEBUG) console.log(finalManifest)
+  if(finalManifest.manifest.length>0){
+    finalManifest.manifest.forEach(e=>{
+      if (e.startsWith('https://') | e.startsWith('http://')) {
+        manifestJSON.manifest.push(path.basename(url.parse(e).pathname))
+      } else if(e.startsWith('file://')) {
+          manifestJSON.manifest.push(path.basename(url.fileURLToPath(e)))
+      } else {
+          manifestJSON.manifest.push(e)
+      }
+    })
+    fs.writeJsonSync(path.join(destination, 'manifest.json'), manifestJSON, {spaces: 4})
+  }
+  fs.rmdirSync(tmp, { recursive: true })
+}
 function processManifestPromise(manifest, tmp){
   return new Promise((resolve, reject) => {
     let kos=[]
@@ -170,16 +194,24 @@ function processManifestPromise(manifest, tmp){
 
 function readLocalManifest(manifest){
   let kos = []
-  let manifestPath = url.fileURLToPath(manifest)
-  console.log(`Reading Manifest from ${manifestPath}\n`)
-  let manifestJson = fs.readJsonSync(manifestPath)
-  if(process.env.DEBUG) {
-    console.log(`From ${manifest}:\n `)
-    console.log(manifestJson.manifest)
+  let manifestPath=manifest
+  if(manifest.startsWith('file://')){
+    manifestPath=url.fileURLToPath(manifest)
   }
-  manifestJson.manifest.forEach(ko=>{
-    kos.push(URI.resolve(manifest, ko))
-  })
+  let manifestUri = new URL(`file://${manifestPath}`)
+  if(fs.existsSync(manifestPath)) {
+    console.log(`Reading Manifest from ${manifestPath}\n`)
+    let manifestJson = fs.readJsonSync(manifestPath)
+    if(process.env.DEBUG) {
+      console.log(`From ${manifest}:\n `)
+      console.log(manifestJson.manifest)
+    }
+    manifestJson.manifest.forEach(ko=>{
+      kos.push(URI.resolve(manifestUri.href, ko))
+    })
+  } else {
+    console.log(`File nout found: ${manifestPath}`)
+  }
   return kos
 }
 
@@ -213,7 +245,7 @@ function extractAssets(manifest, targetDir, extract){
         if(extract){
           try {
             let zip = new AdmZip(ko)
-            zip.extractAllTo(targetDir)
+            zip.extractAllTo(targetDir, true)
           } catch (err) {
             console.log(`Extraction of ${ko} error`)
           }

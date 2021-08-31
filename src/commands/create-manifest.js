@@ -57,9 +57,13 @@ function writeManifest(sourceDirectory, targetDirectory) {
   };
   koZips.forEach((koZip) => {
     if (koZip.path.endsWith(".zip")) {
-      let pathToWrite = getPathForManifestEntry(sourceDirectory, targetDirectory, koZip);
-      pathToWrite = pathToWrite.replace(/\\/g, "/");
-      topLevelNode.manifest.push(pathToWrite);
+      let relativeZipPath = getPathForManifestEntry(sourceDirectory, targetDirectory, koZip);
+      relativeZipPath = relativeZipPath.replace(/\\/g, "/");
+      let koNode = {
+        @id: relativeZipPath,
+        @type: "koio:KnowledgeObject"
+      }
+      topLevelNode.manifest.push(koNode);
     }
   });
   console.log("Writing manifest to: " + manifestDestination)

@@ -78,6 +78,7 @@
     "oclif-readme": "(cd docs && oclif-dev readme)",
     "version": "npm run oclif-readme && git add docs/README.md",
     "docs:dev": "vuepress dev docs",
-    "docs:build": "vuepress build docs"
+    "docs:build": "vuepress build docs",
+    "kgrid": "./bin/run"
   }
 }

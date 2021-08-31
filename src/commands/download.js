@@ -273,7 +273,7 @@ function cleanupAndCreateManifest(finalManifest, destination, tmp) {
 }
 
 function fileIsRemote(file) {
-  return file.startsWith('https://') | file.startsWith('http://');
+  return file.startsWith('https://') || file.startsWith('http://');
 }
 
 DownloadCommand.description = `Download a collection of Knowledge Object to the current directory.

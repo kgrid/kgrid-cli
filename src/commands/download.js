@@ -76,10 +76,10 @@ class DownloadCommand extends Command {
         manifestList.forEach(e => {
           requests.push(processManifestPromise(e, temporaryDirectory));
         })
-        Promise.all(requests)
+        Promise.allSettled(requests)
           .then(values => {
             values.forEach(m => {
-              m.forEach(ko => {
+              m.value.forEach(ko => {
                 if (ko.startsWith('https://') || ko.startsWith('http://')) {
                   koList.remoteList.push(ko)
                 } else {
@@ -232,7 +232,7 @@ function downloadAssets(manifest, targetDir, extract) {
   manifest.forEach(zippedKo => {
     requests.push(downloadPromise(zippedKo, targetDir, extract));
   })
-  return Promise.all(requests)
+  return Promise.allSettled(requests)
 }
 
 function downloadPromise(asset, basePath, extract) {
@@ -271,7 +271,7 @@ function cleanupAndCreateManifest(finalManifest, destination, temporaryDirectory
   }
   (async () => {
     const deleteResult = await del([temporaryDirectory]);
-    console.log('deleted: ' + deleteResult);
+    console.log('deleted temporary directory: ' + deleteResult);
   })();
 }
 

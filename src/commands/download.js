@@ -52,6 +52,7 @@ class DownloadCommand extends Command {
           l.forEach(e => {
             finalManifest.push(e)
           })
+          cleanupAndCreateManifest(finalManifest, destination, temporaryDirectory)
         }
         if (koList.remoteList.length > 0) {
           downloadAssets(koList.remoteList, destination, extract)
@@ -62,6 +63,7 @@ class DownloadCommand extends Command {
                   finalManifest.push(v.value)
                 }
               })
+              cleanupAndCreateManifest(finalManifest, destination, temporaryDirectory)
             })
             .catch(error => {
               if (process.env.DEBUG) console.log(error.message);
@@ -105,11 +107,14 @@ class DownloadCommand extends Command {
               downloadAssets(koList.remoteList, destination, extract)
                 .then(values => {
                   values.forEach(v => {
-                    if (v.status !== 'rejected') {
+                    if (v.status && v.status !== 'rejected') {
                       finalManifest.push(v.value)
+                      console.log(`Downloaded ${v.value || v.reason} ...... ${v.status}`)
+                    } else {
+                      console.log(`Error downloading ${v.value || v.reason} ...... ${v.status}`)
                     }
-                    console.log(`Downloading ${v.value || v.reason} ...... ${v.status}`)
                   })
+                  cleanupAndCreateManifest(finalManifest, destination, temporaryDirectory)
                 })
             }
           })
@@ -166,7 +171,7 @@ function readLocalManifest(manifest) {
       kos.push(
         ko['@id']
           ? URI.resolve(manifestUri.href, ko['@id'])
-          : kos.push(URI.resolve(manifestUri.href, ko)))
+          : URI.resolve(manifestUri.href, ko))
     })
   } else {
     console.log(`File not found: ${manifestPath}`)
@@ -270,8 +275,7 @@ function cleanupAndCreateManifest(finalManifest, destination, temporaryDirectory
     fs.writeJsonSync(path.join(destination, 'manifest.json'), manifestJSON, {spaces: 4})
   }
   (async () => {
-    const deleteResult = await del([temporaryDirectory]);
-    console.log('deleted temporary directory: ' + deleteResult);
+    await del([temporaryDirectory]);
   })();
 }
 

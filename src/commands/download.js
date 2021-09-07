@@ -6,7 +6,7 @@ const download = require('download');
 const URI = require('uri-js');
 const url = require('url');
 const AdmZip = require('adm-zip');
-const tmpDir = "tmp"
+const del = require('del')
 
 class DownloadCommand extends Command {
   async run() {
@@ -15,7 +15,7 @@ class DownloadCommand extends Command {
     let file = flags.file
     let extract = flags.extract || false
     let destination = flags.destination || process.cwd()
-    let tmp = path.join(destination, tmpDir)
+    let temporaryDirectory = path.join(destination, 'tmp')
     let koList = {"remoteList": [], "localList": []}
     let finalManifest = []
     if (manifest == null && file == null) {
@@ -25,7 +25,7 @@ class DownloadCommand extends Command {
     } else {
 
       fs.ensureDirSync(destination)
-      fs.ensureDirSync(tmp)
+      fs.ensureDirSync(temporaryDirectory)
       console.log("The downloaded KOs will be stored in " + destination + ".\n");
 
       // "-f" Specified file
@@ -38,7 +38,7 @@ class DownloadCommand extends Command {
           } else if (e.startsWith('file://')) {
             koList.localList.push(e)
           } else {
-            const baseUri = new URL(`file://${tmp}`);
+            const baseUri = new URL(`file://${temporaryDirectory}`);
             console.log(baseUri)
             let uriCheck = URI.resolve(baseUri.href, e)
             console.log(uriCheck)
@@ -74,7 +74,7 @@ class DownloadCommand extends Command {
         let manifestList = manifest.split(',')
         let requests = [];
         manifestList.forEach(e => {
-          requests.push(processManifestPromise(e, tmp));
+          requests.push(processManifestPromise(e, temporaryDirectory));
         })
         Promise.all(requests)
           .then(values => {
@@ -114,8 +114,8 @@ class DownloadCommand extends Command {
             }
           })
           .finally(() => {
-            cleanupAndCreateManifest(finalManifest, destination, tmp)
-        });
+            cleanupAndCreateManifest(finalManifest, destination, temporaryDirectory)
+          });
       }
     }
   }
@@ -192,7 +192,7 @@ function readRemoteManifest(manifest, tmp) {
       kos.push(
         ko['@id']
           ? URI.resolve(manifest, ko['@id'])
-          : kos.push(URI.resolve(manifest, ko)))
+          : URI.resolve(manifest, ko))
     })
   } catch (error) {
     console.log(error.message)
@@ -232,7 +232,7 @@ function downloadAssets(manifest, targetDir, extract) {
   manifest.forEach(zippedKo => {
     requests.push(downloadPromise(zippedKo, targetDir, extract));
   })
-  return Promise.allSettled(requests)
+  return Promise.all(requests)
 }
 
 function downloadPromise(asset, basePath, extract) {
@@ -247,7 +247,7 @@ function downloadPromise(asset, basePath, extract) {
   })
 }
 
-function cleanupAndCreateManifest(finalManifest, destination, tmp) {
+function cleanupAndCreateManifest(finalManifest, destination, temporaryDirectory) {
   let manifestJSON = []
   if (process.env.DEBUG) console.log(finalManifest)
   if (finalManifest.length > 0) {
@@ -269,7 +269,10 @@ function cleanupAndCreateManifest(finalManifest, destination, tmp) {
     })
     fs.writeJsonSync(path.join(destination, 'manifest.json'), manifestJSON, {spaces: 4})
   }
-  fs.rmdirSync(tmp, {recursive: true})
+  (async () => {
+    const deleteResult = await del([temporaryDirectory]);
+    console.log('deleted: ' + deleteResult);
+  })();
 }
 
 function fileIsRemote(file) {

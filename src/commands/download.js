@@ -38,12 +38,12 @@ class DownloadCommand extends Command {
           } else if (e.startsWith('file://')) {
             koList.localList.push(e)
           } else {
-            const baseUri = new URL(`file://${temporaryDirectory}`);
-            console.log(baseUri)
+            const baseUri = new URL(`file://${e}`);
             let uriCheck = URI.resolve(baseUri.href, e)
-            console.log(uriCheck)
             if (fs.existsSync(url.fileURLToPath(uriCheck))) {
               koList.localList.push(uriCheck)
+            } else {
+              console.log(`Could not resolve file: ${e}`)
             }
           }
         })
@@ -101,6 +101,7 @@ class DownloadCommand extends Command {
               l.forEach(e => {
                 finalManifest.push(e)
               })
+              cleanupAndCreateManifest(finalManifest, destination, temporaryDirectory)
             }
             //Download and extract from the list of remote KOs
             if (koList.remoteList.length > 0) {

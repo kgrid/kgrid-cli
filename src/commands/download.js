@@ -243,8 +243,10 @@ function downloadAssets(manifest, targetDir, extract) {
 
 function downloadPromise(asset, basePath, extract) {
   return new Promise((resolve, reject) => {
-    download(asset, path.join(basePath), {'extract': extract})
-      .then(() => {
+    download(asset, path.join(basePath), {
+      extract: extract,
+      headers: {accept: ['application/zip','application/octet-stream']}
+    }).then(() => {
         resolve(asset);
       })
       .catch(() => {
@@ -257,15 +259,7 @@ function cleanupAndCreateManifest(finalManifest, destination, temporaryDirectory
   let manifestJSON = []
   if (process.env.DEBUG) console.log(finalManifest)
   if (finalManifest.length > 0) {
-    finalManifest.forEach(e => {
-      let id;
-      if (fileIsRemote(e)) {
-        id = path.basename(url.parse(e).pathname)
-      } else if (e.startsWith('file://')) {
-        id = path.basename(url.fileURLToPath(e))
-      } else {
-        id = e
-      }
+    finalManifest.forEach(id => {
       manifestJSON.push(
         {
           "@id": id,

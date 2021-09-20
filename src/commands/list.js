@@ -7,7 +7,7 @@ const list = require('../getall')
 class ListCommand extends Command {
   async run() {
     let pathtype = checkPathKoioType()
-    if (pathtype.type == 'shelf') {
+    if (pathtype.type === 'shelf') {
       var kolist = list(pathtype.shelfpath)
       if (kolist != null) {
         console.log("Shelf:  " + pathtype.shelfpath + '\n---------------------------------------------------------------------------------')

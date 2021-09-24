@@ -10,7 +10,7 @@ const DESCRIPTION_CHARACTER_LIMIT = 27
 function getall(shelf) {
   var kolist = []
   try {
-    const paths = klawSync(shelf, { nofile: true, depthLimit: 0, filter: filterFn });
+    const paths = klawSync(shelf, { nofile: true, depthLimit: 2, filter: filterFn });
     paths.forEach(function (p) {
       if (fs.pathExistsSync(path.join(p.path, 'metadata.json'))) {
         var meta = fs.readJsonSync(path.join(p.path, 'metadata.json'))

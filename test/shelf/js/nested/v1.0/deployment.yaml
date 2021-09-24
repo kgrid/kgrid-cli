@@ -1,0 +1,6 @@
+/welcome:
+  post:
+    artifact: src/index.js
+    engine: javascript
+    function: welcome
+    checksum: OjgJEfn5FR5l7UoNIHF66QdRMP0=

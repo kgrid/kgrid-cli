@@ -40,7 +40,8 @@ class DownloadCommand extends Command {
           } else {
             const baseUri = new URL(`file://${e}`);
             let uriCheck = URI.resolve(baseUri.href, e)
-            if (fs.existsSync(url.fileURLToPath(uriCheck))) {
+            let filePath = url.fileURLToPath(uriCheck);
+            if (fs.existsSync(filePath)) {
               koList.localList.push(uriCheck)
             } else {
               console.log(`Could not resolve file: ${e}`)
@@ -207,10 +208,10 @@ function readRemoteManifest(manifest, tmp) {
   return kos
 }
 
-function extractAssets(manifest, targetDir, extract) {
+function extractAssets(fileList, targetDir, extract) {
   let downloadedKoList = []
-  if (manifest.length > 0) {
-    manifest.forEach(uri => {
+  if (fileList.length > 0) {
+    fileList.forEach(uri => {
       let ko = url.fileURLToPath(uri)
       if (fs.pathExistsSync(ko)) {
         if (extract) {

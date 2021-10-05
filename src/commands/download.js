@@ -8,7 +8,6 @@ const url = require('url');
 const AdmZip = require('adm-zip');
 const {readManifest, createManifest} = require("../../lib/manifestUtilities");
 const axios = require("axios");
-const {down} = require("inquirer/lib/utils/readline");
 
 class DownloadCommand extends Command {
   async run() {

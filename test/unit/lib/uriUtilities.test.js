@@ -1,31 +1,57 @@
 const {expect} = require('chai');
 const URI = require('uri-js');
 
-const {createUri} = require('../../../lib/uriUtilities');
+const {createUri, uriToString, getFilename} = require('../../../lib/uriUtilities');
 
-describe('uri Utilities', ()=>{
-  describe('create Uri', ()=>{
-    it('should create an absolute uri from an absolute local uri', ()=>{
-      let inputUri = `file://${process.cwd()}/file.zip`;
-      let expectedUri = URI.parse(inputUri);
-      let output = createUri(inputUri);
+describe('uri Utilities', () => {
+  let packageName = `package.zip`;
+  let fileScheme = `file`;
+  let absoluteLocalUriPath = `${fileScheme}://${process.cwd()}/${packageName}`;
+  let relativeLocalUriPath = URI.resolve(process.cwd(), packageName);
+  let remoteUriString = `http://example.gov/directory/${packageName}`;
+  describe('create Uri', () => {
+
+    it('should create an absolute uri from an absolute local uri', () => {
+      let expectedUri = URI.parse(absoluteLocalUriPath);
+      let output = createUri(absoluteLocalUriPath);
+      expect(output).to.deep.equal(expectedUri);
+    });
+    it('should create an absolute uri from an absolute remote uri', () => {
+      let expectedUri = URI.parse(remoteUriString);
+      let output = createUri(remoteUriString);
       expect(output).to.deep.equal(expectedUri);
     });
 
-    it('should create an absolute uri from an absolute remote uri', ()=>{
-      let inputUri = `http://example.gov/directory/file.zip`;
-      let expectedUri = URI.parse(inputUri);
-      let output = createUri(inputUri);
-      expect(output).to.deep.equal(expectedUri);
-    });
-
-    it('should create an absolute uri from an relative local path and base', ()=>{
-      let scheme = 'file';
-      let base = process.cwd();
-      let path = `file.zip`;
-      let expectedUri = URI.parse(`${scheme}://${base}/${path}`);
-      let uri = createUri(path, base);
+    it('should create an absolute uri from a relative local path and base', () => {
+      let expectedUri = URI.parse(relativeLocalUriPath);
+      expectedUri.scheme = fileScheme
+      let uri = createUri(packageName);
       expect(uri).to.deep.equal(expectedUri);
     });
   });
+
+  describe('uriToString', () => {
+    describe('should return a proper string', () => {
+      it('with an absolute local uri', () => {
+        let output = uriToString(createUri(absoluteLocalUriPath));
+        expect(output).to.be.equal(absoluteLocalUriPath)
+      })
+
+      it('with an relative local uri', () => {
+        let output = uriToString(createUri(relativeLocalUriPath));
+        expect(output).to.be.equal(`${fileScheme}://${relativeLocalUriPath}`)
+      })
+
+      it('with a remote uri', () => {
+        let output = uriToString(createUri(remoteUriString));
+        expect(output).to.be.equal(remoteUriString)
+      })
+    })
+  })
+
+  describe('getFilename', () => {
+    it('should return the file name', () => {
+      expect(getFilename(createUri(absoluteLocalUriPath))).to.be.equal(`/${packageName}`)
+    })
+  })
 });

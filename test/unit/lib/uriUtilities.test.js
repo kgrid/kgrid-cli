@@ -22,10 +22,17 @@ describe('uri Utilities', () => {
       expect(output).to.deep.equal(expectedUri);
     });
 
-    it('should create an absolute uri from a relative local path and base', () => {
-      let expectedUri = URI.parse(relativeLocalUriPath);
-      expectedUri.scheme = fileScheme
+    it('should create an absolute uri from a downward relative local path and base', () => {
+      let expectedUri = createUri(`${process.cwd()}/${packageName}`)
       let uri = createUri(packageName);
+      expect(uri).to.deep.equal(expectedUri);
+    });
+
+    it('should create an absolute uri from an upward relative local path and base', () => {
+      const upwardPackageName = '../package.zip'
+      let expectedUri = createUri(
+        `${process.cwd().substring(0, process.cwd().lastIndexOf('/'))}/${packageName}`)
+      let uri = createUri(upwardPackageName);
       expect(uri).to.deep.equal(expectedUri);
     });
   });

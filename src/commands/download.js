@@ -7,6 +7,7 @@ const AdmZip = require('adm-zip');
 const {readManifestFromUri, createManifest} = require("../../lib/manifestUtilities");
 const {createUri, uriToString, getFilename} = require("../../lib/uriUtilities");
 
+
 class DownloadCommand extends Command {
   async run() {
     const {args, flags} = this.parse(DownloadCommand)
@@ -29,11 +30,7 @@ class DownloadCommand extends Command {
         let paths = file.split(',')
         paths.map(path => {
           let uri = createUri(path);
-          if (fileIsRemote(uri)) {
-            koUris.remote.push(uri)
-          } else {
-            koUris.local.push(uri)
-          }
+          pushUriToList(uri, koUris)
         })
       }
 
@@ -50,11 +47,7 @@ class DownloadCommand extends Command {
           .then(promises => {
             promises.map((promise) => {
               promise.value.map((uri) => {
-                if (fileIsRemote(uri)) {
-                  koUris.remote.push(uri)
-                } else {
-                  koUris.local.push(uri)
-                }
+                pushUriToList(uri, koUris);
               })
             })
           })
@@ -112,9 +105,11 @@ function downloadRemoteKos(uris, destination, extract) {
     downloadRemoteZips(uris, destination, extract)
       .then(promises => {
         promises.forEach(promise => {
-          console.log(`Downloading ${uriToString(promise.value) || promise.reason} ...... ${promise.status}`)
           if (promise.value) {
+            console.log(`Downloading ${uriToString(promise.value)} ${promise.status}`)
             downloadedKoList.push(promise.value)
+          } else {
+            console.log(`Downloading ${uriToString(promise.reason)} ${promise.status}`)
           }
         })
         resolve(downloadedKoList)
@@ -153,6 +148,14 @@ function downloadRemoteZip(uri, destination, extract) {
 function cleanupAndCreateManifest(copiedKoUris, destination) {
   if (process.env.DEBUG) console.log(copiedKoUris)
   fs.writeJsonSync(path.join(destination, 'manifest.json'), createManifest(copiedKoUris), {spaces: 4})
+}
+
+function pushUriToList(uri, koUris) {
+  if (fileIsRemote(uri)) {
+    koUris.remote.push(uri)
+  } else {
+    koUris.local.push(uri)
+  }
 }
 
 function fileIsRemote(uri) {

@@ -1,12 +1,12 @@
-const {Command, flags} = require('@oclif/command')
-const documentations = require('../json/extradoc.json')
-const fs = require('fs-extra')
-const path = require('path')
+const {Command, flags} = require('@oclif/command');
+const documentations = require('../json/extradoc.json');
+const fs = require('fs-extra');
+const path = require('path');
 const download = require('download');
-const URI = require('uri-js');
-const url = require('url');
 const AdmZip = require('adm-zip');
-const del = require('del')
+const {readManifestFromUri, createManifest} = require("../../lib/manifestUtilities");
+const {createUri, uriToString, getFilename} = require("../../lib/uriUtilities");
+
 
 class DownloadCommand extends Command {
   async run() {
@@ -15,9 +15,7 @@ class DownloadCommand extends Command {
     let file = flags.file
     let extract = flags.extract || false
     let destination = flags.destination || process.cwd()
-    let temporaryDirectory = path.join(destination, 'tmp')
-    let koList = {"remoteList": [], "localList": []}
-    let finalManifest = []
+    let koUris = {"remote": [], "local": []}
     if (manifest == null && file == null) {
       console.log("Please specify the file or the manifest for downloading.\n")
       console.log("See more help with --help")
@@ -25,258 +23,143 @@ class DownloadCommand extends Command {
     } else {
 
       fs.ensureDirSync(destination)
-      fs.ensureDirSync(temporaryDirectory)
       console.log("The downloaded KOs will be stored in " + destination + ".\n");
 
       // "-f" Specified file
       if (file != null) {
-        let l = []
-        let fileList = file.split(',')
-        fileList.forEach(e => {
-          if (fileIsRemote(e)) {
-            koList.remoteList.push(e)
-          } else if (e.startsWith('file://')) {
-            koList.localList.push(e)
-          } else {
-            const baseUri = new URL(`file://${e}`);
-            let uriCheck = URI.resolve(baseUri.href, e)
-            let filePath = url.fileURLToPath(uriCheck);
-            if (fs.existsSync(filePath)) {
-              koList.localList.push(uriCheck)
-            } else {
-              console.log(`Could not resolve file: ${e}`)
-            }
-          }
+        let paths = file.split(',')
+        paths.map(path => {
+          let uri = createUri(path);
+          pushUriToList(uri, koUris)
         })
-        if (koList.localList.length > 0) {
-          l = extractAssets(koList.localList, destination, extract)
-          l.forEach(e => {
-            finalManifest.push(e)
-          })
-          cleanupAndCreateManifest(finalManifest, destination, temporaryDirectory)
-        }
-        if (koList.remoteList.length > 0) {
-          downloadAssets(koList.remoteList, destination, extract)
-            .then(values => {
-              values.forEach(v => {
-                console.log(`Downloading ${v.value || v.reason} ...... ${v.status}`)
-                if (v.value) {
-                  finalManifest.push(v.value)
-                }
-              })
-              cleanupAndCreateManifest(finalManifest, destination, temporaryDirectory)
-            })
-            .catch(error => {
-              if (process.env.DEBUG) console.log(error.message);
-            });
-        }
       }
 
       // "-m" Specified manifest file(s)
       if (manifest) {
         let manifestList = manifest.split(',')
         let requests = [];
-        manifestList.forEach(e => {
-          requests.push(processManifestPromise(e, temporaryDirectory));
+        manifestList.forEach(manifestLocation => {
+          requests.push(
+            readManifestFromUri(
+              createUri(manifestLocation)));
         })
         Promise.allSettled(requests)
-          .then(values => {
-            values.forEach(m => {
-              m.value.forEach(ko => {
-                if (ko.startsWith('https://') || ko.startsWith('http://')) {
-                  koList.remoteList.push(ko)
-                } else {
-                  koList.localList.push(ko)
-                }
+          .then(promises => {
+            promises.map((promise) => {
+              promise.value.map((uri) => {
+                pushUriToList(uri, koUris);
               })
             })
-
-            if (process.env.DEBUG) {
-              console.log('Kos to be loaded\n====================')
-              console.log(koList.remoteList.concat(koList.localList))
-            }
-            let l = []
-            // Extract KOs from the list of local KOs
-            if (koList.localList.length > 0) {
-              l = extractAssets(koList.localList, destination, extract)
-              l.forEach(e => {
-                finalManifest.push(e)
-              })
-              cleanupAndCreateManifest(finalManifest, destination, temporaryDirectory)
-            }
-            //Download and extract from the list of remote KOs
-            if (koList.remoteList.length > 0) {
-              downloadAssets(koList.remoteList, destination, extract)
-                .then(values => {
-                  values.forEach(v => {
-                    if (v.status && v.status !== 'rejected') {
-                      finalManifest.push(v.value)
-                      console.log(`Downloaded ${v.value || v.reason} ...... ${v.status}`)
-                    } else {
-                      console.log(`Error downloading ${v.value || v.reason} ...... ${v.status}`)
-                    }
-                  })
-                  cleanupAndCreateManifest(finalManifest, destination, temporaryDirectory)
-                })
-            }
           })
           .finally(() => {
-            cleanupAndCreateManifest(finalManifest, destination, temporaryDirectory)
+            retrieveAllKos(koUris, destination, extract);
           });
       }
+      retrieveAllKos(koUris, destination, extract);
     }
   }
 }
 
 
-function processManifestPromise(manifest, tmp) {
-  return new Promise((resolve, reject) => {
-    let kos = []
-    if (fileIsRemote(manifest)) {
-      download(manifest, tmp)
-        .then(() => {
-          kos = readRemoteManifest(manifest, tmp)
-          resolve(kos);
-        })
-        .catch(() => {
-          reject(manifest);
-        });
-    } else {
-      try {
-        kos = readLocalManifest(manifest)
-        resolve(kos)
-      } catch (error) {
-        reject(error.message)
-      }
-    }
-  })
-}
-
-function readLocalManifest(manifest) {
-  let kos = []
-  let manifestPath = manifest
-  if (manifest.startsWith('file://')) {
-    manifestPath = url.fileURLToPath(manifest)
+function retrieveAllKos(koUris, destination, extract) {
+  if (process.env.DEBUG) {
+    console.log('Kos to be loaded\n====================')
+    console.log(koUris.remote.concat(koUris.local))
   }
-  let manifestUri = new URL(`file://${manifestPath}`)
-  if (fs.existsSync(manifestPath)) {
-    console.log(`Reading Manifest from ${manifestPath}\n`)
-    let manifestJson = fs.readJsonSync(manifestPath)
-    if (manifestJson.manifest) {
-      manifestJson = manifestJson.manifest
-    }
-    if (process.env.DEBUG) {
-      console.log(`From ${manifest}:\n `)
-      console.log(manifestJson)
-    }
-    manifestJson.forEach(ko => {
-      kos.push(
-        ko['@id']
-          ? URI.resolve(manifestUri.href, ko['@id'])
-          : URI.resolve(manifestUri.href, ko))
+  downloadRemoteKos(koUris.remote, destination, extract)
+    .then(remoteManifest => {
+      let localManifest = copyLocalKos(koUris.local, destination, extract)
+      let finalManifest = localManifest.concat(remoteManifest)
+      cleanupAndCreateManifest(finalManifest, destination)
     })
-  } else {
-    console.log(`File not found: ${manifestPath}`)
-  }
-  return kos
 }
 
-function readRemoteManifest(manifest, tmp) {
-  let kos = []
-  console.log(`Reading Manifest from ${manifest}\n`)
-  let manifestStringArray = manifest.split('/')
-  let manifestName = manifestStringArray[manifestStringArray.length - 1]
-  try {
-    let manifestJson = fs.readJsonSync(path.join(tmp, manifestName))
-    if (manifestJson.manifest) {
-      manifestJson = manifestJson.manifest
-    }
-    if (process.env.DEBUG) {
-      console.log(`From ${manifest}:\n `)
-      console.log(manifestJson)
-    }
-    manifestJson.forEach(ko => {
-      kos.push(
-        ko['@id']
-          ? URI.resolve(manifest, ko['@id'])
-          : URI.resolve(manifest, ko))
-    })
-  } catch (error) {
-    console.log(error.message)
-    console.log()
-  }
-  return kos
-}
-
-function extractAssets(fileList, targetDir, extract) {
-  let downloadedKoList = []
-  if (fileList.length > 0) {
-    fileList.forEach(uri => {
-      let ko = url.fileURLToPath(uri)
-      if (fs.pathExistsSync(ko)) {
-        if (extract) {
-          try {
-            let zip = new AdmZip(ko)
-            zip.extractAllTo(targetDir, true)
-          } catch (err) {
-            console.log(`Extraction of ${ko} error`)
-          }
-        } else {
-          fs.copySync(ko, path.join(targetDir, path.basename(ko)))
+function copyLocalKos(localKoUris, destination, extract) {
+  let copiedKos = []
+  localKoUris.forEach(uri => {
+    let uriAsString = uriToString(uri);
+    if (fs.pathExistsSync(uri.path)) {
+      if (extract) {
+        try {
+          let zip = new AdmZip(uri)
+          zip.extractAllTo(destination, true)
+        } catch (err) {
+          console.log(`Extraction of ${uriAsString} error`)
         }
-        downloadedKoList.push(uri)
-        console.log(`Retrieving ${ko} ...... fulfilled`)
       } else {
-        console.log(`Retrieving ${ko} ...... failed`)
+        fs.copySync(uri.path, path.join(destination, getFilename(uri)))
       }
-    })
-  }
-  return downloadedKoList
-}
-
-function downloadAssets(manifest, targetDir, extract) {
-  let requests = [];
-  manifest.forEach(zippedKo => {
-    requests.push(downloadPromise(zippedKo, targetDir, extract));
+      copiedKos.push(uri)
+      console.log(`Retrieving ${uriAsString} ...... fulfilled`)
+    } else {
+      console.log(`Retrieving ${uriAsString} ...... failed`)
+    }
   })
-  return Promise.allSettled(requests)
+  return copiedKos
 }
 
-function downloadPromise(asset, basePath, extract) {
+
+function downloadRemoteKos(uris, destination, extract) {
   return new Promise((resolve, reject) => {
-    download(asset, path.join(basePath), {
+    let downloadedKoList = [];
+    downloadRemoteZips(uris, destination, extract)
+      .then(promises => {
+        promises.forEach(promise => {
+          if (promise.value) {
+            console.log(`Downloading ${uriToString(promise.value)} ${promise.status}`)
+            downloadedKoList.push(promise.value)
+          } else {
+            console.log(`Downloading ${uriToString(promise.reason)} ${promise.status}`)
+          }
+        })
+        resolve(downloadedKoList)
+      })
+      .catch(error => {
+        if (process.env.DEBUG) console.log(error.message);
+        reject(error)
+      })
+  });
+
+}
+
+function downloadRemoteZips(uris, destination, extract) {
+  let downloadPromises = [];
+  uris.forEach(uri => {
+    downloadPromises.push(downloadRemoteZip(uri, destination, extract));
+  })
+  return Promise.allSettled(downloadPromises)
+}
+
+function downloadRemoteZip(uri, destination, extract) {
+  return new Promise((resolve, reject) => {
+    download(uri, path.join(destination), {
       extract: extract,
-      headers: {accept: ['application/zip','application/octet-stream']}
-    }).then(() => {
-        resolve(asset);
+      headers: {accept: ['application/zip', 'application/octet-stream']}
+    })
+      .then(() => {
+        resolve(uri);
       })
       .catch(() => {
-        reject(asset);
+        reject(uri);
       });
   })
 }
 
-function cleanupAndCreateManifest(finalManifest, destination, temporaryDirectory) {
-  let manifestJSON = []
-  if (process.env.DEBUG) console.log(finalManifest)
-  if (finalManifest.length > 0) {
-    finalManifest.forEach(id => {
-      manifestJSON.push(
-        {
-          "@id": id,
-          "@type": "koio:KnowledgeObject"
-        }
-      )
-    })
-    fs.writeJsonSync(path.join(destination, 'manifest.json'), manifestJSON, {spaces: 4})
-  }
-  (async () => {
-    await del([temporaryDirectory]);
-  })();
+function cleanupAndCreateManifest(copiedKoUris, destination) {
+  if (process.env.DEBUG) console.log(copiedKoUris)
+  fs.writeJsonSync(path.join(destination, 'manifest.json'), createManifest(copiedKoUris), {spaces: 4})
 }
 
-function fileIsRemote(file) {
-  return file.startsWith('https://') || file.startsWith('http://');
+function pushUriToList(uri, koUris) {
+  if (fileIsRemote(uri)) {
+    koUris.remote.push(uri)
+  } else {
+    koUris.local.push(uri)
+  }
+}
+
+function fileIsRemote(uri) {
+  return uri.scheme.startsWith('http');
 }
 
 DownloadCommand.description = `Download a collection of Knowledge Object to the current directory.
